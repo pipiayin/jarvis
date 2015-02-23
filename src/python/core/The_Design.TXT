@@ -1,0 +1,20 @@
+
+
+A simple AI core has only two logic:
+(1) firstly, understand its own environemnt
+    (1.1) this by default use a few environment detection script
+    (1.2) then it could gather via config files (or plug-ins)
+
+(2) secondly, decide what should do now
+    (2.1) a simple queue to hold 7 tasks
+    (2.2) if no interrupt, execute tasks
+
+
+It looks like some kind of OS, but should be 
+(a) kept very simple (b) add machine learnning inside.
+
+
+This logic inside this AI should be very simple, it depends on TASK to 
+increase functions.
+
+

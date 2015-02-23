@@ -1,0 +1,3 @@
+
+* Jarvis core, initialing to know the basic environment, put environment in params
+* TASK, an interface for all runable task.
