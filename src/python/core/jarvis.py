@@ -11,10 +11,11 @@ import configparser
 class Jarvis:
     def __init__(self):
         self.params = {}
-        self.prepare_config()
-        self.detect_env()
+        self.prepareConfig()
+        self.detectEnv()
 
-    def prepare_config(self):
+
+    def prepareConfig(self):
         ## read params from possible config file
         try:
             config = configparser.ConfigParser()
@@ -23,7 +24,7 @@ class Jarvis:
         except:
             self.params['config.file.check'] = False
 
-    def detect_env(self):
+    def detectEnv(self):
         ## detect environment
         self.params['platform.system'] = platform.system()
         try:
@@ -33,14 +34,33 @@ class Jarvis:
                 self.params['internet.check'] = False
         
 
-    def show_params(self):
+    def showParams(self):
         print(self.params)
+
+
+    def doTask(self, task):
+        task.setParams(self.params)
+        task.do()
+        
 
 # Task for javis
 class Task:
-    pass
+    def setParams(self, params):
+        raise NotImplementedError("Should have implemented 'setParams'")
+    
+    def do(self):
+        raise NotImplementedError("Should have implemented 'do'")
 
+
+#basic task, to install necessary packages
+class InstallPackages(Task):
+    def setParams(self, params):
+        self.params = params
+
+    def do(self):
+        if self.params['internet.check'] :
+            commands.getoutput("apt-get install python3")
 # 
 if __name__ == '__main__':
     ai = Jarvis()
-    ai.show_params()
+    ai.showParams()
