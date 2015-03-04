@@ -9,14 +9,15 @@ from datetime import date, timedelta
 
 
 past_n_days = sys.argv[1]
+ad_login = sys.argv[2]
+secret = sys.argv[3]
 yesterday = date.today() - timedelta(int(past_n_days))
 daysBeforeTimestamp =  yesterday.strftime("%Y%m%d") +"000000.0Z"
 current_time = datetime.datetime.now()
 log = open("/var/log/ad_leave_log","a")
+
 #ad_login = raw_input("AD login name:")
 #secret = getpass.getpass()
-ad_login = "Trend\SafesyncAD"
-secret = "Saf35ynC"
 #title = raw_input("query title:")
 #displayName = raw_input("query name:")
 displayName = "xSP"
