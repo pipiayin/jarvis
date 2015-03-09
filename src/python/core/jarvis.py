@@ -1,15 +1,37 @@
 #!/usr/bin/env python3
-# -*- coding: <encoding name> -*-
+# -*- coding: utf-8 -*-
 
 # Javis Core
 
 import os
+import sys
 import platform
 import socket
 import configparser
 
+#simple function to get class via name
+def get_class(kls):
+    thismodule = sys.modules[__name__]
+    parts = kls.split('.')
+    if len(parts) <= 1:
+        return getattr(thismodule, 'CmdTask')
+    else:
+        module = ".".join(parts[:-1])
+        m = __import__( module )
+        for comp in parts[1:]:
+            m = getattr(m, comp)            
+        return m
+
 class Jarvis:
     def __init__(self):
+        #try to add package path  
+        workingPath = os.getcwd()
+        absPath = os.path.dirname(os.path.abspath(__file__))
+        sys.path.append(workingPath)
+        sys.path.append(absPath)
+        if absPath.endswith("/core"):
+            sys.path.append(absPath[0:-5])
+
         self.tasks = []
         self.params = {}
         self.prepareConfig()
@@ -22,6 +44,7 @@ class Jarvis:
             config = configparser.ConfigParser()
             config.read('jarvis.conf')
             self.params['config.file.check'] = True
+            self.config = config
             allSections =  config.sections()
             for s in allSections:
                 if s.startswith('task.'):
@@ -49,8 +72,18 @@ class Jarvis:
         return self.tasks
 
 
-    def doTask(self, task):
-        task.setParams(self.params)
+    def doTask(self, taskClass):
+        taskConfig = self.config.items(taskClass)
+        configParams = {}
+        for k,v in taskConfig:
+            configParams[k] = v
+
+        #print configParams
+        #print configParams['class']
+
+        taskClass = get_class(configParams[u'class'])
+        task = taskClass()
+        task.setParams(configParams.copy())
         task.do()
         
 
@@ -79,8 +112,10 @@ class CmdTask(Task):
    
     def do(self):
         try:
-            commands.getoutput(self.params['cmd']) 
+            import commands
+            print commands.getoutput(self.params['cmd']) 
         except:
+            print('except...')
             print("can't execute cmd:"+self.params['cmd'])
 
 
@@ -94,7 +129,8 @@ if __name__ == '__main__':
 
     ai = Jarvis()
     print ai.listParams()
-    print ai.listTasks()
+    for task in ai.listTasks():
+        ai.doTask(task)
 
 
 
