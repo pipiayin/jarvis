@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: <encoding name> -*-
 
-# Javis
+# Javis Core
 
 import os
 import platform
@@ -10,6 +10,7 @@ import configparser
 
 class Jarvis:
     def __init__(self):
+        self.tasks = []
         self.params = {}
         self.prepareConfig()
         self.detectEnv()
@@ -21,8 +22,13 @@ class Jarvis:
             config = configparser.ConfigParser()
             config.read('jarvis.conf')
             self.params['config.file.check'] = True
+            allSections =  config.sections()
+            for s in allSections:
+                if s.startswith('task.'):
+                    self.tasks.append(s)
         except:
             self.params['config.file.check'] = False
+
 
     def detectEnv(self):
         ## detect environment
@@ -34,8 +40,13 @@ class Jarvis:
                 self.params['internet.check'] = False
         
 
-    def showParams(self):
-        print(self.params)
+
+    def listParams(self):
+        return (self.params)
+
+
+    def listTasks(self):
+        return self.tasks
 
 
     def doTask(self, task):
@@ -60,7 +71,30 @@ class InstallPackages(Task):
     def do(self):
         if self.params['internet.check'] :
             commands.getoutput("apt-get install python3")
-# 
+
+#basic task to execute from commandline
+class CmdTask(Task):
+    def setParams(self, params):
+        self.params = params
+   
+    def do(self):
+        try:
+            commands.getoutput(self.params['cmd']) 
+        except:
+            print("can't execute cmd:"+self.params['cmd'])
+
+
+#######################################################################
+# commandline run Jarvis
+# 1. list properties, environments...
+# 2. list tasks
+# 3. pick-up tasks to run
+#
 if __name__ == '__main__':
+
     ai = Jarvis()
-    ai.showParams()
+    print ai.listParams()
+    print ai.listTasks()
+
+
+
