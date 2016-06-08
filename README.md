@@ -8,9 +8,12 @@ Too many project has the same call name "jarvis", I will find another name latte
 
     1.1  
 
-2. Energy source
+2. High Level Design
 
-    2.1 Hand power.
+    * Input(string) --> (AI) --> Output(String|URL|Action)
+    * Commandline
+    * Session concerns
+    *
 
  
 3. Deployment
