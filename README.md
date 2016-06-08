@@ -2,8 +2,11 @@
 
 Power me, I will serve you.
 
-1. A simple AI device.
-    1.1 
+Too many project has the same call name "jarvis", I will find another name latter.
+
+1. A simple chatbot with a bit of AI and a bit of learnning.
+
+    1.1  
 
 2. Energy source
 
@@ -11,9 +14,9 @@ Power me, I will serve you.
 
  
 3. Deployment
-    
-    3.1 Raspberry PI-2 
-        3.1.1 with camera
-        3.1.2 external bettery
-        3.1.3 power from hand power generator 
-        3.1.4 solar panel? 
+    3.1 Desktop
+    3.2 Raspberry PI-2 
+        3.2.1 with camera
+        3.2.2 external bettery
+        3.2.3 power from hand power generator 
+        3.2.4 solar panel? 
