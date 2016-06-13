@@ -1,20 +1,23 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #encoding=utf-8
-import jieba
 
-jieba.set_dictionary('dict.txt.big')
+import urllib.request
+import json
+import requests
 
-string1 = u'請幫我google一下生涯規劃'
-string2 = u'查詢生涯規劃'
-string3 = u'找生涯規劃'
+wikiAPI = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=xml&exintro=&titles=袋鼠'
 
-strings = [string1,string2,string3]
+#wikiAPI = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=json&exintro=&titles=%E6%BE%B3%E5%A4%A7%E5%88%A9%E4%BA%9E'
 
-for s in strings:
-    print "Input：",s
+#with urllib.request.urlopen(wikiAPI) as response:
+#   html = response.read().decode('utf-8')
+#   r = json.loads(html)
+#   print(r)
 
-    words = jieba.cut(s, cut_all=False)
+r  = requests.get(wikiAPI)
 
-    print "Output 精確模式 Full Mode："
-    for word in words:
-        print word
-    print("----")
+print(r.encoding)
+print(dir(r))
+print(r.text)
+
