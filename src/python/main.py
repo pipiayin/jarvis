@@ -9,7 +9,6 @@ from pprint import pprint
 from brain import WikiBrain
 
 
-
 userReq =":None" 
 
 defaultAction = {'.exit':'離開','.help':'系統說明'}
@@ -24,7 +23,7 @@ def loadBrain():
  
 
 def think(userSession):
-    wikiBrain.think(userSession)
+    return wikiBrain.think(userSession)
  
 if __name__ == '__main__':
 
@@ -37,6 +36,7 @@ if __name__ == '__main__':
         words = pseg.cut(userReq)
         userSession["lastWords"]  = words
         userSession["lastString"]  = userReq
-        think(userSession)
+        print("...")
+        print(think(userSession))
         print("---")
         
