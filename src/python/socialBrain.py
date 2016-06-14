@@ -42,7 +42,10 @@ if __name__ == '__main__':
     r = requests.get('https://graph.facebook.com/oauth/access_token?grant_type=client_credentials&client_id='+app_id+'&client_secret='+client_secret)
     access_token = r.text.split('=')[1]
     print(access_token)
-    r = requests.get('https://graph.facebook.com/v2.6/1091008854278872/accounts',params={'access_token':access_token})
+    r = requests.get('https://graph.facebook.com/v2.6/1091008854278872/subscriptions',params={'access_token':access_token})
     print(r.text)
+    r = requests.get('https://graph.facebook.com/v2.6/112972272461691/friends', params={'access_token':access_token})
+    print(r.text)
+
 
 
