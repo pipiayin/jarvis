@@ -8,28 +8,97 @@ import jieba.posseg as pseg
 import random
 import time
 import sys
+import csv
+
 
 class SocialBrain():
+    
+    kb = {}
+    wikiAPI = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=json&exintro=&redirects=&titles='
+    def __init__(self):
+        
+        with open('kb.csv') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            for row in spamreader:
+                if(len(row)>=2):
+                    self.kb[row[0].strip()] = row[1].strip()
 
-    def basicParser(self, msg):
+    def tryExactMatch(self, msg):
+        for key in self.kb:
+            if msg.count(key) > 0:
+                return self.kb[key]
+        return ""
+
+    def basicParser(self, msg, words):
         response = ""
         print(len(msg))
         if len(msg) >= 60:
-            response = u'抱歉一次講太多我聽不懂，可以簡潔一點，60個字之內就好?'
-            print('what?? too long')
+            res_act = self.kb[u'act_too_many_words']
+            return res_act
+
+        res_em = self.tryExactMatch(msg)
+        if res_em != '':
+            return res_em
+
+       # print(dir(words))
         return response
 
     def load(self, info):
         print("load information")
 
-    def think(self, userSession):
-        response =u'有什麼可以幫您服務的地方？'
-        msg = userSession["msg"]  
-        basic_res = self.basicParser(msg) 
-        if basic_res != '':
-            return basic_res
+
+    def wikiParser(self, msg, words):
+        print("go to wikiparser??")
+        result = ""
+        print(words)
+        for word in words:
+            if word.flag in ['n','j','x']:
+                print("to find"+str(word))
+                wikiResult = self.findWiki(word)
+                if wikiResult == '':
+                    return result
+                else:
+                    return wikiResult
+            else:
+                pass
+        return result
+
+
+    def think(self, msg):
+        response = ""
+        handler_list = [self.basicParser, self.wikiParser]
+        words = pseg.cut(msg)
+        for h in handler_list :
+            basic_res = h(msg,words) 
+            if basic_res != '':
+                return basic_res
          
-        return response
+        if response == '':
+            return self.kb['act_no_info']
+        else:
+            return response
+
+    def findWiki(self, word):
+        url = self.wikiAPI+word.word
+        print(url)
+        r  = requests.get( self.wikiAPI+word.word )
+        return self.getExtract(r.text)
+
+    def getExtract(self, wikiApiRes):
+        if wikiApiRes.count('<extract')==0 :
+            return ""
+        result = wikiApiRes.split('<extract')[1].split('</extract>')[0]
+        result = result.replace('xml:space="preserve">','')
+        result = result.replace('&lt;','')
+        result = result.replace('p&gt;','')
+        result = result.replace('/b&gt;','')
+        result = result.replace('b&gt;','')
+        result = result.replace('/p&gt;','')
+        result = result.replace('&gt;','')
+        result = result.replace('br&gt;','')
+
+        return result
+
 
 
 
@@ -37,17 +106,9 @@ class SocialBrain():
 if __name__ == '__main__':
 
     fbBrain = SocialBrain()
-    
-    jieba.set_dictionary('data/dict.txt.big')
-
     msg = sys.argv[1]
-    userSession = {"name":"","lastWords":"", "lastString":""}
-    userReq = u'照片不錯'
-    words = pseg.cut(userReq)
-    userSession["lastWords"]  = words
-    userSession["msg"]  = msg
 
-    print(fbBrain.think(userSession))
+    print(fbBrain.think(msg))
 
 
 
