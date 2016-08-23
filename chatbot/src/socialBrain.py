@@ -9,6 +9,7 @@ import random
 import time
 import sys
 import csv
+from dynamoKB import matchHandler
 
 
 class SocialBrain():
@@ -31,7 +32,6 @@ class SocialBrain():
 
     def basicParser(self, msg, words):
         response = ""
-        print(len(msg))
         if len(msg) >= 60:
             res_act = self.kb[u'act_too_many_words']
             return res_act
@@ -63,11 +63,19 @@ class SocialBrain():
                 pass
         return result
 
+    def simpleListWords(self, words):
+        toThinkList = []
+        for w in words:
+            toThinkList.append(w.word)
+        return toThinkList
 
     def think(self, msg):
         response = ""
-        handler_list = [self.basicParser, self.wikiParser]
+        handler_list = [matchHandler]
         words = pseg.cut(msg)
+        
+        words = self.simpleListWords(words)
+
         for h in handler_list :
             basic_res = h(msg,words) 
             if basic_res != '':

@@ -24,6 +24,10 @@ A config-able chat microservice for better customer support.
 - 
 ## a microservice 
 - AWS lambda and API gateway
+- put knowledge base in dynamodb
+> kbmatch (pkey)
+> kbguess (pkey)
+>msglog (lkey)
 - package method
 
 # TODOs
@@ -32,3 +36,7 @@ A config-able chat microservice for better customer support.
 
 # Notes
 - due to AWS limitation, only python2.7
+
+# how to make a Lambda?
+- ZIP every thing.
+- Check Lambda.py
