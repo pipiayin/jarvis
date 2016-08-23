@@ -43,17 +43,13 @@ class SocialBrain():
        # print(dir(words))
         return response
 
-    def load(self, info):
-        print("load information")
-
-
     def wikiParser(self, msg, words):
-        print("go to wikiparser??")
+        #print("go to wikiparser??")
         result = ""
-        print(words)
+        #print(words)
         for word in words:
             if word.flag in ['n','j','x']:
-                print("to find"+str(word))
+                #print("to find"+str(word))
                 wikiResult = self.findWiki(word)
                 if wikiResult == '':
                     return result
@@ -88,7 +84,7 @@ class SocialBrain():
 
     def findWiki(self, word):
         url = self.wikiAPI+word.word
-        print(url)
+        #print(url)
         r  = requests.get( self.wikiAPI+word.word )
         return self.getExtract(r.text)
 
