@@ -17,7 +17,7 @@ A config-able chat microservice for better customer support.
 - Third pary tool (jeiba)
 - sentiment tool (??)
 - bad language tool (??)
-- response text repository
+- response text repository <- use csv file and also dynamodb
 - take notes   
 ## Config-able
 - response text repository
@@ -27,15 +27,17 @@ A config-able chat microservice for better customer support.
 - put knowledge base in dynamodb
 > kbmatch (pkey)
 > kbguess (pkey)
->msglog (lkey)
+> similar (pkey, ori)
+> msglog (lkey)
 - package method
+> zip la.zip -r <file> ... <folder> <folder>
 
 # TODOs
-##  
-
+- simple api test client (instead of curl)
 
 # Notes
 - due to AWS limitation, only python2.7
+- python requests is very slow?!
 
 # how to make a Lambda?
 - ZIP every thing.

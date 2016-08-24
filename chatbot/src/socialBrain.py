@@ -10,6 +10,7 @@ import time
 import sys
 import csv
 from dynamoKB import matchHandler
+from pttChat import pttHandler
 
 
 class SocialBrain():
@@ -18,7 +19,7 @@ class SocialBrain():
     wikiAPI = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=json&exintro=&redirects=&titles='
     def __init__(self):
         
-        with open('kb.csv') as csvfile:
+        with open('basickb.csv') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
             for row in spamreader:
                 if(len(row)>=2):
@@ -33,12 +34,12 @@ class SocialBrain():
     def basicParser(self, msg, words):
         response = ""
         if len(msg) >= 60:
-            res_act = self.kb[u'act_too_many_words']
-            return res_act
+            res_act = self.kb[u'act_too_many_words'].split(";")
+            return random.choice(res_act)
 
-        res_em = self.tryExactMatch(msg)
-        if res_em != '':
-            return res_em
+#        res_em = self.tryExactMatch(msg)
+#        if res_em != '':
+#            return res_em
 
        # print(dir(words))
         return response
@@ -67,7 +68,7 @@ class SocialBrain():
 
     def think(self, msg):
         response = ""
-        handler_list = [matchHandler]
+        handler_list = [self.basicParser, matchHandler, pttHandler]
         words = pseg.cut(msg)
         
         words = self.simpleListWords(words)
