@@ -15,7 +15,7 @@ if __name__ == '__main__':
     headers = {'Content-Type': 'application/json', 'x-api-key':apiKey}
 
     url = 'https://csul2m26h5.execute-api.us-east-1.amazonaws.com/prod/ai'
-    payload = json.dumps({ "msg" : msg  })
+    payload = json.dumps({ "msg" : msg ,"uid" : "test_user_from_ai" })
     r = requests.post(url, headers=headers, data = payload)
     resj = json.loads(r.text)
     print(resj['res'])
