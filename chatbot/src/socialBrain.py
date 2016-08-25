@@ -11,6 +11,7 @@ import sys
 import csv
 from dynamoKB import matchHandler
 from pttChat import pttHandler
+from wikiChat import wikiHandler
 
 
 class SocialBrain():
@@ -44,42 +45,39 @@ class SocialBrain():
        # print(dir(words))
         return response
 
-    def wikiParser(self, msg, words):
-        #print("go to wikiparser??")
-        result = ""
-        #print(words)
-        for word in words:
-            if word.flag in ['n','j','x']:
-                #print("to find"+str(word))
-                wikiResult = self.findWiki(word)
-                if wikiResult == '':
-                    return result
-                else:
-                    return wikiResult
-            else:
-                pass
-        return result
 
     def simpleListWords(self, words):
         toThinkList = []
+        wordtypes = []
         for w in words:
             toThinkList.append(w.word)
-        return toThinkList
+            wordtypes.append((w.word, w.flag))
+        return toThinkList, wordtypes
 
     def think(self, msg):
         response = ""
-        handler_list = [self.basicParser, matchHandler, pttHandler]
+        all_list = [self.basicParser, matchHandler,wikiHandler, pttHandler]
+        short_list = [self.basicParser, matchHandler, pttHandler]
+        handler_list = short_list
         words = pseg.cut(msg)
         
-        words = self.simpleListWords(words)
+        words, wordtypes = self.simpleListWords(words)
+        wcount = len(wordtypes)
+        nounwcount = 0.0
+        for (w,f) in wordtypes:
+            if f in['n','j','nr','ns','nt','an']:
+                nounwcount += 1
+        if nounwcount / float(wcount) >= 0.29:
+            handler_list = all_list 
 
         for h in handler_list :
             basic_res = h(msg,words) 
             if basic_res != '':
                 return basic_res
          
-        if response == '':
-            return self.kb['act_no_info']
+        if response == '': # can't find any answer
+            noInfoList = self.kb['act_no_info'].split(";")
+            return random.choice(noInfoList)
         else:
             return response
 
