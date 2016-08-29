@@ -17,7 +17,6 @@ from wikiChat import wikiHandler
 class SocialBrain():
     
     kb = {}
-    wikiAPI = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=json&exintro=&redirects=&titles='
     def __init__(self):
         
         with open('basickb.csv') as csvfile:
@@ -34,6 +33,10 @@ class SocialBrain():
 
     def basicParser(self, msg, words):
         response = ""
+        msg = msg.strip() 
+        if len(msg) <= 3 and msg in self.kb[u'list_hello'].split(;): # small lines
+            res_act = self.kb[u'act_hello_words'].split(";")
+
         if len(msg) >= 60:
             res_act = self.kb[u'act_too_many_words'].split(";")
             return random.choice(res_act)
@@ -56,8 +59,8 @@ class SocialBrain():
 
     def think(self, msg):
         response = ""
-        all_list = [self.basicParser, matchHandler,wikiHandler, pttHandler]
-        short_list = [self.basicParser, matchHandler, pttHandler]
+        all_list = [self.basicParser, matchHandler,wikiHandler]
+        short_list = [self.basicParser, matchHandler]
         handler_list = short_list
         words = pseg.cut(msg)
         
@@ -75,32 +78,16 @@ class SocialBrain():
             if basic_res != '':
                 return basic_res
          
-        if response == '': # can't find any answer
-            noInfoList = self.kb['act_no_info'].split(";")
-            return random.choice(noInfoList)
+        if response == '': # can't find any answer give 50% for pttHandler
+            if random.randint(0,1) == 1:
+                response = pttHandler(msg, words)
+                if response == '':
+                    noInfoList = self.kb['act_no_info'].split(";")
+                    response = random.choice(noInfoList)
+            return response 
         else:
             return response
 
-    def findWiki(self, word):
-        url = self.wikiAPI+word.word
-        #print(url)
-        r  = requests.get( self.wikiAPI+word.word )
-        return self.getExtract(r.text)
-
-    def getExtract(self, wikiApiRes):
-        if wikiApiRes.count('<extract')==0 :
-            return ""
-        result = wikiApiRes.split('<extract')[1].split('</extract>')[0]
-        result = result.replace('xml:space="preserve">','')
-        result = result.replace('&lt;','')
-        result = result.replace('p&gt;','')
-        result = result.replace('/b&gt;','')
-        result = result.replace('b&gt;','')
-        result = result.replace('/p&gt;','')
-        result = result.replace('&gt;','')
-        result = result.replace('br&gt;','')
-
-        return result
 
 
 

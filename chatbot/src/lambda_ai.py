@@ -9,11 +9,14 @@ import requests
 
 
 def lambda_handler(even, context):
-    msg = even['msg']
-    fbBrain = SocialBrain()
-    resp = fbBrain.think(msg)
+    try:
+        msg = even['msg']
+        fbBrain = SocialBrain()
+        resp = fbBrain.think(msg)
+        return {'res':resp}
+    except e:
+        return {'res':str(e)}
    
-    return {'res':resp}
 
 
 if __name__ == '__main__':
