@@ -9,7 +9,7 @@ import random
 import time
 import sys
 import csv
-from dynamoKB import matchHandler
+from esKB import esHandler
 from pttChat import pttHandler
 from wikiChat import wikiHandler
 
@@ -34,8 +34,9 @@ class SocialBrain():
     def basicParser(self, msg, words):
         response = ""
         msg = msg.strip() 
-        if len(msg) <= 3 and msg in self.kb[u'list_hello'].split(;): # small lines
-            res_act = self.kb[u'act_hello_words'].split(";")
+        if len(msg) <= 3 and msg in self.kb[u'list_hello'].split(';'): # small lines
+            res_act = self.kb[u'act_hello'].split(";")
+            return random.choice(res_act)
 
         if len(msg) >= 60:
             res_act = self.kb[u'act_too_many_words'].split(";")
@@ -59,8 +60,8 @@ class SocialBrain():
 
     def think(self, msg):
         response = ""
-        all_list = [self.basicParser, matchHandler,wikiHandler]
-        short_list = [self.basicParser, matchHandler]
+        all_list = [self.basicParser, esHandler,wikiHandler]
+        short_list = [self.basicParser, esHandler]
         handler_list = short_list
         words = pseg.cut(msg)
         
