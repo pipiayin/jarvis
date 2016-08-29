@@ -28,6 +28,7 @@ def getExtract( wikiApiRes):
     result = re.sub(r'\<.*?\>', '', result)
     result = re.sub(r'\(.*?\)', '', result)
     result = re.sub(r'（.*?）', '', result)
+    result = re.sub(r'\n', '', result)
     return result
 
 
@@ -45,7 +46,7 @@ def wikiHandler(msg, words):
                 wikiResult = findWiki(word.word)
                 if len(wikiResult) >= 61 :
                     wikiResult = wikiResult[:60]
-                    wikiResult = wikiResult+" ..."
+                    wikiResult = wikiResult+u'....歹勢我是不是話太多?'
                 break
             else:
                 print("to ignore"+str(word))

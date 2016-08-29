@@ -14,8 +14,8 @@ def lambda_handler(even, context):
         fbBrain = SocialBrain()
         resp = fbBrain.think(msg)
         return {'res':resp}
-    except e:
-        return {'res':str(e)}
+    except:
+        return {'res':"something wrong"}
    
 
 
