@@ -14,8 +14,10 @@ if __name__ == '__main__':
     s.close()
     headers = {'Content-Type': 'application/json', 'x-api-key':apiKey}
 
-    url = 'https://csul2m26h5.execute-api.us-east-1.amazonaws.com/prod/ai'
-    payload = json.dumps({ "msg" : msg ,"uid" : "test_user_from_ai" })
+    #url = 'https://csul2m26h5.execute-api.us-east-1.amazonaws.com/prod/ai'
+    url = 'https://ns67c2h3na.execute-api.us-east-1.amazonaws.com/prod/ai'
+    tmp =   {u'entry': [{u'messaging': [{u'timestamp': 1472454587950, u'message': {u'text': msg, u'mid': u'mid.1472454587942:6009b68089c825cf40', u'seq': 268}, u'recipient': {u'id': u'1739093062995859'}, u'sender': {u'id': u'1181896645200579'}}] , u'id': u'1739093062995859', u'time': 1472454587999}], u'object': u'page'}
+    payload = json.dumps(tmp)
     r = requests.post(url, headers=headers, data = payload)
     resj = json.loads(r.text)
-    print(resj['res'])
+    print(resj)
