@@ -25,6 +25,7 @@ def getExtract( wikiApiRes):
     for i in ignoreList:
         result = result.replace(i,'')
 
+    result = re.sub(r'（.*?）', '', result)
     result = re.sub(r'\<.*?\>', '', result)
     result = re.sub(r'\(.*?\)', '', result)
     result = re.sub(r'（.*?）', '', result)

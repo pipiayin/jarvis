@@ -5,6 +5,7 @@ import json
 import requests
 import jieba
 import jieba.posseg as pseg
+import re
 import random
 import time
 import sys
@@ -34,14 +35,22 @@ class SocialBrain():
     def basicParser(self, msg, words):
         response = ""
         msg = msg.strip() 
-        if len(msg) <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
+        lenMsg = len(msg)
+        if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
             res_act = self.kb[u'act_hello'].split(";")
             return random.choice(res_act)
 
-        if len(msg) <= 5 and msg in self.kb[u'list_done'].split(';'): # small lines
+        if lenMsg <= 5 and msg in self.kb[u'list_done'].split(';'): # small lines
             res_act = self.kb[u'act_ack'].split(";")
             return random.choice(res_act)
-        if len(msg) >= 60:
+
+        if lenMsg > 9 :
+            engcounts = len(re.findall('[a-zA-Z]',msg))
+            if float(engcounts) / lenMsg > 0.75:
+                res_act = self.kb[u'act_no_english'].split(";")
+                return random.choice(res_act)
+                
+        if lenMsg >= 60:
             res_act = self.kb[u'act_too_many_words'].split(";")
             return random.choice(res_act)
 

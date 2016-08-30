@@ -23,7 +23,7 @@ FBURL = 'https://graph.facebook.com/v2.6/me/messages'
 
 def responseToUser(uid,mid, resp):
     try:
-        print("start to respobse")
+        print("start to response")
         headers = {"Content-type": "application/json"}
         payload = {}
         payload['recipient'] = {"id":uid}
@@ -33,9 +33,9 @@ def responseToUser(uid,mid, resp):
         jdump = json.dumps(payload)
         print(jdump)
         url = FBURL + "?access_token="+FBTOKEN
-#        r = requests.post(url, headers=headers, data = jdump)
-#        print(r)
-#        print(r.text)
+        r = requests.post(url, headers=headers, data = jdump)
+        print(r)
+        print(r.text)
         print("did send response")
         return ''
     except:
@@ -59,6 +59,7 @@ def lambda_handler(even, context):
     try:
         print("-----get message ---")
         print(len(even['entry']))
+        print(even)
         msg = even['entry'][0][u'messaging'][0]['message']['text']
         mid = even['entry'][0][u'messaging'][0]['message']['mid']
         uid = even['entry'][0][u'messaging'][0]['sender']['id']
@@ -70,10 +71,12 @@ def lambda_handler(even, context):
         }
         resp =""
         if exists(mid,uid) == None: 
+            print("to response")
             fbBrain = SocialBrain()
             resp = fbBrain.think(msg)
             responseToUser(uid,mid, resp)
             table_log.put_item(Item=toLog)
+            print("responsed ")
         else:
             print("no need to response")
  
