@@ -7,6 +7,7 @@ from socialBrain import SocialBrain
 import json
 import requests
 import boto3
+import sys
 import json
 import random
 
@@ -42,8 +43,13 @@ def responseToUser(uid,mid, resp):
         
 
 def exists(mid,uid):
+    item = None
     try:
         item = table_log.get_item( Key={ 'mid': mid, 'uid':uid })
+        if "Item" in item:
+            return item
+        else:
+            return None
     except:
         print(sys.exc_info()[0])
         item = None
@@ -62,6 +68,7 @@ def lambda_handler(even, context):
             "recipient_id": rid,
             "message_id": mid
         }
+        resp =""
         if exists(mid,uid) == None: 
             fbBrain = SocialBrain()
             resp = fbBrain.think(msg)
@@ -71,6 +78,7 @@ def lambda_handler(even, context):
             print("no need to response")
  
         print("-----end message ---")
+        res['msgback'] = resp
         return json.dumps(res)
     except:
         print(even)
