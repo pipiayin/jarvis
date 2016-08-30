@@ -20,16 +20,18 @@ def findWiki( word):
 def getExtract( wikiApiRes):
     if wikiApiRes.count('<extract')==0 :
         return ""
-    result = wikiApiRes.split('<extract')[1].split('</extract>')[0]
-    ignoreList = ['xml:space="preserve">','&lt;','p&gt;','/b&gt;','b&gt;','/p&gt;','&gt;','br&gt;']
-    for i in ignoreList:
-        result = result.replace(i,'')
+    #result = wikiApiRes.split('<extract')[1].split('</extract>')[0]
+    result = wikiApiRes.strip()
 
-    result = re.sub(r'（.*?）', '', result)
     result = re.sub(r'\<.*?\>', '', result)
+    result = re.sub(r'（.*?）', '', result)
     result = re.sub(r'\(.*?\)', '', result)
     result = re.sub(r'（.*?）', '', result)
+    result = re.sub(r'\&lt;.*?\&gt;', '', result)
     result = re.sub(r'\n', '', result)
+#    ignoreList = ['xml:space="preserve">','&lt;','p&gt;','/b&gt;','b&gt;','/p&gt;','&gt;','br&gt;']
+#    for i in ignoreList:
+#        result = result.replace(i,'')
     return result
 
 
@@ -42,7 +44,7 @@ def wikiHandler(msg, words):
         jieba.load_userdict('data/dict.txt.big')
         words = pseg.cut(msg)
         for word in words:
-            if word.flag in ['n','j','nr','ns','nt','an']:
+            if word.flag in ['n','j','nr','ns','nt','an','nt']:
                 print("to find"+str(word))
                 wikiResult = findWiki(word.word)
                 if len(wikiResult) >= 61 :
