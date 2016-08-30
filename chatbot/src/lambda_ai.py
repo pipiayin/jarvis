@@ -76,7 +76,7 @@ def lambda_handler(even, context):
             resp = fbBrain.think(msg)
             responseToUser(uid,mid, resp)
             table_log.put_item(Item=toLog)
-            print("responsed ")
+            print("responsed (tolog->)"+str(toLog))
         else:
             print("no need to response")
  

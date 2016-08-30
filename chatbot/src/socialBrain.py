@@ -83,7 +83,8 @@ class SocialBrain():
         for (w,f) in wordtypes:
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += 1
-        if nounwcount / float(wcount) >= 0.29:
+
+        if nounwcount / float(wcount) >= 0.25:
             handler_list = all_list 
 
         for h in handler_list :
@@ -92,7 +93,7 @@ class SocialBrain():
                 return basic_res
          
         if response == '': # can't find any answer give 33% for pttHandler
-            if random.randint(0,2) == 2:
+            if random.randint(0,2) < 2:
                 response = pttHandler(msg, words)
 
         if response == '':
