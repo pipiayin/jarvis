@@ -24,9 +24,10 @@ def inSimilar(msg):
                 'pkey': msg,
             }
         )
-    except ClientError as e:
+    except:
         #print(e.response['Error']['Message'])
-        return ""
+        e = sys.exc_info()[0]
+        return str(e)
     else:
         #print("Get Similar succeeded:")
         if 'Item' in response:
@@ -67,7 +68,7 @@ def matchHandler(msg, words):
             'pkey': ori
            }
         )
-    except ClientError as e:
+    except:
         #print(e.response['Error']['Message'])
         return ''
     else:

@@ -64,15 +64,26 @@ with open(sys.argv[2]) as sfile:
             w = w.strip()
             if w == '':
                 continue
+            # build in each word
+            toInsert = allkb[oriKey]
+            toInsert['similar'] = w
             similarList.append(w)
+            print(toInsert)
+            res = es.index(index="testi", doc_type='fb',  body=toInsert)
 
-        if oriKey in allkb:
-            allkb[oriKey]['similar'] = similarList
+#        if oriKey in allkb:
+#            allkb[oriKey]['similar'] = similarList
 
 
+<<<<<<< HEAD
 for k in allkb:
     print(allkb[k])
     res = es.index(index="testi", doc_type='fb',  body=allkb[k])
+=======
+#for k in allkb:
+#    print(allkb[k])
+#    #res = es.index(index="testi", doc_type='fb',  body=allkb[k])
+>>>>>>> e24865b25d6a22970f1ad8c957966f87c9342bb8
 
 es.indices.refresh(index="testi")
 print("======= all upload ======")

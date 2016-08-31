@@ -6,8 +6,10 @@ import lxml.html as lh
 from StringIO import StringIO
 import re
 
-
 from lxml import etree
+
+
+
 
 f = open('out1.csv','a')
 for i in range(2,10000):
@@ -54,7 +56,7 @@ for i in range(2,10000):
         print("======")
         oneresult = allq+","+alla+","+dr
     
-        f.write(oneresult+"\n")
+#        f.write(oneresult+"\n")
     except:
         pass 
 #    print(oneresult)

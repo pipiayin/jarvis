@@ -33,60 +33,19 @@ es = Elasticsearch(
 )
 print(es.info())
 
-print("load kb csv file to allkb{}")
-
-allkb = {}
-with open(sys.argv[1]) as csvfile:
-    slines = csv.reader(csvfile, delimiter=',', quotechar='"')
-    for line in slines:
-        oriKey = line[0].strip()
-        swords = line[1].strip().split(";")
-        res = []
-        for w in swords:
-            w = w.strip()
-            if w == '':
-                continue
-            res.append(w)
-        item={u'pkey':oriKey, u'res':res}
-        allkb[oriKey] = item
-        # to make sure similar table always has itself
-
-
-print("map similar key word mapping to allkb{}....")
-
-with open(sys.argv[2]) as sfile:
-    slines = csv.reader(sfile, delimiter=',', quotechar='"')
-    for line in slines:
-        oriKey = line[0].strip()
-        swords = line[1].strip().split(";")
-        similarList = []
-        for w in swords:
-            w = w.strip()
-            if w == '':
-                continue
-            similarList.append(w)
-
-        if oriKey in allkb:
-            allkb[oriKey]['similar'] = similarList
-
-
-for k in allkb:
-    print(allkb[k])
-    res = es.index(index="testi", doc_type='fb',  body=allkb[k])
 
 es.indices.refresh(index="testi")
 print("======= all upload ======")
 
 
 q = {
-      "min_score": 0.9 ,
       "query" :{
       "multi_match" : {
-        "query": u'學習專案管理',
-        "fields": [ "pkey", "similar" ]
+        "query": sys.argv[1],
+        "fields": [  "pkey", "similar" ]
       }
       }
-    }
+ }
 
 
 
