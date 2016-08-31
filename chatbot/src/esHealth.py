@@ -13,7 +13,7 @@ import csv
 from requests_aws4auth import AWS4Auth
 
 
-min_score=0.9
+min_score=0.5
 
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 aws_access_key_id = ''
@@ -40,8 +40,17 @@ es = Elasticsearch(
     verify_certs=True,
     connection_class=RequestsHttpConnection
 )
+def extraFilter(msg):
+    rList = ['您好：','你好:','您好:','你好：','妳好：','妳好:','您好','你好','妳好']
 
-def esHandler(msg, words):
+    for r in rList:   
+        if msg.count(r) > 0:
+            msg = msg.split(r)[-1]
+            break
+    return msg
+
+
+def esHealthHandler(msg, words):
     result =""
 
     q = {
@@ -56,7 +65,9 @@ def esHandler(msg, words):
     res = es.search(index="health", body=q)
     print("Got %d Hits:" % res['hits']['total'])
     for h in res['hits']['hits']:
-        result = (h['_source']['res'])
+        result = (h['_source']['a'])
+        result = extraFilter(result)
+        result = u'或許你想知道的是健康訊息, 以下資料查詢自台灣e院 其他人的問題回答...\n'+result
         break
     return result
 
@@ -69,6 +80,5 @@ if __name__ == '__main__':
 
 
     print("==== result ===")
-    print(esHandler(sys.argv[1],[]))
-
+    print(esHealthHandler(sys.argv[1],[])) 
 

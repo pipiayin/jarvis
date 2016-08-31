@@ -11,6 +11,7 @@ import time
 import sys
 import csv
 from esKB import esHandler
+from esHealth import esHealthHandler
 from pttChat import pttHandler
 from wikiChat import wikiHandler
 
@@ -50,7 +51,7 @@ class SocialBrain():
                 res_act = self.kb[u'act_no_english'].split(";")
                 return random.choice(res_act)
                 
-        if lenMsg >= 60:
+        if lenMsg >= 90:
             res_act = self.kb[u'act_too_many_words'].split(";")
             return random.choice(res_act)
 
