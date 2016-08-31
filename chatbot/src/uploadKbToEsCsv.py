@@ -75,15 +75,9 @@ with open(sys.argv[2]) as sfile:
 #            allkb[oriKey]['similar'] = similarList
 
 
-<<<<<<< HEAD
-for k in allkb:
-    print(allkb[k])
-    res = es.index(index="testi", doc_type='fb',  body=allkb[k])
-=======
 #for k in allkb:
 #    print(allkb[k])
 #    #res = es.index(index="testi", doc_type='fb',  body=allkb[k])
->>>>>>> e24865b25d6a22970f1ad8c957966f87c9342bb8
 
 es.indices.refresh(index="testi")
 print("======= all upload ======")
