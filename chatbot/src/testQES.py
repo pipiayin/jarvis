@@ -9,7 +9,7 @@ import csv
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
-awsauthfile = '/root/.aws/credentials_3rd'
+awsauthfile = '/root/.aws/credentials'
 aws_access_key_id = '' 
 aws_secret_access_key = ''
 
@@ -34,22 +34,23 @@ es = Elasticsearch(
 print(es.info())
 
 
-es.indices.refresh(index="testi")
-print("======= all upload ======")
+#es.indices.refresh(index="testi")
+#es.indices.create(index="health")
+#print("======= all upload ======")
 
 
+msg = sys.argv[3]
+field = sys.argv[2]
 q = {
       "query" :{
-      "multi_match" : {
-        "query": sys.argv[1],
-        "fields": [  "pkey", "similar" ]
+      "match_phrase" : {
+        field: msg
       }
       }
  }
 
 
-
-res = es.search(index="testi", body=q)
+res = es.search(index=sys.argv[1], body=q)
 print(res)
 print("Got %d Hits:" % res['hits']['total'])
 for h in res['hits']['hits']:
