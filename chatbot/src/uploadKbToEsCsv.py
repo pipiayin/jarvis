@@ -9,7 +9,7 @@ import csv
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
-awsauthfile = '/root/.aws/credentials_3rd'
+awsauthfile = '/root/.aws/credentials'
 aws_access_key_id = '' 
 aws_secret_access_key = ''
 
@@ -72,7 +72,7 @@ with open(sys.argv[2]) as sfile:
 
 for k in allkb:
     print(allkb[k])
-#    res = es.index(index="testi", doc_type='fb',  body=allkb[k])
+    res = es.index(index="testi", doc_type='fb',  body=allkb[k])
 
 es.indices.refresh(index="testi")
 print("======= all upload ======")
@@ -82,7 +82,7 @@ q = {
       "min_score": 0.9 ,
       "query" :{
       "multi_match" : {
-        "query": u'學習專案管理',
+        "query": u'虛擬助理',
         "fields": [ "pkey", "similar" ]
       }
       }
