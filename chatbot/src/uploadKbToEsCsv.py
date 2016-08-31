@@ -64,15 +64,20 @@ with open(sys.argv[2]) as sfile:
             w = w.strip()
             if w == '':
                 continue
+            # build in each word
+            toInsert = allkb[oriKey]
+            toInsert['similar'] = w
             similarList.append(w)
+            print(toInsert)
+            res = es.index(index="testi", doc_type='fb',  body=toInsert)
 
-        if oriKey in allkb:
-            allkb[oriKey]['similar'] = similarList
+#        if oriKey in allkb:
+#            allkb[oriKey]['similar'] = similarList
 
 
-for k in allkb:
-    print(allkb[k])
-#    res = es.index(index="testi", doc_type='fb',  body=allkb[k])
+#for k in allkb:
+#    print(allkb[k])
+#    #res = es.index(index="testi", doc_type='fb',  body=allkb[k])
 
 es.indices.refresh(index="testi")
 print("======= all upload ======")
@@ -82,7 +87,7 @@ q = {
       "min_score": 0.9 ,
       "query" :{
       "multi_match" : {
-        "query": u'學習專案管理',
+        "query": u'虛擬助理',
         "fields": [ "pkey", "similar" ]
       }
       }
