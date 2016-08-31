@@ -13,7 +13,7 @@ import csv
 from requests_aws4auth import AWS4Auth
 
 
-min_score=0.5
+min_score=0.8
 
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 aws_access_key_id = ''
@@ -62,12 +62,13 @@ def esHealthHandler(msg, words):
       }
     }   
 
+
     res = es.search(index="health", body=q)
     print("Got %d Hits:" % res['hits']['total'])
     for h in res['hits']['hits']:
         result = (h['_source']['a'])
         result = extraFilter(result)
-        result = u'或許你想知道的是健康訊息, 以下資料查詢自台灣e院 其他人的問題回答...\n'+result
+        result = u'或許你想知道的是健康訊息, 以下資料查詢自台灣e院相關問題回答...\n'+result
         break
     return result
 
