@@ -10,7 +10,7 @@ import jieba.posseg as pseg
 import re
 
 def findWiki( word):
-    url = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=xml&exintro=&titles={0}'
+    url = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=xml&exintro=&redirects=&titles={0}'
     r  = requests.get(url.format(word) )
     result = getExtract(r.text)
     #print(result)
@@ -48,8 +48,8 @@ def wikiHandler(msg, words):
             if word.flag in ['n','j','nr','ns','nt','an','nt']:
                 #print("to find"+str(word))
                 wikiResult = findWiki(word.word)
-                if len(wikiResult) >= 61 :
-                    wikiResult = wikiResult[:60]
+                if len(wikiResult) >= 120 :
+                    wikiResult = wikiResult[:120]
                     wikiResult = wikiResult+u'....歹勢我是不是話太多?'
                     #print("yes")
                 break

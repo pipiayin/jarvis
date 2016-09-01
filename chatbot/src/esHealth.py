@@ -13,7 +13,7 @@ import csv
 from requests_aws4auth import AWS4Auth
 
 
-min_score=0.8
+min_score=1.0
 
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 aws_access_key_id = ''
@@ -47,11 +47,20 @@ def extraFilter(msg):
         if msg.count(r) > 0:
             msg = msg.split(r)[-1]
             break
+
+    return msg
+
+def preProcess(msg):
+    cList = ['不知道該怎麼辦','怎麼辦','?','？',"。","，",":",";"]
+    for c in cList:   
+        if msg.count(c) > 0:
+            msg = msg.replace(c," ")
     return msg
 
 
 def esHealthHandler(msg, words):
     result =""
+    msg = preProcess(msg)
 
     q = {
       "min_score": min_score,

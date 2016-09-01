@@ -19,6 +19,7 @@ from wikiChat import wikiHandler
 class SocialBrain():
     
     kb = {}
+    processmsg = ''
     def __init__(self):
         
         with open('basickb.csv') as csvfile:
@@ -45,6 +46,14 @@ class SocialBrain():
             res_act = self.kb[u'act_ack'].split(";")
             return random.choice(res_act)
 
+        if lenMsg == 1 : # one words
+            res_act = self.kb[u'act_one_words'].split(";")
+            return random.choice(res_act)
+
+        if lenMsg == 2 : # two words
+            res_act = self.kb[u'act_two_words'].split(";")
+            return random.choice(res_act)
+
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
             if float(engcounts) / lenMsg > 0.75:
@@ -55,6 +64,14 @@ class SocialBrain():
             res_act = self.kb[u'act_too_many_words'].split(";")
             return random.choice(res_act)
 
+        # if no return yet. will modify self.processmsg
+        # remove what_is and how_to
+        toRemoveList =['what_is','how_to']
+        for t in toRemoveList :
+            rlist = self.kb[t].split(";") 
+            for r in rlist:
+                self.processmsg = self.processmsg.replace(r," ")
+        
 #        res_em = self.tryExactMatch(msg)
 #        if res_em != '':
 #            return res_em
@@ -73,8 +90,9 @@ class SocialBrain():
 
     def think(self, msg):
         response = ""
-        all_list = [self.basicParser, esHandler,wikiHandler]
-        short_list = [self.basicParser, esHandler]
+        self.processmsg = msg # supposedly, basicParser will change processmsg
+        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler]
+        short_list = [self.basicParser, esHandler, esHealthHandler]
         handler_list = short_list
         words = pseg.cut(msg)
         
@@ -89,7 +107,7 @@ class SocialBrain():
             handler_list = all_list 
 
         for h in handler_list :
-            basic_res = h(msg,words) 
+            basic_res = h(self.processmsg,words) 
             if basic_res != '':
                 return basic_res
          
@@ -107,9 +125,9 @@ class SocialBrain():
 
 
 
+fbBrain = SocialBrain()
 if __name__ == '__main__':
 
-    fbBrain = SocialBrain()
     msg = sys.argv[1]
 
     print(fbBrain.think(msg))
