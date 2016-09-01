@@ -44,18 +44,28 @@ def wikiHandler(msg, words):
     try:
         jieba.load_userdict('data/dict.txt.big')
         words = pseg.cut(msg)
+        tWord = ''
         for word in words:
             if word.flag in ['n','j','nr','ns','nt','an','nt']:
-                #print("to find"+str(word))
-                wikiResult = findWiki(word.word)
-                if len(wikiResult) >= 120 :
-                    wikiResult = wikiResult[:120]
-                    wikiResult = wikiResult+u'....歹勢我是不是話太多?'
+                tWord = tWord + str(word.word)
+        #        print("to find "+ tWord)
                     #print("yes")
-                break
                
             else:
-                print("to ignore"+str(word))
+        #        print("to ignore "+str(word.word))
+                tWord = tWord+"!"
+             
+        tmpL = tWord.split("!")
+        allList = list(set(tmpL))
+        allList.remove(u'')
+        
+        tWord = allList[0] #just pick first
+        print("final find "+tWord)
+        wikiResult = findWiki(tWord)
+        if len(wikiResult) >= 120 :
+            wikiResult = wikiResult[:120]
+            wikiResult = wikiResult+u'....歹勢我是不是話太多?'
+        return wikiResult
     except: 
         print(sys.exc_info()[0])
         return ''
