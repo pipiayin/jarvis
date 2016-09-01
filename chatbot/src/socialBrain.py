@@ -12,6 +12,7 @@ import sys
 import csv
 from esKB import esHandler
 from esHealth import esHealthHandler
+from esBible import esBibleHandler
 from pttChat import pttHandler
 from wikiChat import wikiHandler
 
@@ -91,9 +92,17 @@ class SocialBrain():
     def think(self, msg):
         response = ""
         self.processmsg = msg # supposedly, basicParser will change processmsg
-        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler]
-        short_list = [self.basicParser, esHandler, esHealthHandler]
+        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
+        short_list = [self.basicParser, esHandler,wikiHandler, esHealthHandler]
+        bible_first_list = [self.basicParser, esHandler,esBibleHandler, wikiHandler,esHealthHandler]
+        # TODO should have abetter way
         handler_list = short_list
+        bList = [u'聖經',u'信仰',u'基督教',u'基督']
+        for bw in bList:
+            if self.processmsg.count(bw) > 0:
+                handler_list = bible_first_list
+                all_list = bible_first_list
+                break
         words = pseg.cut(msg)
         
         words, wordtypes = self.simpleListWords(words)
@@ -103,7 +112,7 @@ class SocialBrain():
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += 1
 
-        if nounwcount / float(wcount) >= 0.25:
+        if nounwcount / float(wcount) >= 0.3:
             handler_list = all_list 
 
         for h in handler_list :
@@ -111,9 +120,9 @@ class SocialBrain():
             if basic_res != '':
                 return basic_res
          
-        if response == '': # can't find any answer give 33% for pttHandler
+        if response == '': # can't find any answer give 66% for BibleHandler
             if random.randint(0,2) < 2:
-                response = pttHandler(msg, words)
+                response = esBibleHandler(msg, words)
 
         if response == '':
             noInfoList = self.kb['act_no_info'].split(";")
