@@ -135,6 +135,10 @@ class SocialBrain():
             if random.randint(0,2) < 2:
                 response = esBibleHandler(msg, words)
 
+        if response == '': # can't find any answer give 50% for pttHandler
+            if random.randint(0,1) < 1:
+                response = pttHandler(msg, words)
+
         if response == '':
             noInfoList = self.kb['act_no_info'].split(";")
             response = random.choice(noInfoList)
