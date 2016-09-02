@@ -57,7 +57,8 @@ class SocialBrain():
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
-            if float(engcounts) / lenMsg > 0.75:
+            noMeanCounts = len(re.findall('[ .?!-]',msg))
+            if float(engcounts) / (lenMsg - noMeanCounts) > 0.75:
                 return self.randomAct(u'act_no_english')
                 
         if lenMsg >= 90:
