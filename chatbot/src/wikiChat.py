@@ -40,6 +40,7 @@ def wikiHandler(msg, words):
 
     #TODO for wiki handler, need to use jieba to parse string again. 
     # could be improve in the future
+    print(msg)
     wikiResult =''
     try:
         jieba.load_userdict('data/dict.txt.big')
@@ -48,16 +49,19 @@ def wikiHandler(msg, words):
         for word in words:
             if word.flag in ['n','j','nr','ns','nt','an','nt']:
                 tWord = tWord + str(word.word)
-        #        print("to find "+ tWord)
+                #print("to find "+ tWord)
                     #print("yes")
                
             else:
-        #        print("to ignore "+str(word.word))
+                #print("to ignore "+str(word.word))
                 tWord = tWord+"!"
              
         tmpL = tWord.split("!")
         allList = list(set(tmpL))
         allList.remove(u'')
+        if len(allList) == 0:
+            #means no need to find
+            return ''
         
         tWord = allList[0] #just pick first
         print("final find "+tWord)
