@@ -55,6 +55,12 @@ class SocialBrain():
         if lenMsg == 2 : # two words
             return self.randomAct(u'act_two_words')
 
+        if lenMsg == 3 : # two words
+            list3words = self.kb[u'list_three_words'].split(';')
+            for tw in list3words:
+                if tw == msg:
+                    return self.randomAct(u'act_three_words')
+
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
             noMeanCounts = len(re.findall('[ .?!-]',msg))
