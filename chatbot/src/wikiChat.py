@@ -40,7 +40,7 @@ def wikiHandler(msg, words):
 
     #TODO for wiki handler, need to use jieba to parse string again. 
     # could be improve in the future
-    print(msg)
+    #print(msg)
     wikiResult =''
     try:
         jieba.load_userdict('data/dict.txt.big')
@@ -56,9 +56,12 @@ def wikiHandler(msg, words):
                 #print("to ignore "+str(word.word))
                 tWord = tWord+"!"
              
+        #print(tWord)
         tmpL = tWord.split("!")
         allList = list(set(tmpL))
-        allList.remove(u'')
+        #print(allList)
+        if u'' in allList:
+            allList.remove(u'')
         if len(allList) == 0:
             #means no need to find
             return ''
