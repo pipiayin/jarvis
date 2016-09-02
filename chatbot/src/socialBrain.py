@@ -35,35 +35,33 @@ class SocialBrain():
                 return self.kb[key]
         return ""
 
+    def randomAct(self, actKey):
+        res_act = self.kb[actKey].split(";")
+        return random.choice(res_act)
+       
     def basicParser(self, msg, words):
         response = ""
         msg = msg.strip() 
         lenMsg = len(msg)
         if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
-            res_act = self.kb[u'act_hello'].split(";")
-            return random.choice(res_act)
+            return randomAct(u'act_hello')
 
         if lenMsg <= 5 and msg in self.kb[u'list_done'].split(';'): # small lines
-            res_act = self.kb[u'act_ack'].split(";")
-            return random.choice(res_act)
+            return randomAct(u'act_ack')
 
         if lenMsg == 1 : # one words
-            res_act = self.kb[u'act_one_words'].split(";")
-            return random.choice(res_act)
+            return randomAct(u'act_one_words')
 
         if lenMsg == 2 : # two words
-            res_act = self.kb[u'act_two_words'].split(";")
-            return random.choice(res_act)
+            return randomAct(u'act_two_words')
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
             if float(engcounts) / lenMsg > 0.75:
-                res_act = self.kb[u'act_no_english'].split(";")
-                return random.choice(res_act)
+                return randomAct(u'act_no_english')
                 
         if lenMsg >= 90:
-            res_act = self.kb[u'act_too_many_words'].split(";")
-            return random.choice(res_act)
+            return randomAct(u'act_too_many_words')
 
         # if no return yet. will modify self.processmsg
         # remove what_is and how_to
