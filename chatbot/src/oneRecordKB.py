@@ -34,8 +34,10 @@ es = Elasticsearch(
 print(es.info())
 
 print("just insert one record")
+msg = sys.argv[1]
+res = [sys.argv[2]]
 
-toInsert={u'pkey':oriKey, u'res':res, u'similar':w}
+toInsert={u'pkey':msg, u'res':res, u'similar':msg}
 
 res = es.index(index="testi", doc_type='fb',  body=toInsert)
 
@@ -44,7 +46,7 @@ es.indices.refresh(index="testi")
 q = {
       "query" :{
       "match" : {
-        "similar": w
+        "similar": msg
       }
       }
  }
