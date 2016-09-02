@@ -44,24 +44,24 @@ class SocialBrain():
         msg = msg.strip() 
         lenMsg = len(msg)
         if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
-            return randomAct(u'act_hello')
+            return self.randomAct(u'act_hello')
 
         if lenMsg <= 5 and msg in self.kb[u'list_done'].split(';'): # small lines
-            return randomAct(u'act_ack')
+            return self.randomAct(u'act_ack')
 
         if lenMsg == 1 : # one words
-            return randomAct(u'act_one_words')
+            return self.randomAct(u'act_one_words')
 
         if lenMsg == 2 : # two words
-            return randomAct(u'act_two_words')
+            return self.randomAct(u'act_two_words')
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
             if float(engcounts) / lenMsg > 0.75:
-                return randomAct(u'act_no_english')
+                return self.randomAct(u'act_no_english')
                 
         if lenMsg >= 90:
-            return randomAct(u'act_too_many_words')
+            return self.randomAct(u'act_too_many_words')
 
         # if no return yet. will modify self.processmsg
         # remove what_is and how_to
