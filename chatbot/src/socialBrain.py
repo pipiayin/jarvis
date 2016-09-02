@@ -66,10 +66,13 @@ class SocialBrain():
             noMeanCounts = len(re.findall('[ .?!-]',msg))
             if float(engcounts) / (lenMsg - noMeanCounts) > 0.75:
                 return self.randomAct(u'act_no_english')
+
                 
         if lenMsg >= 90:
             return self.randomAct(u'act_too_many_words')
+        #### prefix checking
 
+        prefixCheckList = ['']
         # if no return yet. will modify self.processmsg
         # remove what_is and how_to
         toRemoveList =['what_is','how_to']
@@ -98,15 +101,14 @@ class SocialBrain():
         response = ""
         self.processmsg = msg # supposedly, basicParser will change processmsg
         all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
-        short_list = [self.basicParser, esHandler,wikiHandler, esHealthHandler]
-        bible_first_list = [self.basicParser, esHandler,esBibleHandler, wikiHandler,esHealthHandler]
+        short_list = [self.basicParser, esHandler]
+        bible_first_list = [self.basicParser, esHandler,esBibleHandler]
         # TODO should have abetter way
         handler_list = short_list
         bList = [u'聖經',u'信仰',u'基督教',u'基督']
         for bw in bList:
             if self.processmsg.count(bw) > 0:
                 handler_list = bible_first_list
-                all_list = bible_first_list
                 break
         words = pseg.cut(msg)
         
@@ -118,8 +120,12 @@ class SocialBrain():
                 nounwcount += 1
 
         if nounwcount / float(wcount) >= 0.3:
-            handler_list = all_list 
+            if wikiHandler not in handler_list:
+                handler_list.append(wikiHandler)
 
+        if esHealthHandler not in handler_list:
+            handler_list.append(esHealthHandler)
+    
         for h in handler_list :
             basic_res = h(self.processmsg,words) 
             if basic_res != '':
