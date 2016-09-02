@@ -34,24 +34,25 @@ es = Elasticsearch(
 print(es.info())
 
 
-#es.indices.refresh(index="testi")
 #es.indices.create(index="health")
 #print("======= all upload ======")
 
 
 msg = sys.argv[3]
 field = sys.argv[2]
+indexname = sys.argv[1]
 q = {
       "query" :{
-      "match_phrase" : {
+      "match" : {
         field: msg
       }
       }
  }
 
 
-res = es.search(index=sys.argv[1], body=q)
-print(res)
+es.indices.refresh(index=indexname)
+res = es.search(index=indexname, body=q)
+#print(res)
 print("Got %d Hits:" % res['hits']['total'])
 for h in res['hits']['hits']:
     print(h)

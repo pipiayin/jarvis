@@ -13,7 +13,7 @@ import csv
 from requests_aws4auth import AWS4Auth
 
 
-min_score=0.9
+min_score=1.5
 
 host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 aws_access_key_id = ''
