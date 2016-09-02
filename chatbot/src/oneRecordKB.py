@@ -35,7 +35,9 @@ print(es.info())
 
 print("just insert one record")
 msg = sys.argv[1]
-res = [sys.argv[2]]
+allres = sys.argv[2]
+allres = allres.strip()
+res = allres.split(";")
 
 toInsert={u'pkey':msg, u'res':res, u'similar':msg}
 
