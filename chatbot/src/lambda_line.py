@@ -15,6 +15,7 @@ import botocore.session
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
 table_log = dynamodb.Table('linelog')
+lambda_client = boto3.client('lambda')
 
 
 
@@ -34,6 +35,13 @@ def lambda_handler(even, context):
         uid = "....."
         toLog = {'uid':uid, 'ts':ts, 'msg':even}
         table_log.put_item(Item=toLog)
+        lresponse = lambda_client.invoke(
+            FunctionName='aibrain',
+            InvocationType='Event',
+            LogType='None',
+            ClientContext='string',
+            Payload=json.dumps(even),
+        )
         print("responsed (tolog->)"+str(toLog))
         return "ok"
    # except:

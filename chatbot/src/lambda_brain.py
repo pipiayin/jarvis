@@ -12,33 +12,26 @@ import random
 import botocore.session
 
 
-dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
-
-table_log = dynamodb.Table('linelog')
-
 
 
 def responseToUser(uid,mid, resp):
-    try:
+#    try:
+        print("simulate sleep and to response to line user")
         print("start to response")
         return ''
-    except:
-        return ''
+#    except:
+#        return ''
         
 
 def lambda_handler(even, context):
    # try:
-        print("-----get message ---")
+        print("-----get message this is lambda brain ---")
         print(even)
-        ts =  int(time.time())
-        uid = "....."
-        toLog = {'uid':uid, 'ts':ts, 'msg':even}
-        table_log.put_item(Item=toLog)
-        print("responsed (tolog->)"+str(toLog))
+        responseToUser('1','1','1')
         return "ok"
    # except:
-        print(even)
-        print(sys.exc_info()[0])
+   #     print(even)
+   #     print(sys.exc_info()[0])
         return "something wrong"
    
 
