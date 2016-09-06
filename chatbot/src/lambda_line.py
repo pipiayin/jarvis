@@ -30,9 +30,8 @@ def responseToUser(uid,mid, resp):
 def lambda_handler(even, context):
    # try:
         print("-----get message ---")
-        print(even)
         ts =  int(time.time())
-        uid = "....."
+        uid = even['result'][0]['content']['from']
         toLog = {'uid':uid, 'ts':ts, 'msg':even}
         table_log.put_item(Item=toLog)
         lresponse = lambda_client.invoke(
