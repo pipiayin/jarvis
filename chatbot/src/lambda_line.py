@@ -19,20 +19,13 @@ lambda_client = boto3.client('lambda')
 
 
 
-def responseToUser(uid,mid, resp):
-    try:
-        print("start to response")
-        return ''
-    except:
-        return ''
-        
-
 def lambda_handler(even, context):
    # try:
         print("-----get message ---")
         ts =  int(time.time())
         uid = even['result'][0]['content']['from']
-        toLog = {'uid':uid, 'ts':ts, 'msg':even}
+        msg = even['result'][0]['content']['text']
+        toLog = {'uid':uid, 'ts':ts, 'line':even, 'msg':msg}
         table_log.put_item(Item=toLog)
         lresponse = lambda_client.invoke(
             FunctionName='aibrain',
