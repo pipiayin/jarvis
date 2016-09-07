@@ -22,7 +22,7 @@ A config-able chat microservice for better customer support.
 ## Config-able
 - response text repository
 - 
-## a microservice 
+## a few microservice 
 - AWS lambda and API gateway
 - put knowledge base in elasticsearch
 - put log in dynamodb
@@ -31,11 +31,14 @@ A config-able chat microservice for better customer support.
 > zip la.zip -r <file> ... <folder> <folder>
 
 # TODOs
-- simple api test client (instead of curl)
+- elasticcache for AI to remember and allow to talk.
+- move elasticsearch site to ai (for reduce cost)
+- cancel the facebook messager and move to line
 
 # Notes
 - due to AWS limitation, only python2.7
-- python requests is very slow?!
+- request slow and repeating issues: most of the webhook will set timeout! 
+  make sure the time consuming workers should run in async way
 
 # how to make a Lambda?
 - ZIP every thing.
