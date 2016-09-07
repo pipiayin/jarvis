@@ -71,11 +71,20 @@ def wikiHandler(msg, words):
             print('avoid one sinegle chinese char search')
             return ''
 
-        print("final find "+tWord)
+        print("find "+tWord)
         wikiResult = findWiki(tWord)
         if len(wikiResult) >= 120 :
             wikiResult = wikiResult[:120]
             wikiResult = wikiResult+u'....歹勢我是不是話太多?'
+
+        if len(allList) >= 2 and wikiResult =='': # give the string second chance
+            tWord = allList[1].strip() #just pick first
+            print("find second term "+tWord)
+            wikiResult = findWiki(tWord)
+            if len(wikiResult) >= 120 :
+                wikiResult = wikiResult[:120]
+                wikiResult = wikiResult+u'...ok.'
+
         return wikiResult
     except: 
         print(sys.exc_info()[0])
