@@ -11,9 +11,10 @@ from datetime import datetime
 import sys
 import csv
 from requests_aws4auth import AWS4Auth
-from awsconfig import ESHOST
+from awsconfig import ESHOST, REGION
 
 host = ESHOST
+region = REGION
 
 min_score=1.2
 
@@ -32,7 +33,7 @@ with open(awsauthfile) as f:
         if 'aws_secret_access_key' in line :
             aws_secret_access_key = line.split("=")[1].strip()
 
-awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, 'us-east-1', 'es')
+awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, region, 'es')
 
 es = Elasticsearch(
     hosts=[{'host': host, 'port': 443}],

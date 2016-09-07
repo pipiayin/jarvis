@@ -1,7 +1,7 @@
 # zip , s3 upload, aws lambda commandline update
 rm ailine.zip
 rm aiBrain.zip
-zip aiBrain.zip -r data/ dynamoKB.py jieba/ lambda_brain.py socialBrain.py basickb.csv requests/  pttChat.py basickb.csv wikiChat.py esKB.py elasticsearch/ urllib3 requests_aws4auth/ credentials esHealth.py esBible.py linecre.so awsconfig.py
+zip aiBrain.zip -r data/ jieba/ lambda_brain.py socialBrain.py basickb.csv requests/  pttChat.py basickb.csv wikiChat.py esKB.py elasticsearch/ urllib3 requests_aws4auth/ credentials esHealth.py esBible.py linecre.so awsconfig.py credentials_ai
 zip ailine.zip -r lambda_line.py
 aws --profile ailine s3 cp aiBrain.zip s3://sandyai2/
 aws --profile ailine s3 cp ailine.zip s3://sandyai2/
