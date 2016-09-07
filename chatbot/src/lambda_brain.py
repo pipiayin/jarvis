@@ -19,7 +19,7 @@ XLineChannelID = ''
 XLineChannelSecret = ''
 XLineTrustedUserWithACL = ''
 
-awsauthfile = 'credentials'
+awsauthfile = 'credentials_ai'
 lineauth = 'linecre.so'
 with open(lineauth) as f:
     content = f.readlines()

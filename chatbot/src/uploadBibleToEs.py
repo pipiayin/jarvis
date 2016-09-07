@@ -12,7 +12,7 @@ host = ESHOST
 
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
-awsauthfile = '/root/.aws/credentials'
+awsauthfile = 'credentials_ai'
 aws_access_key_id = '' 
 aws_secret_access_key = ''
 
@@ -25,7 +25,7 @@ with open(awsauthfile) as f:
         if 'aws_secret_access_key' in line :
             aws_secret_access_key = line.split("=")[1].strip()
 
-awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, 'us-east-1', 'es')
+awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, 'us-west-2', 'es')
 
 
 es = Elasticsearch(

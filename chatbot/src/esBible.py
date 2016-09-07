@@ -24,7 +24,7 @@ aws_secret_access_key = ''
 #es = Elasticsearch( hosts=[{'host': host, 'port': 443}])
 #es = Elasticsearch(host=host, port=80)
 
-awsauthfile = 'credentials'
+awsauthfile = 'credentials_ai'
 with open(awsauthfile) as f:
     content = f.readlines()
     for line in content:
