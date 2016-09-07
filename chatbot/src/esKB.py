@@ -11,11 +11,13 @@ from datetime import datetime
 import sys
 import csv
 from requests_aws4auth import AWS4Auth
+from awsconfig import ESHOST
 
 
 min_score=1.5
 
-host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
+#host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
+host = ESHOST
 aws_access_key_id = ''
 aws_secret_access_key = ''
 
