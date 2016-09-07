@@ -66,7 +66,11 @@ def wikiHandler(msg, words):
             #means no need to find
             return ''
         
-        tWord = allList[0] #just pick first
+        tWord = allList[0].strip() #just pick first
+        if len(tWord) <= 1:
+            print('avoid one sinegle chinese char search')
+            return ''
+
         print("final find "+tWord)
         wikiResult = findWiki(tWord)
         if len(wikiResult) >= 120 :
