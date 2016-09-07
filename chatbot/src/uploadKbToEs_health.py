@@ -8,9 +8,11 @@ import fileinput
 
 import sys
 import csv
+from awsconfig import ESHOST
 
-#host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
-host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
+host = ESHOST
+
+#host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 awsauthfile = '/root/.aws/credentials'
 aws_access_key_id = '' 
 aws_secret_access_key = ''

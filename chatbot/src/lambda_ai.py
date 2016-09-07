@@ -9,6 +9,7 @@ import requests
 import boto3
 import sys
 import json
+import time
 import random
 
 
@@ -20,6 +21,8 @@ table_log = dynamodb.Table('msglog')
 
 FBTOKEN='EAASfqRZCfuj4BABqBW0AuPVnGIVYJC9MudDTixyAxX0oZBicI8MN4qGYP3j29QwvvUotId0172KfXfaRvwt97OpsjTdpVN4OudoZBADQ6FbeeoT7d3gMbICEhDlEiWeVuJuS3utPKH1XfINrOI0emQyG6GZAuIryM5HYrYrm8QZDZD'
 FBURL = 'https://graph.facebook.com/v2.6/me/messages'
+
+fbBrain = SocialBrain()
 
 def responseToUser(uid,mid, resp):
     try:
@@ -64,7 +67,7 @@ def lambda_handler(even, context):
         mid = even['entry'][0][u'messaging'][0]['message']['mid']
         uid = even['entry'][0][u'messaging'][0]['sender']['id']
         rid = even['entry'][0][u'messaging'][0]['recipient']['id']
-        toLog = {'mid':mid, 'uid':uid, 'msg':msg}
+        toLog = {'mid':mid, 'uid':uid, 'msg':msg, 'res':'','ts':0}
         res = {
             "recipient_id": rid,
             "message_id": mid
@@ -72,9 +75,10 @@ def lambda_handler(even, context):
         resp =""
         if exists(mid,uid) == None: 
             print("to response")
-            fbBrain = SocialBrain()
             resp = fbBrain.think(msg)
             responseToUser(uid,mid, resp)
+            toLog['res'] = resp
+            toLog['ts'] = int(time.time())
             table_log.put_item(Item=toLog)
             print("responsed (tolog->)"+str(toLog))
         else:

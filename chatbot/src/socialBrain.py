@@ -13,7 +13,7 @@ import csv
 from esKB import esHandler
 from esHealth import esHealthHandler
 from esBible import esBibleHandler
-from pttChat import pttHandler
+#from pttChat import pttHandler
 from wikiChat import wikiHandler
 
 
@@ -42,6 +42,7 @@ class SocialBrain():
     def basicParser(self, msg, words):
         response = ""
         msg = msg.strip() 
+        msg = re.sub(u'[~～#$]', '', msg)
         lenMsg = len(msg)
         if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
             return self.randomAct(u'act_hello')
@@ -63,7 +64,7 @@ class SocialBrain():
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
-            noMeanCounts = len(re.findall('[ .?!-]',msg))
+            noMeanCounts = len(re.findall('[ .?!-~]',msg))
             if float(engcounts) / (lenMsg - noMeanCounts) > 0.75:
                 return self.randomAct(u'act_no_english')
 
@@ -135,15 +136,14 @@ class SocialBrain():
             if random.randint(0,2) < 2:
                 response = esBibleHandler(msg, words)
 
-        if response == '': # can't find any answer give 50% for pttHandler
-            if random.randint(0,1) < 1:
-                response = pttHandler(msg, words)
+#        if response == '': # can't find any answer give 50% for pttHandler
+#            if random.randint(0,1) < 1:
+#                response = pttHandler(msg, words)
 
         if response == '':
             noInfoList = self.kb['act_no_info'].split(";")
             response = random.choice(noInfoList)
         return response
-
 
 
 
