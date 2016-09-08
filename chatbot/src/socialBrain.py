@@ -50,6 +50,9 @@ class SocialBrain():
         if lenMsg <= 5 and msg in self.kb[u'list_done'].split(';'): # small lines
             return self.randomAct(u'act_ack')
 
+        if lenMsg <= 5 and msg in self.kb[u'list_no'].split(';'): # small lines
+            return self.randomAct(u'act_ack_no')
+
         if lenMsg == 1 : # one words
             return self.randomAct(u'act_one_words')
 
