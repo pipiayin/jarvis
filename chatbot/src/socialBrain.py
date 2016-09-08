@@ -21,6 +21,8 @@ class SocialBrain():
     
     kb = {}
     processmsg = ''
+    notFoundResList = []
+
     def __init__(self):
         
         with open('basickb.csv') as csvfile:
@@ -79,11 +81,18 @@ class SocialBrain():
         prefixCheckList = ['']
         # if no return yet. will modify self.processmsg
         # remove what_is and how_to
-        toRemoveList =['what_is','how_to']
-        for t in toRemoveList :
-            rlist = self.kb[t].split(";") 
+        notFoundResList = { 'what_is':'what_is_res',
+                            'how_to':'how_to_res',
+                            'where_is':'where_is_res',
+                            'who_is':'who_is_res'}
+
+        for sec in notFoundResList:
+            rlist = self.kb[sec].split(";") 
             for r in rlist:
-                self.processmsg = self.processmsg.replace(r," ")
+                if self.processmsg.count(r) > 0:
+                    self.notFoundResList = self.kb[notFoundResList[sec]].split(";")
+                    break
+
         
 #        res_em = self.tryExactMatch(msg)
 #        if res_em != '':
@@ -107,7 +116,6 @@ class SocialBrain():
         all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
         short_list = [self.basicParser, esHandler]
         bible_first_list = [self.basicParser, esHandler,esBibleHandler]
-        # TODO should have abetter way
         handler_list = short_list
         bList = [u'聖經',u'信仰',u'基督教',u'基督']
         for bw in bList:
@@ -122,10 +130,22 @@ class SocialBrain():
         for (w,f) in wordtypes:
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
+        nrate = nounwcount / float(wcount)
 
-        if nounwcount / float(wcount) >= 0.3:
-            if wikiHandler not in handler_list:
+        howtolist = self.kb['how_to'].split(";") 
+        for howto in howtolist:
+            if self.processmsg.count(howto) > 0:
+                handler_list.append(esHealthHandler)
+                break
+        whatislist = self.kb['what_is'].split(";")
+        whoislist = self.kb['who_is'].split(";")
+        whatislist.extend(whoislist)
+        for whatis in whatislist:              
+            if wikiHandler not in handler_list and self.processmsg.count(whatis) > 0 and nrate >0.3:
+                #print("add to what/who is")
                 handler_list.append(wikiHandler)
+                break
+
 
         if esHealthHandler not in handler_list:
             handler_list.append(esHealthHandler)
@@ -145,8 +165,12 @@ class SocialBrain():
 #                response = pttHandler(msg, words)
 
         if response == '':
-            noInfoList = self.kb['act_no_info'].split(";")
-            response = random.choice(noInfoList)
+            #print(self.notFoundResList)
+            if len(self.notFoundResList) > 0:
+                response = random.choice(self.notFoundResList)
+            else: 
+                response = random.choice(self.kb['act_no_info'].split(';'))
+
         return response
 
 
