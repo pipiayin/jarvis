@@ -118,7 +118,7 @@ class SocialBrain():
         nounwcount = 0.0
         for (w,f) in wordtypes:
             if f in['n','j','nr','ns','nt','an','nt']:
-                nounwcount += 1
+                nounwcount += len(w)
 
         if nounwcount / float(wcount) >= 0.3:
             if wikiHandler not in handler_list:
@@ -129,6 +129,7 @@ class SocialBrain():
     
         for h in handler_list :
             basic_res = h(self.processmsg,words) 
+            #print('handle by'+str(h))
             if basic_res != '':
                 return basic_res
          

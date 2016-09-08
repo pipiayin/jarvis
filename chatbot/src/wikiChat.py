@@ -53,7 +53,7 @@ def wikiHandler(msg, words):
                     #print("yes")
                
             else:
-                #print("to ignore "+str(word.word))
+                #print("to ignore "+str(word.word)+ " "+str(word.flag))
                 tWord = tWord+"!"
              
         #print(tWord)
@@ -73,17 +73,17 @@ def wikiHandler(msg, words):
 
         print("find "+tWord)
         wikiResult = findWiki(tWord)
-        if len(wikiResult) >= 120 :
-            wikiResult = wikiResult[:120]
-            wikiResult = wikiResult+u'....歹勢我是不是話太多?'
+        if len(wikiResult) >= 200 :
+            wikiResult = wikiResult[:200]
+            wikiResult = wikiResult+u'...其他可以查一下wiki唷'
 
         if len(allList) >= 2 and wikiResult =='': # give the string second chance
             tWord = allList[1].strip() #just pick first
             print("find second term "+tWord)
             wikiResult = findWiki(tWord)
-            if len(wikiResult) >= 120 :
-                wikiResult = wikiResult[:120]
-                wikiResult = wikiResult+u'...ok.'
+            if len(wikiResult) >= 200 :
+                wikiResult = wikiResult[:200]
+                wikiResult = wikiResult+u'...細節太多可以看wiki.'
 
         return wikiResult
     except: 
