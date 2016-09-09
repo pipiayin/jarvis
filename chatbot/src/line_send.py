@@ -74,9 +74,11 @@ def directSend(even, themsg):
 if __name__ == '__main__':
     import sys
 
-    msg = sys.argv[1]
+    #msg = sys.argv[1]
+    msg = '人工智慧小姍有新版本了!還請各位有空可以跟小姍聊兩句喔 \n  --- What\'s News --- \n * 移除ptt查詢 \n * 增加知識庫 \n * 優先判斷名詞長度決定查詢 \n * 簡單過濾髒話 \n * 修改知識庫相似度參數 '
 
-    uids=['u41b34094d1078bfd7ac91ae9a0fa2d25']
+    uids=['u41b34094d1078bfd7ac91ae9a0fa2d25'] #ME
+    #uids=["u0a3d105aa9f8c1ab256dffe226c1d99a", "u1ea21aa1908e6f9db4493f338add1f43", "u41b34094d1078bfd7ac91ae9a0fa2d25", "u47ea331dd00d16c830afef34795b634d", "ua112a584bffbd8898c583669931ee23b", "ubc5b714cecbad5657485548f2a6776fa", "ue38104279bcf8edf0534e038fd151006", "ueda8b2682b70f3bd7b93d72ac58a5e33", "uf234561bda4da2dd46e6486636eb607f" ,"u9c82e1183eeac7c50124d769d343657c" ]
     responseToUser(uids, msg)
     # To try from command line
     a = """tmp = {u'result': 
