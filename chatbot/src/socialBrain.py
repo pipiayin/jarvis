@@ -167,7 +167,7 @@ class SocialBrain():
 #            if random.randint(0,1) < 1:
 #                response = pttHandler(msg, words)
         if response == '': # can't still can't find any answer 
-            response = esHealthHandler(msg, words, mscore=0.6)
+            response = esHealthHandler(msg, words, mscore=0.77)
 
         if response == '':
             print(self.notFoundResList)
