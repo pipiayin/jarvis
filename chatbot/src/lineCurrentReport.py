@@ -8,6 +8,7 @@ import boto3
 import sys
 import json
 import random
+from nocheckin import headers, line_url
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -30,13 +31,21 @@ def exists(mid,uid):
 
 def showUids():
         allUid = []
-        r = table_log.scan(Limit=5000)
+        r = table_log.scan(Limit=15000)
         for item in r['Items']:
             oneUid = item['uid']
             if oneUid not in allUid:
                 allUid.append(oneUid)
-        for u in allUid:
+
+        mids= ",".join(allUid)
+        params={"mids":mids}
+        r = requests.get(line_url, headers=headers, params = params)
+        rjson = json.loads(r.text)
+       
+        for u in rjson['contacts']:
             print(u)
+
+            
         print(len(allUid))
 
 
