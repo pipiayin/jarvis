@@ -51,7 +51,6 @@ def responseToUser(uid, resp):
         print(jdump)
         url = 'https://trialbot-api.line.me/v1/events'
         r = requests.post(url, headers=headers, data = jdump)
-        print(r)
         print(r.text)
         print("did send response")
 
@@ -67,6 +66,18 @@ def lambda_handler(even, context):
         msg = even['result'][0]['content']['text']
         resp = lineBrain.think(msg)
         responseToUser(fromuid,resp)
+
+        headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
+        masteruid = 'u41b34094d1078bfd7ac91ae9a0fa2d25'
+        params={"mids":fromuid}
+        line_url = 'https://trialbot-api.line.me/v1/profiles'
+        r = requests.get(line_url, headers=headers, params = params)
+        rjson = json.loads(r.text)
+
+        ruser = rjson['contacts'][0]['displayName']
+        notifyData = ruser +" 傳下列訊息給小姍:\n"+msg
+        responseToUser(masteruid,notifyData) 
+        print("did notify master")
         return "ok"
    # except:
    #     print(even)
