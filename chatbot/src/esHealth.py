@@ -61,12 +61,12 @@ def preProcess(msg):
     return msg
 
 
-def esHealthHandler(msg, words):
+def esHealthHandler(msg, words,mscore=0.9):
     result =""
     msg = preProcess(msg)
 
     q = {
-      "min_score": min_score,
+      "min_score": mscore,
       "query" :{
       "match" : {
         "q": msg
@@ -80,7 +80,10 @@ def esHealthHandler(msg, words):
     for h in res['hits']['hits']:
         result = (h['_source']['a'])
         result = extraFilter(result)
-        result = u'或許你想知道的是健康訊息, 以下資料查詢自台灣e院相關問題回答...\n'+result
+        if mscore >= 0.9:
+            result = u'或許健康訊息對你有用唷, 以下資料查詢自台灣e院相關問題回答...\n'+result
+        else:
+            result = u'小姍猜想可能是問健康問題, 以下資料查詢自台灣e院相關問題回答...\n'+result
         break
     return result
 

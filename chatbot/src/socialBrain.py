@@ -84,6 +84,7 @@ class SocialBrain():
         notFoundResList = { 'what_is':'what_is_res',
                             'how_to':'how_to_res',
                             'where_is':'where_is_res',
+                            'list_tell_me':'list_tell_me_res',
                             'who_is':'who_is_res'}
 
         for sec in notFoundResList:
@@ -127,9 +128,11 @@ class SocialBrain():
         words, wordtypes = self.simpleListWords(words)
         wcount = len(wordtypes)
         nounwcount = 0.0
+        ncount = 0
         for (w,f) in wordtypes:
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
+                ncount +=1
         nrate = nounwcount / float(wcount)
 
         howtolist = self.kb['how_to'].split(";") 
@@ -141,7 +144,7 @@ class SocialBrain():
         whoislist = self.kb['who_is'].split(";")
         whatislist.extend(whoislist)
         for whatis in whatislist:              
-            if wikiHandler not in handler_list and self.processmsg.count(whatis) > 0 and nrate >0.3:
+            if wikiHandler not in handler_list and self.processmsg.count(whatis) > 0 and nrate >0.3 :
                 #print("add to what/who is")
                 handler_list.append(wikiHandler)
                 break
@@ -163,9 +166,11 @@ class SocialBrain():
 #        if response == '': # can't find any answer give 50% for pttHandler
 #            if random.randint(0,1) < 1:
 #                response = pttHandler(msg, words)
+        if response == '': # can't still can't find any answer 
+            response = esHealthHandler(msg, words, mscore=0.6)
 
         if response == '':
-            #print(self.notFoundResList)
+            print(self.notFoundResList)
             if len(self.notFoundResList) > 0:
                 response = random.choice(self.notFoundResList)
             else: 
