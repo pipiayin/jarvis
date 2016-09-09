@@ -166,11 +166,23 @@ class SocialBrain():
 #        if response == '': # can't find any answer give 50% for pttHandler
 #            if random.randint(0,1) < 1:
 #                response = pttHandler(msg, words)
+        if response == '':
+            #print("in will do")
+            #TODO put in will do list
+            willDoList = self.kb['will_do'].split(";")
+            for wd in willDoList:
+                #print(wd)
+                chkWillDo = re.match(wd, msg)
+                if chkWillDo:
+                    response = self.randomAct('will_do_res')
+                    return response
+                    break
+           
         if response == '': # can't still can't find any answer 
             response = esHealthHandler(msg, words, mscore=0.77)
 
         if response == '':
-            print(self.notFoundResList)
+            #print(self.notFoundResList)
             if len(self.notFoundResList) > 0:
                 response = random.choice(self.notFoundResList)
             else: 
