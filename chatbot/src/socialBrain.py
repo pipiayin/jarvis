@@ -89,11 +89,15 @@ class SocialBrain():
 
         for sec in notFoundResList:
             rlist = self.kb[sec].split(";") 
+            directBreak = False
             for r in rlist:
                 if self.processmsg.count(r) > 0:
                     self.notFoundResList = self.kb[notFoundResList[sec]].split(";")
+                    directBreak = True
                     break
 
+            if directBreak:
+                break
         
 #        res_em = self.tryExactMatch(msg)
 #        if res_em != '':
