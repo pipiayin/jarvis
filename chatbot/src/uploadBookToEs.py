@@ -45,13 +45,18 @@ with open(sys.argv[1]) as bfile:
             continue 
         for s in  sects: 
             parts = re.split(u'，',s) 
+            mergeTmp = ''
             for key in parts:
-                if len(key) >10:
-                    resp = "".join(sects)
+                if len(key+u'，'+mergeTmp) >10:
+                    resp = "，".join(sects)
                     if resp.replace(' ','') == '':
                         continue
-                    item={u'pkey':key, u'res':resp}
+                    item={u'pkey':mergeTmp+u'，'+key, u'res':resp}
                     print(item)
+                    mergeTmp = ''
+                else:
+                    mergeTmp = mergeTmp +u'，'+ key
+
 #                    res = es.index(index="books1", doc_type='web',  body=item)
 #        print(item)
 #        allkb[oriKey] = item
