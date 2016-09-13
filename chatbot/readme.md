@@ -39,7 +39,12 @@ A config-able chat microservice for better customer support.
 - due to AWS limitation, only python2.7
 - request slow and repeating issues: most of the webhook will set timeout! 
   make sure the time consuming workers should run in async way
-
+- How to allow learnning from user?
+   (1) user A ask question "U" and SandyAI can not answer
+   (2) 
+       * SandyAI then ask user B?
+       * SandyAI then ask back user A?
+- add books
 # how to make a Lambda?
 - ZIP every thing.
 - Check Lambda.py
