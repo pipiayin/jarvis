@@ -1,8 +1,9 @@
 # jarvis
 
-Power me, I will serve you.
 
 Too many project has the same call name "jarvis", I will find another name latter.
+
+This repository contains a few different projects. 
 
 1. A simple chatbot with a bit of AI and a bit of learnning.
 
