@@ -18,6 +18,7 @@ lineBrain = SocialBrain()
 XLineChannelID = ''
 XLineChannelSecret = ''
 XLineTrustedUserWithACL = ''
+XLineToken=''
 
 awsauthfile = 'credentials_ai'
 lineauth = 'linecre.so'
@@ -30,26 +31,27 @@ with open(lineauth) as f:
             XLineChannelSecret = line.split("=")[1].strip()
         if 'X-Line-Trusted-User-With-ACL' in line :
             XLineTrustedUserWithACL = line.split("=")[1].strip()
+        if 'X-Line-ChannelAccessToken' in line :
+            XLineToken = line.split(" =")[1].strip()
 
 
 def responseToUser(uid, resp):
 #    try:
         print("to response to line user")
-        headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        #headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
         payload = { 
-            "to":[uid],
-            "toChannel":1383378250,
-            "eventType":"138311608800106203",
-            "content":{
-                "contentType":1,
-                "toType":1,
+            "to": uid ,
+            "messages":[{
+                "type":"text",
                 "text": resp
-             }
+             }]
         }  
 
         jdump = json.dumps(payload)
         print(jdump)
-        url = 'https://trialbot-api.line.me/v1/events'
+        url = 'https://api.line.me/v2/bot/message/push'
+        #url = 'https://trialbot-api.line.me/v1/events'
         r = requests.post(url, headers=headers, data = jdump)
         print(r.text)
         print("did send response")
@@ -59,25 +61,26 @@ def responseToUser(uid, resp):
 #        return ''
         
 
+
 def lambda_handler(even, context):
    # try:
         print("-----get message this is lambda brain ---")
-        fromuid = even['result'][0]['content']['from']
-        msg = even['result'][0]['content']['text']
+        fromuid = even['events'][0]['source']['userId']
+        msg = even['events'][0]['message']['text']
         resp = lineBrain.think(msg)
         responseToUser(fromuid,resp)
 
-        headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
-        masteruid = 'u41b34094d1078bfd7ac91ae9a0fa2d25'
-        params={"mids":fromuid}
-        line_url = 'https://trialbot-api.line.me/v1/profiles'
-        r = requests.get(line_url, headers=headers, params = params)
-        rjson = json.loads(r.text)
-
-        ruser = rjson['contacts'][0]['displayName']
-        notifyData = ruser +" 傳下列訊息給小姍:\n"+msg
-        responseToUser(masteruid,notifyData) 
-        print("did notify master")
+        #headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
+        #masteruid = 'u41b34094d1078bfd7ac91ae9a0fa2d25'
+        #params={"mids":fromuid}
+        #line_url = 'https://trialbot-api.line.me/v1/profiles'
+        #r = requests.get(line_url, headers=headers, params = params)
+        #rjson = json.loads(r.text)
+#
+#        ruser = rjson['contacts'][0]['displayName']
+#        notifyData = ruser +" 傳下列訊息給小姍:\n"+msg
+#        responseToUser(masteruid,notifyData) 
+#        print("did notify master")
         return "ok"
    # except:
    #     print(even)

@@ -24,8 +24,9 @@ def lambda_handler(even, context):
         print("-----get message ---")
         ts =  int(time.time())
         print(even) #
-        uid = even['result'][0]['content']['from']
-        msg = even['result'][0]['content']['text']
+
+        uid = even['events'][0]['source']['userId']
+        msg = even['events'][0]['message']['text']
     
         toLog = {'uid':uid, 'ts':ts, 'line':even, 'msg':msg}
         table_log.put_item(Item=toLog)

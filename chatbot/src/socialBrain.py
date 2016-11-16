@@ -13,6 +13,8 @@ import csv
 from esKB import esHandler
 from esHealth import esHealthHandler
 from esBible import esBibleHandler
+#from io import open
+import codecs
 #from pttChat import pttHandler
 from wikiChat import wikiHandler
 
@@ -43,7 +45,8 @@ class SocialBrain():
        
     def basicParser(self, msg, words):
         response = ""
-        msg = msg.strip() 
+        #msg = msg.encode('utf-8')
+        msg = msg.strip()
         msg = re.sub(u'[~～#$]', '', msg)
         lenMsg = len(msg)
         if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
@@ -70,7 +73,7 @@ class SocialBrain():
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
             noMeanCounts = len(re.findall('[ .?!-~]',msg))
-            if float(engcounts) / (lenMsg - noMeanCounts) > 0.75:
+            if float(engcounts) / (lenMsg - noMeanCounts+0.1 ) > 0.75:
                 return self.randomAct(u'act_no_english')
 
                 
@@ -141,7 +144,7 @@ class SocialBrain():
 
         howtolist = self.kb['how_to'].split(";") 
         for howto in howtolist:
-            if self.processmsg.count(howto) > 0:
+            if self.processmsg.count(howto) > 0 and len(self.processmsg) > 6:
                 handler_list.append(esHealthHandler)
                 break
         whatislist = self.kb['what_is'].split(";")
@@ -171,19 +174,17 @@ class SocialBrain():
 #            if random.randint(0,1) < 1:
 #                response = pttHandler(msg, words)
         if response == '':
-            #print("in will do")
+            print("in will do")
             #TODO put in will do list
             willDoList = self.kb['will_do'].split(";")
             for wd in willDoList:
-                #print(wd)
-                chkWillDo = re.match(wd, msg)
-                if chkWillDo:
+                if msg.count(wd):
                     response = self.randomAct('will_do_res')
                     return response
                     break
            
-        if response == '': # can't still can't find any answer 
-            response = esHealthHandler(msg, words, mscore=0.77)
+#        if response == '' and len(self.processmsg) > 5: # can't still can't find any answer 
+#            response = esHealthHandler(msg, words, mscore=0.77)
 
         if response == '':
             #print(self.notFoundResList)
