@@ -17,7 +17,7 @@ dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table_log = dynamodb.Table('linelog')
 lambda_client = boto3.client('lambda')
 
-
+learn_trigger = '590590 '
 
 def lambda_handler(even, context):
    # try:
@@ -28,15 +28,28 @@ def lambda_handler(even, context):
         uid = even['events'][0]['source']['userId']
         msg = even['events'][0]['message']['text']
     
+        msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even, 'msg':msg}
-        table_log.put_item(Item=toLog)
-        lresponse = lambda_client.invoke(
-            FunctionName='aibrain',
-            InvocationType='Event',
-            LogType='None',
-            ClientContext='string',
-            Payload=json.dumps(even),
-        )
+        if msg.startswith(learn_trigger) :
+            print("to learn...")
+            table_log.put_item(Item=toLog)
+            lresponse = lambda_client.invoke(
+                FunctionName='ailearn',
+                InvocationType='Event',
+                LogType='None',
+                ClientContext='string',
+                Payload=json.dumps(toLog),
+            )
+        else:
+            table_log.put_item(Item=toLog)
+            lresponse = lambda_client.invoke(
+                FunctionName='aibrain',
+                InvocationType='Event',
+                LogType='None',
+                ClientContext='string',
+                Payload=json.dumps(even),
+            )
+
         print("responsed (tolog->)"+str(toLog))
         return "ok"
    # except:
@@ -51,7 +64,12 @@ if __name__ == '__main__':
     msg = sys.argv[1]
 
     # To try from command line
-    tmp = { "result":[ { "from":"u206d25c2ea6bd87c17655609a1c37cb8", "fromChannel":1341301815, "to":["u0cc15697597f61dd8b01cea8b027050e"], "toChannel":1441301333, "eventType":"138311609000106303", "id":"ABCDEF-12345678901", "content":{ } } ] }
+    tmp = {u'events':
+          [{
+            u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
+            u'message': {'text':msg}
+           }]}
+
     print(lambda_handler(tmp, None))
 
     
