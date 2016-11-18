@@ -12,27 +12,17 @@ import sys
 import csv
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
+from nocheckin import aws_access_key_id,aws_secret_access_key
 
 
-min_score=1.5
+min_score=2
 
 #host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 host = ESHOST
 region = REGION
-aws_access_key_id = ''
-aws_secret_access_key = ''
 
 #es = Elasticsearch( hosts=[{'host': host, 'port': 443}])
 #es = Elasticsearch(host=host, port=80)
-
-awsauthfile = 'credentials_ai'
-with open(awsauthfile) as f:
-    content = f.readlines()
-    for line in content:
-        if 'aws_access_key_id' in line :
-            aws_access_key_id = line.split("=")[1].strip()
-        if 'aws_secret_access_key' in line :
-            aws_secret_access_key = line.split("=")[1].strip()
 
 awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, region, 'es')
 
@@ -59,11 +49,35 @@ def esHandler(msg, words):
 
     res = es.search(index="testi", body=q)
     print("Got %d Hits:" % res['hits']['total'])
+    allposi =[]
     for h in res['hits']['hits']:
-        result = random.choice((h['_source']['res']))
-        break
-    return result
+        allposi = allposi + h['_source']['res']
+        #result = random.choice((h['_source']['res']))
+        #return result
+    if len(allposi) > 0:
+        result = random.choice(allposi)
+        return result
 
+    qb = {
+      "min_score": 1.2,
+      "query" :{
+      "multi_match" : {
+        "query": msg, 
+        "fields": [ "pkey"]
+      }
+      }
+    }   
+
+    res = es.search(index="books1", body=qb)
+    print("Got %d Hits:" % res['hits']['total'])
+    if len(res['hits']['hits']) == 0:
+        return ''
+    else:
+   #     for i in res['hits']['hits']:
+   #         print(i['_source']['res'])
+        resultDict = random.choice(res['hits']['hits'][:3])
+        result = resultDict['_source']['res']
+        return result
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
