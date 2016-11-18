@@ -61,6 +61,18 @@ def responseToUser(uid, resp):
 #        return ''
         
 
+def getUserDisplayName(fromuid):
+    try:
+        line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+
+        r = requests.get(line_url, headers=headers)
+        rjson = json.loads(r.text)
+        ruser = rjson['displayName']
+        return ruser
+    except:
+        print('can not get displayName from uid:'+fromuid)
+        return ''
 
 def lambda_handler(even, context):
    # try:
@@ -70,17 +82,10 @@ def lambda_handler(even, context):
         resp = lineBrain.think(msg)
         responseToUser(fromuid,resp)
 
-        #headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
-        #masteruid = 'u41b34094d1078bfd7ac91ae9a0fa2d25'
-        #params={"mids":fromuid}
-        #line_url = 'https://trialbot-api.line.me/v1/profiles'
-        #r = requests.get(line_url, headers=headers, params = params)
-        #rjson = json.loads(r.text)
-#
-#        ruser = rjson['contacts'][0]['displayName']
-#        notifyData = ruser +" 傳下列訊息給小姍:\n"+msg
-#        responseToUser(masteruid,notifyData) 
-#        print("did notify master")
+        dname = getUserDisplayName(fromuid)
+        notifyData = dname +" 傳下列訊息給小姍:\n"+msg
+        meid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+        responseToUser(meid,notifyData)
         return "ok"
    # except:
    #     print(even)
@@ -94,23 +99,11 @@ if __name__ == '__main__':
     msg = sys.argv[1]
 
     # To try from command line
-    tmp = {u'result': 
+    tmp = {u'events': 
           [{
-            u'from': u'u206d25c2ea6bd87c17655609a1c37cb8',
-            u'eventType': u'138311609000106303',
-                  u'content': {
-                      u'from': u'u41b34094d1078bfd7ac91ae9a0fa2d25',
-                      u'seq': None,
-                      u'text': u'嗨嗨',
-                      u'toType': 1,
-                      u'to': [u'ue7f007a54c9cdc5dcd8b0dad74b4e7ad'],
-                      u'location': None,
-                      u'deliveredTime': 0,
-                      u'createdTime': 1473144583164,
-                      u'contentType': 1,
-                      u'contentMetadata': {u'SKIP_BADGE_COUNT': u'true', u'AT_RECV_MODE': u'2'},
-                     u'id': u'4869745949958'},
-             u'to': [u'ue7f007a54c9cdc5dcd8b0dad74b4e7ad'], u'fromChannel': 1341301815, u'toChannel': 1479704687, u'createdTime': 1473144583237, u'id': u'WB1519-3801923172'}]}
+            u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
+            u'message': {'text':u'test test test test'}
+           }]}   
     print(lambda_handler(tmp, None))
 
     
