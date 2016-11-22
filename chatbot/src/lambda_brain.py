@@ -3,7 +3,7 @@
 
 
 from __future__ import print_function 
-from socialBrain import SocialBrain
+from socialBrain import SocialBrain, GenericBrain
 import json
 import boto3
 import sys
@@ -79,7 +79,13 @@ def lambda_handler(even, context):
         print("-----get message this is lambda brain ---")
         fromuid = even['events'][0]['source']['userId']
         msg = even['events'][0]['message']['text']
-        resp = lineBrain.think(msg)
+        resp = ''
+        if 'botid' in even :
+            genericBrain = GenericBrain(even['botid'],'q')
+            resp = genericBrain.think(msg)
+        else:
+            resp = lineBrain.think(msg)
+
         responseToUser(fromuid,resp)
 
         dname = getUserDisplayName(fromuid)
@@ -102,8 +108,8 @@ if __name__ == '__main__':
     tmp = {u'events': 
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
-            u'message': {'text':u'test test test test'}
-           }]}   
+            u'message': {'text':msg}
+           }], 'botid':'bot1'}   
     print(lambda_handler(tmp, None))
 
     

@@ -10,6 +10,8 @@ from awsconfig import ESHOST, REGION
 
 host = ESHOST
 region = REGION
+idx = 'testi'
+dtype='fb'
 
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
@@ -74,17 +76,10 @@ with open(sys.argv[2]) as sfile:
             toInsert['similar'] = w
             similarList.append(w)
             print(toInsert)
-            res = es.index(index="testi", doc_type='fb',  body=toInsert)
-
-#        if oriKey in allkb:
-#            allkb[oriKey]['similar'] = similarList
+#            res = es.index(index=idx, doc_type=dtype,  body=toInsert)
 
 
-#for k in allkb:
-#    print(allkb[k])
-#    #res = es.index(index="testi", doc_type='fb',  body=allkb[k])
-
-es.indices.refresh(index="testi")
+#es.indices.refresh(index=idx)
 print("======= all upload ======")
 
 
@@ -100,7 +95,7 @@ q = {
 
 
 
-res = es.search(index="testi", body=q)
+res = es.search(index=idx, body=q)
 print(res)
 print("Got %d Hits:" % res['hits']['total'])
 for h in res['hits']['hits']:

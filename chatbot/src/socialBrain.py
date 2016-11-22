@@ -11,6 +11,7 @@ import time
 import sys
 import csv
 from esKB import esHandler
+from genericKB import genericHandler
 from esHealth import esHealthHandler
 from esBible import esBibleHandler
 #from io import open
@@ -18,6 +19,18 @@ import codecs
 #from pttChat import pttHandler
 from wikiChat import wikiHandler
 
+class GenericBrain():
+    idx = ''
+    searchq = ''
+
+    def __init__(self, idx, searchq):
+        self.idx = idx
+        self.searchq = searchq
+
+    def think(self, msg):
+        response = genericHandler(self.idx,self.searchq ,msg)
+        return response
+        
 
 class SocialBrain():
     
@@ -200,10 +213,12 @@ class SocialBrain():
 
 
 fbBrain = SocialBrain()
+gBrain = GenericBrain('bot1','q')
 if __name__ == '__main__':
 
     msg = sys.argv[1]
 
+    print(gBrain.think(msg))
     print(fbBrain.think(msg))
 
 
