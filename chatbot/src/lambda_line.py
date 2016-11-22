@@ -10,14 +10,33 @@ import json
 import time
 import random
 import botocore.session
+import requests
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
 table_log = dynamodb.Table('linelog')
+table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
 learn_trigger = '590590 '
+
+def getLineUser(fromuid):
+    try:
+        line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
+        
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        print(line_url)
+        r = requests.get(line_url, headers=headers)
+        print(r.text)
+        rjson = json.loads(r.text)
+        print(rjson)
+        return rjson
+    except:
+        print('can not line user profile from uid:'+fromuid)
+        return ''
+
 
 def lambda_handler(even, context):
    # try:
@@ -30,9 +49,11 @@ def lambda_handler(even, context):
     
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even, 'msg':msg}
+        oneUser = getLineUser(uid)
+        table_user.put_item(Item=oneUser)
+        table_log.put_item(Item=toLog)
         if msg.startswith(learn_trigger) :
             print("to learn...")
-            table_log.put_item(Item=toLog)
             lresponse = lambda_client.invoke(
                 FunctionName='ailearn',
                 InvocationType='Event',
@@ -41,7 +62,6 @@ def lambda_handler(even, context):
                 Payload=json.dumps(toLog),
             )
         else:
-            table_log.put_item(Item=toLog)
             lresponse = lambda_client.invoke(
                 FunctionName='aibrain',
                 InvocationType='Event',
