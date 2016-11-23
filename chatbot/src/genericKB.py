@@ -15,7 +15,7 @@ from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id,aws_secret_access_key
 
 
-min_score=0.6
+min_score=0.7
 
 #host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 host = ESHOST
@@ -43,28 +43,22 @@ def genericHandler(idx, searchq, msg):
       "query" :{
       "multi_match" : {
         "query": msg, 
-        "fields": [ "q" ,"a" ] 
+        "fields": [ "q"  ] 
       }
       }
     }
     print(q)   
 
     res = es.search(index=idx, body=q)
+    hits = res['hits']['total'] 
     print("Got %d Hits:" % res['hits']['total'])
+    if hits == 0:
+        return ""
     allposi =[]
-    for h in res['hits']['hits']:
-        allposi = allposi + h['_source']['a']
-        #result = random.choice((h['_source']['res']))
-        #return result
-    if len(allposi) > 0:
-        result = random.choice(allposi)
-        return result
-
-   #     for i in res['hits']['hits']:
-   #         print(i['_source']['res'])
-        resultDict = random.choice(res['hits']['hits'][:3])
-        result = resultDict['_source']['res']
-        return result
+    cnt = 0
+    rDict = random.choice(res['hits']['hits'][:2])
+    result = rDict['_source']['a'][0]
+    return result
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:

@@ -80,18 +80,23 @@ def lambda_handler(even, context):
         fromuid = even['events'][0]['source']['userId']
         msg = even['events'][0]['message']['text']
         resp = ''
+        tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+        bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+        bossmsg = u'傳下列訊息給聊天機器人 '
+        dname = getUserDisplayName(fromuid)
         if 'botid' in even :
             genericBrain = GenericBrain(even['botid'],'q')
+            bossid = even['bossid']
+            bossmsg = bossmsg + even['botid'] + " "
             resp = genericBrain.think(msg)
+            notifyData = dname + bossmsg +"\n"+msg
+            responseToUser(bossid,notifyData)
         else:
             resp = lineBrain.think(msg)
 
+        notifyData = dname + bossmsg +"\n"+msg
         responseToUser(fromuid,resp)
-
-        dname = getUserDisplayName(fromuid)
-        notifyData = dname +" 傳下列訊息給小姍:\n"+msg
-        meid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
-        responseToUser(meid,notifyData)
+        responseToUser(tsid,notifyData)
         return "ok"
    # except:
    #     print(even)
