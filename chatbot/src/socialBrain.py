@@ -22,6 +22,7 @@ from wikiChat import wikiHandler
 class GenericBrain():
     idx = ''
     searchq = ''
+    no_res = 'bot_cannot_response'
 
     def __init__(self, idx, searchq):
         self.idx = idx
@@ -29,6 +30,12 @@ class GenericBrain():
 
     def think(self, msg):
         response = genericHandler(self.idx,self.searchq ,msg)
+        if response == '':
+            response = genericHandler(self.idx,self.searchq ,self.no_res)
+ 
+        if response == '':
+            response = u'人工智慧系統遭受不可能的狀況 抱歉請稍候再試' 
+
         return response
         
 
