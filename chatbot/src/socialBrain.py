@@ -20,7 +20,7 @@ import codecs
 from wikiChat import wikiHandler
 
 class GenericEnBrain():
-    listIdx = [('enbot1','fb')]
+    listIdx = [('enbasic1',0.8), ('enbot1',2.0)]
     kb = {}
     notFoundResList = []
 
@@ -46,7 +46,7 @@ class GenericEnBrain():
                 return self.randomAct('dirty_words_res')
    
         for cnf in self.listIdx:
-            response = genericHandler(cnf[0], 'fb', msg, min_score=2.0)
+            response = genericHandler(cnf[0], 'fb', msg, min_score=cnf[1])
             if response != '':
                 return response
 
