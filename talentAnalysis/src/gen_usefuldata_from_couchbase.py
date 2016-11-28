@@ -59,7 +59,7 @@ def buildDataFromCouchbase(limit,offset):
 
     result = []
 
-    for one in couchbucket.n1ql_query('SELECT * FROM personanew limit '+str(limit)+' offset '+str(offset)+' '):
+    for one in couchbucket.n1ql_query('SELECT * FROM persona limit '+str(limit)+' offset '+str(offset)+' '):
 
         for k in one:
             personName = ""
@@ -107,8 +107,8 @@ def buildDataFromCouchbase(limit,offset):
 def getCataDict():
     return {0:2,1:2,2:len(ManagerCata)}
 
-couchbase_host='10.1.192.79'
-couchbase_bucket='personanew'
+couchbase_host='10.1.193.189'
+couchbase_bucket='persona'
 
 couchbucket = Couchbase.connect(bucket=couchbase_bucket, host=couchbase_host)
 
@@ -130,13 +130,13 @@ if __name__ == '__main__':
     model = GradientBoostedTrees.trainClassifier(sc.parallelize(data), cataDict, numIterations=10, maxBins=500)
     print(model.numTrees())
     print(model.totalNumNodes())
-
-    print('===== random predict===')
-    idxManager = ManagerCata.index('Alex Tseng (RD-TW)')
-    print('idx manager = '+str(idxManager))
-    print(model.predict([0.0,0.0,idxManager]))
-    print(model.predict([0.0,1.0,idxManager]))
-    print(model.predict([1.0,0.0,idxManager]))
-    print(model.predict([1.0,1.0,idxManager]))
+#
+#    print('===== random predict===')
+#    idxManager = ManagerCata.index('Alex Tseng (RD-TW)')
+#    print('idx manager = '+str(idxManager))
+#    print(model.predict([0.0,0.0,idxManager]))
+#    print(model.predict([0.0,1.0,idxManager]))
+#    print(model.predict([1.0,0.0,idxManager]))
+#    print(model.predict([1.0,1.0,idxManager]))
 #    rdd = sc.parallelize([[2.0], [0.0]])
 #    model.predict(rdd).collect()
