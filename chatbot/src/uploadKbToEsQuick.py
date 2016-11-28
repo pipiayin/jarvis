@@ -27,60 +27,32 @@ es = Elasticsearch(
 )
 print(es.info())
 
-def loadToEs(keyfile, csvfile, idx, dtype):
+def loadToEs( csvfile, idx, dtype):
     print("load kb csv file to allkb{}")
 
-    allkb = {}
-    with open(keyfile) as kfile:
-        slines = csv.reader(kfile, delimiter=',', quotechar='"')
-        for line in slines:
-            oriKey = line[0].strip()
-            swords = line[1:]
-            res = []
-            for w in swords:
-                w = w.strip()
-                if w == '':
-                    continue
-                res.append(w)
-            item={u'pkey':oriKey, u'res':res}
-            allkb[oriKey] = item
-        # to make sure similar table always has itself
-
-
-    print("map similar key word mapping to allkb{}....")
 
     with open(csvfile) as sfile:
         slines = csv.reader(sfile, delimiter=',', quotechar='"')
         for line in slines:
-            oriKey = line[0].strip()
-            swords = line[1:]
-            similarList = []
-            for w in swords:
-                w = w.strip()
-                if w == '':
-                    continue
+            q = line[0].strip()
+            a = line[1:]
             # build in each word
-                toInsert = allkb[oriKey]
-                toInsert['similar'] = w
-                similarList.append(w)
-                print(toInsert)
-#            res = es.index(index=idx, doc_type=dtype,  body=toInsert)
+            toInsert = {u'q':q , u'a':a}
+            print(toInsert)
+            res = es.index(index=idx, doc_type=dtype,  body=toInsert)
 
 
-#es.indices.refresh(index=idx)
+    es.indices.refresh(index=idx)
 
     print("======= all uploaded ======")
 
 
 if __name__ == '__main__':
     import sys
-
-
-    keyfile = sys.argv[1]
-    csvfile = sys.argv[2]
-    idx = sys.argv[3]
-    dtype = sys.argv[4]
-    loadToEs(keyfile,csvfile, idx, dtype)
+    csvfile = sys.argv[1]
+    idx = sys.argv[2]
+    dtype = sys.argv[3]
+    loadToEs(csvfile, idx, dtype)
 
 #res = es.search(index=idx, body=q)
 #print(res)

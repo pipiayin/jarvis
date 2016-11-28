@@ -48,9 +48,10 @@ def lambda_handler(even, context):
         msg = even['events'][0]['message']['text']
     
         msg = msg.strip()
-        toLog = {'uid':uid, 'ts':ts, 'line':even, 'msg':msg}
+        toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg}
         oneUser = getLineUser(uid)
         table_user.put_item(Item=oneUser)
+        print(toLog)
         table_log.put_item(Item=toLog)
         if msg.startswith(learn_trigger) :
             print("to learn...")

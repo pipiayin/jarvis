@@ -4,20 +4,13 @@
 # For handle Facebook message request
 
 from __future__ import print_function 
-from socialBrain import SocialBrain
 import json
-import requests
 import boto3
 import sys
 import json
 import time
-import random
 
-
-dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 lambda_client = boto3.client('lambda')
-
-
 
 def lambda_handler(even, context):
     try:
@@ -28,7 +21,7 @@ def lambda_handler(even, context):
         mid = even['entry'][0][u'messaging'][0]['message']['mid']
         uid = even['entry'][0][u'messaging'][0]['sender']['id']
         rid = even['entry'][0][u'messaging'][0]['recipient']['id']
-        toLog = {'mid':mid, 'uid':uid, 'msg':msg, 'res':'','ts':0}
+        toLog = {'mid':mid, 'uid':uid, 'msg':msg, 'res':'','ts':0,'rid':rid}
         res = {
             "recipient_id": rid,
             "message_id": mid
