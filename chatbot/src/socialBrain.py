@@ -19,10 +19,47 @@ import codecs
 #from pttChat import pttHandler
 from wikiChat import wikiHandler
 
+class GenericEnBrain():
+    listIdx = [('enbot1','fb')]
+    kb = {}
+    notFoundResList = []
+
+    def __init__(self):
+
+        with open('basickb_en.csv') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            for row in spamreader:
+                if(len(row)>=2):
+                    self.kb[row[0].strip()] = row[1].strip()
+
+    def randomAct(self, actKey):
+        res_act = self.kb[actKey].split(";")
+        return random.choice(res_act)
+
+    def think(self, msg):
+        response = ''
+        dirtylist = self.kb['dirty_words'].lower().split(";")
+        msg = msg.strip()
+        for dword in dirtylist:
+            dword = dword.strip()
+            if dword in msg:
+                return self.randomAct('dirty_words_res')
+   
+        for cnf in self.listIdx:
+            response = genericHandler(cnf[0], 'fb', msg, min_score=2.0)
+            if response != '':
+                return response
+
+        if response == '':
+            response = self.randomAct('act_no_info')
+
+        return response
+    
 class GenericBrain():
     idx = ''
     searchq = ''
     no_res = 'bot_cannot_response'
+
 
     def __init__(self, idx, searchq):
         self.idx = idx
@@ -221,12 +258,14 @@ class SocialBrain():
 
 fbBrain = SocialBrain()
 gBrain = GenericBrain('bot1','q')
+genBrain = GenericEnBrain()
 if __name__ == '__main__':
 
     msg = sys.argv[1]
 
-    print(gBrain.think(msg))
-    print(fbBrain.think(msg))
+    print(genBrain.think(msg))
+#    print(gBrain.think(msg))
+#    print(fbBrain.think(msg))
 
 
 

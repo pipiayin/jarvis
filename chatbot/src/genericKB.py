@@ -34,7 +34,7 @@ es = Elasticsearch(
     connection_class=RequestsHttpConnection
 )
 
-def genericHandler(idx, searchq, msg):
+def genericHandler(idx, searchq, msg,min_score=0.8):
     
     result =""
     #TODO, remove the assumption of fields q and q and use searchq instead
@@ -47,7 +47,6 @@ def genericHandler(idx, searchq, msg):
       }
       }
     }
-    print(q)   
 
     res = es.search(index=idx, body=q)
     hits = res['hits']['total'] 
@@ -57,7 +56,10 @@ def genericHandler(idx, searchq, msg):
     allposi =[]
     cnt = 0
     rDict = random.choice(res['hits']['hits'][:2])
-    result = rDict['_source']['a'][0]
+    if type(rDict['_source']['a']) is list:
+        result = rDict['_source']['a'][0]
+    else:
+        result = rDict['_source']['a']
     return result
 
 if __name__ == '__main__':
