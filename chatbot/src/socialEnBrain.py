@@ -11,10 +11,13 @@ import csv
 from esKB import esHandler
 from genericKB import genericHandler
 from esHealth import esHealthHandler
+from wikiFinder import findWikiEn
 #from io import open
 import codecs
 #from pttChat import pttHandler
 from wikiChat import wikiHandler
+import os
+os.environ['NLTK_DATA'] = 'nltk_data'
 
 class GenericEnBrain():
     listIdx = [('enbasic1',0.8), ('enbot1',2.0)]
@@ -46,6 +49,14 @@ class GenericEnBrain():
             response = genericHandler(cnf[0], 'fb', msg, min_score=cnf[1])
             if response != '':
                 return response
+
+        if response == '': # Wikifinedr
+            from textblob import TextBlob
+            b = TextBlob(msg.lower())
+            if len(b.noun_phrases) > 0:
+                toFindInWiki = b.noun_phrases[0]
+                wikiResponse = findWikiEn(toFindInWiki)
+                response = wikiResponse[0:300] + "...<search from wiki>"
 
         if response == '':
             response = self.randomAct('act_no_info')

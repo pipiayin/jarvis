@@ -4,7 +4,7 @@
 # For handle Facebook message request
 
 from __future__ import print_function 
-from socialBrain import GenericEnBrain
+from socialEnBrain import GenericEnBrain
 
 import json
 import requests
