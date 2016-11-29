@@ -8,14 +8,13 @@ import random
 import time
 import sys
 import csv
-from esKB import esHandler
 from genericKB import genericHandler
 from esHealth import esHealthHandler
 from wikiFinder import findWikiEn
 #from io import open
 import codecs
 #from pttChat import pttHandler
-from wikiChat import wikiHandler
+#from wikiChat import wikiHandler
 import os
 os.environ['NLTK_DATA'] = 'nltk_data'
 
