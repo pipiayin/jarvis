@@ -16,7 +16,6 @@ import codecs
 #from pttChat import pttHandler
 #from wikiChat import wikiHandler
 import os
-os.environ['NLTK_DATA'] = 'nltk_data'
 
 class GenericEnBrain():
     listIdx = [('enbasic1',0.8), ('enbot1',2.0)]
@@ -50,6 +49,9 @@ class GenericEnBrain():
                 return response
 
         if response == '': # Wikifinedr
+            nltk_data_path = os.getcwd()+'/nltk_data'
+            print(nltk_data_path)
+            os.environ['NLTK_DATA'] = nltk_data_path
             from textblob import TextBlob
             b = TextBlob(msg.lower())
             if len(b.noun_phrases) > 0:
