@@ -40,11 +40,14 @@ A config-able chat microservice for better customer support.
 - request slow and repeating issues: most of the webhook will set timeout! 
   make sure the time consuming workers should run in async way
 - How to allow learnning from user?
-   (1) user A ask question "U" and SandyAI can not answer
+   (0) a tricky 590590 prefix to force do indexing
+   (1) user A ask question "Q1" and SandyAI can not answer
    (2) 
        * SandyAI then ask user B?
        * SandyAI then ask back user A?
 - add books
 # how to make a Lambda?
 - ZIP every thing.
-- Check Lambda.py
+- check deployToAWS_AITS.sh
+
+
