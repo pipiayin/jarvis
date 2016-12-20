@@ -223,12 +223,12 @@ class SocialBrain():
 
 fbBrain = SocialBrain()
 gBrain = GenericBrain('bot1','q')
-genBrain = GenericEnBrain()
+#genBrain = GenericEnBrain()
 if __name__ == '__main__':
 
     msg = sys.argv[1]
 
-    print(genBrain.think(msg))
+#    print(genBrain.think(msg))
 #    print(gBrain.think(msg))
 #    print(fbBrain.think(msg))
 
