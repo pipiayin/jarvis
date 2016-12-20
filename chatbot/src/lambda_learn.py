@@ -24,6 +24,7 @@ min_score=1.5
 host = ESHOST
 region = REGION
 
+bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
 
 awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, region, 'es')
 
@@ -37,6 +38,19 @@ es = Elasticsearch(
 
 
 learn_trigger = '590590 '
+def getUserDisplayName(fromuid):
+    try:
+        line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+
+        r = requests.get(line_url, headers=headers)
+        rjson = json.loads(r.text)
+        ruser = rjson['displayName']
+        return ruser
+    except:
+        print('can not get displayName from uid:'+fromuid)
+        return ''
+
 
 def responseToUser(uid, resp):
 #    try:
@@ -71,6 +85,8 @@ def lambda_handler(even, context):
         res = es.index(index="testi", doc_type='fb',  body=toInsert)
         es.indices.refresh(index="testi")
         responseToUser(even['uid'],u'學到了~謝謝~')
+        uname = getUserDisplayName(even['uid'])
+        responseToUser(bossid,uname+u' 教會小姍： \n'+msg+"::"+res)
         return "ok"
     except:
         print(even)
