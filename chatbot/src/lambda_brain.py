@@ -17,8 +17,6 @@ from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
 
 lineBrain = SocialBrain()
 
-XLineToken=''
-
 
 def responseToUser(uid, resp):
 #    try:
