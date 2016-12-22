@@ -16,7 +16,7 @@ from awsconfig import ESHOST, REGION
 host = ESHOST
 region = REGION
 
-min_score=1.2
+min_score=1.25
 
 aws_access_key_id = ''
 aws_secret_access_key = ''
