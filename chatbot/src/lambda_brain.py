@@ -4,6 +4,7 @@
 
 from __future__ import print_function 
 from socialBrain import SocialBrain, GenericBrain
+
 import json
 import boto3
 import sys
@@ -12,27 +13,11 @@ import time
 import random
 import botocore.session
 import requests
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
 
 lineBrain = SocialBrain()
 
-XLineChannelID = ''
-XLineChannelSecret = ''
-XLineTrustedUserWithACL = ''
 XLineToken=''
-
-awsauthfile = 'credentials_ai'
-lineauth = 'linecre.so'
-with open(lineauth) as f:
-    content = f.readlines()
-    for line in content:
-        if 'X-Line-ChannelID' in line :
-            XLineChannelID = line.split("=")[1].strip()
-        if 'X-Line-ChannelSecret' in line :
-            XLineChannelSecret = line.split("=")[1].strip()
-        if 'X-Line-Trusted-User-With-ACL' in line :
-            XLineTrustedUserWithACL = line.split("=")[1].strip()
-        if 'X-Line-ChannelAccessToken' in line :
-            XLineToken = line.split(" =")[1].strip()
 
 
 def responseToUser(uid, resp):
