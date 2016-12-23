@@ -9,6 +9,7 @@ import sys
 import json
 import random
 import argparse
+from nocheckin import XLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -17,6 +18,30 @@ table_log = dynamodb.Table('lineuser')
 table_usert = dynamodb.Table('lineusert')
 table_user = dynamodb.Table('lineuser')
 
+def sendToUser(uid, msg):
+#    try:
+        print("to response to line user")
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        payload = {
+            "to": uid ,
+            "messages":[{
+                "type":"text",
+                "text": msg
+             }]
+        }
+
+        jdump = json.dumps(payload)
+        print(jdump)
+        url = 'https://api.line.me/v2/bot/message/push'
+        #url = 'https://trialbot-api.line.me/v1/events'
+        r = requests.post(url, headers=headers, data = jdump)
+        print(r.text)
+
+        return ''
+
+def sendToUserList(ulist, msg):
+    for u in ulist:
+        sendToUser(u, msg)
 
 def exists(mid,uid):
     item = None
@@ -55,6 +80,7 @@ def getUserSession(uid):
         return item['Item']
     else: 
         return None
+
 def updateUserSession(uitem):
     table_user.put_item( Item = uitem)
 
@@ -72,9 +98,9 @@ if __name__ == '__main__':
         exit(0)
 
     if args.msg is not None:
-   
         print("send message:"+args.msg)
         ulist =  [bossid]
+        sendToUserList(ulist,args.msg)
 #        ulist = listLineUserId()
 #        for iu in ulist:
 #            print(iu)
