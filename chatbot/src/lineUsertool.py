@@ -9,6 +9,7 @@ import sys
 import json
 import random
 import argparse
+import time
 from nocheckin import XLineToken
 
 
@@ -42,6 +43,8 @@ def sendToUser(uid, msg):
 def sendToUserList(ulist, msg):
     for u in ulist:
         sendToUser(u, msg)
+        time.sleep(0.5)
+        print("done: "+u)
 
 def exists(mid,uid):
     item = None
@@ -100,17 +103,6 @@ if __name__ == '__main__':
     if args.msg is not None:
         print("send message:"+args.msg)
         ulist =  [bossid]
-        sendToUserList(ulist,args.msg)
 #        ulist = listLineUserId()
-#        for iu in ulist:
-#            print(iu)
-    #showAll()
-    #s = getUserSession(bossid)
-    #s['lmsg'] = 'the last few words'
-    #s['status'] = 'expecting'
-    #print(s)
-    #updateUserSession(s)
-
-    # To try from command line
-    
+        sendToUserList(ulist,args.msg)
 
