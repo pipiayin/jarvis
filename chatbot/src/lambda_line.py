@@ -11,7 +11,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -22,14 +22,16 @@ lambda_client = boto3.client('lambda')
 
 learn_trigger = '590590 '
 
-def getLineUser(fromuid):
+def getLineUser(fromuid,botid=''):
     try:
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        if botid == 'happyrun':
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+
         print(line_url)
         r = requests.get(line_url, headers=headers)
-        print(r.text)
         rjson = json.loads(r.text)
         print(rjson)
         return rjson
@@ -50,6 +52,15 @@ def lambda_handler(even, context):
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg}
         oneUser = getLineUser(uid)
+        if 'botid' in even:
+            oneUser = getLineUser(uid,even['botid'])
+            oneUser['botid'] = even['botid']
+            toLog['botid'] = even['botid'] 
+        if 'bossid' in even:
+            oneUser['bossid'] = even['bossid']
+            toLog['bossid'] = even['bossid']
+
+        print(oneUser)
         table_user.put_item(Item=oneUser)
         print(toLog)
         table_log.put_item(Item=toLog)
@@ -88,7 +99,9 @@ if __name__ == '__main__':
     tmp = {u'events':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
-            u'message': {'text':msg}
+            u'message': {'text':msg},
+            u'botid' : 'happyrun',
+            u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
            }]}
 
     print(lambda_handler(tmp, None))

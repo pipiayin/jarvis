@@ -57,7 +57,7 @@ class GenericEnBrain():
             if len(b.noun_phrases) > 0:
                 toFindInWiki = b.noun_phrases[0]
                 wikiResponse = findWikiEn(toFindInWiki)
-                response = wikiResponse[0:300] + "...<search from wiki>"
+                response = wikiResponse[0:256] + "...<search from wiki>"
 
         if response == '':
             response = self.randomAct('act_no_info')

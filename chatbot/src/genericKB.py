@@ -15,7 +15,7 @@ from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id,aws_secret_access_key
 
 
-min_score=0.7
+min_score=0.8
 
 #host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 host = ESHOST
@@ -48,6 +48,8 @@ def genericHandler(idx, searchq, msg,min_score=0.8):
       }
     }
 
+    print(idx)
+    print(q)
     res = es.search(index=idx, body=q)
     hits = res['hits']['total'] 
     print("Got %d Hits:" % res['hits']['total'])
@@ -70,6 +72,7 @@ if __name__ == '__main__':
 
 
     print("==== result ===")
-    print(genericHandler('bot1', 'q' ,sys.argv[1]))
+#    print(genericHandler('bot1', 'q' ,sys.argv[1]))
+    print(genericHandler('happyrun', 'q' ,sys.argv[1]))
 
 

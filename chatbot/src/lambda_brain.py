@@ -13,15 +13,17 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken
 
 lineBrain = SocialBrain()
 
 
-def responseToUser(uid, resp):
+def responseToUser(uid, resp, botid=''):
 #    try:
         print("to response to line user")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        if botid == 'happyrun' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
         #headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
         payload = { 
             "to": uid ,
@@ -44,11 +46,13 @@ def responseToUser(uid, resp):
 #        return ''
         
 
-def getUserDisplayName(fromuid):
+def getUserDisplayName(fromuid, botid=''):
     try:
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
 
+        if botid == 'happyrun' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         ruser = rjson['displayName']
@@ -74,11 +78,12 @@ def lambda_handler(even, context):
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
             responseToUser(bossid,notifyData)
+            responseToUser(fromuid,resp,even['botid'])
         else:
             resp = lineBrain.think(msg)
+            responseToUser(fromuid,resp)
 
         notifyData = dname + bossmsg +"\n"+msg
-        responseToUser(fromuid,resp)
         responseToUser(tsid,notifyData)
         return "ok"
    # except:
@@ -97,7 +102,7 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             u'message': {'text':msg}
-           }], 'botid':'bot1'}   
+           }], 'botid':'happyrun'}   
     print(lambda_handler(tmp, None))
 
     

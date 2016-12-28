@@ -16,7 +16,7 @@ from esHealth import esHealthHandler
 from esBible import esBibleHandler
 #from io import open
 import codecs
-#from pttChat import pttHandler
+from pttChat import pttHandler
 from wikiChat import wikiHandler
 
     
@@ -25,18 +25,33 @@ class GenericBrain():
     searchq = ''
     no_res = 'bot_cannot_response'
 
+    kb = {}
 
     def __init__(self, idx, searchq):
         self.idx = idx
         self.searchq = searchq
+        with open('basickb.csv') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            for row in spamreader:
+                if(len(row)>=2):
+                    self.kb[row[0].strip()] = row[1].strip()
+
+    def randomAct(self, actKey):
+        res_act = self.kb[actKey].split(";")
+        return random.choice(res_act)
 
     def think(self, msg):
+        msg = msg.strip()
+        if msg in self.kb[u'bad_words'].split(';'):
+            response = self.randomAct(u'bad_words_res')
+            return response
+       
         response = genericHandler(self.idx,self.searchq ,msg)
         if response == '':
             response = genericHandler(self.idx,self.searchq ,self.no_res)
  
         if response == '':
-            response = u'人工智慧系統遭受不可能的狀況 抱歉請稍候再試' 
+            response = self.randomAct(u'happyrun_no_res')
 
         return response
         
@@ -221,14 +236,14 @@ class SocialBrain():
 
 
 fbBrain = SocialBrain()
-gBrain = GenericBrain('bot1','q')
+gBrain = GenericBrain('happyrun','q')
 #genBrain = GenericEnBrain()
 if __name__ == '__main__':
 
     msg = sys.argv[1]
 
 #    print(genBrain.think(msg))
-#    print(gBrain.think(msg))
+    print(gBrain.think(msg))
 #    print(fbBrain.think(msg))
 
 
