@@ -1,5 +1,4 @@
 
-
             Social Media Taiwanese Chatbot
 
 ######################################################################
@@ -15,13 +14,13 @@ A config-able chat microservice for better customer support.
 
 ## analysis customer''s input from text message
 - Third pary tool (jeiba)
-- sentiment tool (not yet)
+- sentiment tool (Still TO DO)
 - bad language tool (done in basicHandler)
 - response text repository <- use csv file and also dynamodb
 - take notes   
 ## Config-able
 - response text repository
-- 
+- a bot-id in header to identify bot webhook 
 ## a few microservice 
 - AWS lambda and API gateway
 - put knowledge base in elasticsearch
