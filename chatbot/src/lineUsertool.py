@@ -93,6 +93,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='line user tool')
     parser.add_argument('--list','-l', action='store_true', help='list all user')
     parser.add_argument('--msg','-m', help='send message to all user')
+    parser.add_argument('--select','-s', help='selected user list file')
 
     args = parser.parse_args()
     if args.list :
@@ -103,6 +104,16 @@ if __name__ == '__main__':
     if args.msg is not None:
         print("send message:"+args.msg)
         ulist =  [bossid]
-#        ulist = listLineUserId()
-        sendToUserList(ulist,args.msg)
+        if args.select is not None:
+            userListFile = open(args.select)
+            for line in userListFile:
+                parts = line.split(",")
+                uid=parts[0].strip()
+                ulist.append(uid)
+            print(ulist)
+        else:
+            ulist = listLineUserId()
+            print(ulist)
+
+#        sendToUserList(ulist,args.msg)
 
