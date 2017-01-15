@@ -20,7 +20,7 @@ table_log = dynamodb.Table('linelog')
 table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
-learn_trigger = '590590 '
+learn_trigger = '590590'
 
 def getLineUser(fromuid,botid=''):
     try:

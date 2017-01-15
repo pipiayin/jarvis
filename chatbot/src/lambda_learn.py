@@ -37,7 +37,7 @@ es = Elasticsearch(
 )
 
 
-learn_trigger = '590590 '
+learn_trigger = '590590'
 
 def getUserDisplayName(fromuid, botid=''):
     try:
