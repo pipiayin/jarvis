@@ -92,6 +92,7 @@ def lambda_handler(even, context):
             print(msg)
             return ''
         msg = msg.replace(learn_trigger,'')
+        msg = msg.strip()
         parts = msg.split(" ")
         msg = parts[0].strip()
         if len(msg) <= 2:
