@@ -17,6 +17,7 @@ from datetime import datetime
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken
+from blackList import badfriends,badwords
 
 min_score=1.5
 
@@ -95,14 +96,24 @@ def lambda_handler(even, context):
         msg = msg.strip()
         parts = msg.split(" ")
         msg = parts[0].strip()
+        uname = getUserDisplayName(even['uid'])
+        if even['uid'] in badfriends:
+            responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
+            responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
+            return "not learn"
+        for bw in badwords:
+            if bw in msg:
+                responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
+                responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
+                return "not learnn"
+        
         if len(msg) <= 2:
             responseToUser(even['uid'],u'抱歉 學習目標不能少於兩個字，你想要教我"'+msg+ u'" 但是單靠兩個字就希望人工智慧有絕對正確反映也太強人所難')
-            uname = getUserDisplayName(even['uid'])
-            responseToUser(bossid, uname + u'試圖機器人以下事情不過失敗了 \n'+msg, botid)
+            responseToUser(bossid, uname + u'試圖教以下事情不過失敗了 \n'+msg, botid)
             return "not leart"
         
-        res = " ".join(parts[1:])
-        toInsert={u'pkey':msg, u'res':[res], u'similar':msg}
+        res = " ".join(parts[1:]) 
+        toInsert={u'pkey':msg, u'res':[res], u'similar':msg,u'uid':even['uid']}
 
         if botid != '':
             toInsert={u'q':msg, u'a':[res]}
