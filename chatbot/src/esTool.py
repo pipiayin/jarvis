@@ -6,6 +6,8 @@ from requests_aws4auth import AWS4Auth
 from datetime import datetime
 import sys
 import csv
+import argparse
+import json
 from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id, aws_secret_access_key
 
@@ -23,44 +25,57 @@ es = Elasticsearch(
     verify_certs=True,
     connection_class=RequestsHttpConnection
 )
-print(es.info())
 
 #es.indices.create(index="health")
 #print("======= all upload ======")
+def rebuild(indexname, jsonfile):
+    es.indices.delete(index=indexname)
+    es.indices.create(index=indexname)
 
-msg = sys.argv[3]
-field = sys.argv[2]
-indexname = sys.argv[1]
-q = {
-      "query" :{
-      "match" : {
-        field: msg
-      }
-      }
- }
-q = {
-      "min_score": 0.0000001,
-      "query" :{
+    for line in open(jsonfile):
+        s = line.strip()
+        toInsert = eval(s)
+        res = es.index(index=indexname, doc_type='fb',  body=toInsert)
+        print(res)
+
+    es.indices.refresh(index=indexname)
+
+
+def listAll(indexname):
+    q = {
+        "min_score": 0.0000001,
+        "query" :{
           "match_all" : {
           } 
       },
-      "size": 5000
- }
+         "size": 5000
+    }
 
-#q = {
-#      "min_score": 1,
-#      "query" :{
-#      "multi_match" : {
-#        "query": msg,
-#        "fields": [ "pkey", "similar" ]
-#      }
-#      }
-#}
 
-es.indices.refresh(index=indexname)
-res = es.search(index=indexname, body=q)
+    es.indices.refresh(index=indexname)
+    res = es.search(index=indexname, body=q)
 #print(res)
-print("Got %d Hits:" % res['hits']['total'])
-for h in res['hits']['hits']:
-    print(h['_source'])
+    print("Got %d Hits:" % res['hits']['total'])
+    for h in res['hits']['hits']:
+        print(h['_source'])
+
+if __name__ == '__main__':
+    bossid='Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+    parser = argparse.ArgumentParser(description='line user tool')
+    parser.add_argument('--list','-l', action='store_true', help='list all docs')
+    parser.add_argument('--rebuild','-r',action='store_true', help='rebuild index via upload a json file')
+    parser.add_argument('--indexname','-i', help='index name')
+    parser.add_argument('--jsondump','-j', help='jsondump file name, one line per json doc')
+
+    args = parser.parse_args()
+
+    if args.list :
+        print('list all')
+        listAll(args.indexname)
+        exit(0)
+
+    if args.rebuild:
+        print('rebuild by jsonfile')
+        rebuild(args.indexname, args.jsondump)
+   
 
