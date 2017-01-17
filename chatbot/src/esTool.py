@@ -62,5 +62,5 @@ res = es.search(index=indexname, body=q)
 #print(res)
 print("Got %d Hits:" % res['hits']['total'])
 for h in res['hits']['hits']:
-    print(h)
+    print(h['_source'])
 
