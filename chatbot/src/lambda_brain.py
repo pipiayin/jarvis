@@ -102,7 +102,7 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             u'message': {'text':msg}
-           }], 'botid':'happyrun'}   
+           }]}   
     print(lambda_handler(tmp, None))
 
     

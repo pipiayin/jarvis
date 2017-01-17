@@ -1,7 +1,8 @@
-
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
 
 badfriends = ['U8fac6794d83b4a39614dd1c3f563230e','U23382b41c01869abed7f0b620183b071']
-badwords = [u'幹你娘'
+badwords = [ u'幹你娘'
     ,u'幹你老師'
     ,u'幹林老師'
     ,u'幹您老師'
@@ -32,4 +33,5 @@ badwords = [u'幹你娘'
 ,u'幹恁老師'
 ,u'恁娘卡好'
     ,u'破麻'
+    ,u'肏他媽'
     ]
