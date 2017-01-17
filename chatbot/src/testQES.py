@@ -38,14 +38,14 @@ q = {
       }
       }
  }
-q = {
-      "min_score": 0.0000001,
-      "query" :{
-          "match_all" : {
-          } 
-      },
-      "size": 5000
- }
+#q = {
+#      "min_score": 0.0000001,
+#      "query" :{
+#          "match_all" : {
+#          } 
+#      },
+#      "size": 5000
+# }
 
 #q = {
 #      "min_score": 1,

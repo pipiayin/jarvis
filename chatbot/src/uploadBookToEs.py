@@ -26,9 +26,9 @@ es = Elasticsearch(
 )
 #print(es.info())
 #es.indices.delete(index="bible")
-#es.indices.create(index="books1")
+#es.indices.create(index="enbot1")
 
-print("load book")
+print("load shakespear")
 
 sp = [u'。',u'？',u'！']
 ssp = [u'，']
@@ -57,10 +57,10 @@ with open(sys.argv[1]) as bfile:
                 else:
                     mergeTmp = mergeTmp +u'，'+ key
 
-#                    res = es.index(index="books1", doc_type='web',  body=item)
+                    res = es.index(index="books1", doc_type='web',  body=item)
 #        print(item)
 #        allkb[oriKey] = item
         # to make sure similar table always has itself
-#es.indices.refresh(index="books1")
+es.indices.refresh(index="books1")
 print("======= all upload ======")
 

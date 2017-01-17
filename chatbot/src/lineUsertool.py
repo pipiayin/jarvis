@@ -114,6 +114,5 @@ if __name__ == '__main__':
         else:
             ulist = listLineUserId()
             print(ulist)
-
-#        sendToUserList(ulist,args.msg)
+            sendToUserList(ulist,args.msg)
 

@@ -51,8 +51,11 @@ if __name__ == '__main__':
     import sys
     csvfile = sys.argv[1]
     idx = sys.argv[2]
+    es.indices.delete(index=idx)
+    es.indices.create(index=idx)
     dtype = sys.argv[3]
     loadToEs(csvfile, idx, dtype)
+    es.indices.refresh(index=idx)
 
 #res = es.search(index=idx, body=q)
 #print(res)

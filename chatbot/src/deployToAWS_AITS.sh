@@ -3,8 +3,8 @@ rm ailine.zip
 rm aiBrain.zip
 rm aiLearn.zip
 rm linegenbot.zip
-zip aiBrain.zip -r data/ jieba/ lambda_brain.py socialBrain.py basickb.csv requests/  pttChat.py basickb.csv wikiChat.py esKB.py elasticsearch/ urllib3 requests_aws4auth/ credentials esHealth.py esBible.py linecre.so awsconfig.py credentials_ai nocheckin.py genericKB.py
-zip aiLearn.zip -r  elasticsearch/ urllib3 requests/ requests_aws4auth/ credentials linecre.so awsconfig.py credentials_ai nocheckin.py lambda_learn.py genericKB.py
+zip aiBrain.zip -r data/ jieba/ lambda_brain.py socialBrain.py basickb.csv requests/  pttChat.py basickb.csv wikiChat.py esKB.py elasticsearch/ urllib3 requests_aws4auth/ credentials esHealth.py esBible.py linecre.so awsconfig.py credentials_ai nocheckin.py genericKB.py blackList.py
+zip aiLearn.zip -r  elasticsearch/ urllib3 requests/ requests_aws4auth/ credentials linecre.so awsconfig.py credentials_ai nocheckin.py lambda_learn.py genericKB.py blackList.py
 zip ailine.zip -r lambda_line.py nocheckin.py requests/ urllib3 genericKB.py
 aws --profile ailine s3 cp aiBrain.zip s3://sandyai2/
 aws --profile ailine s3 cp ailine.zip s3://sandyai2/

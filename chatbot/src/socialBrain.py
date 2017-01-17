@@ -45,6 +45,10 @@ class GenericBrain():
         if msg in self.kb[u'bad_words'].split(';'):
             response = self.randomAct(u'bad_words_res')
             return response
+
+        if msg in self.kb[u'command'].split(';'):
+            response = self.randomAct(u'command_res')
+            return response
        
         response = genericHandler(self.idx,self.searchq ,msg)
         if response == '':
@@ -86,6 +90,10 @@ class SocialBrain():
         msg = msg.strip()
         msg = re.sub(u'[~～#$]', '', msg)
         lenMsg = len(msg)
+        if msg in self.kb[u'command'].split(';'):
+            response = self.randomAct(u'command_res')
+            return response
+
         if lenMsg <= 5 and msg in self.kb[u'list_hello'].split(';'): # small lines
             return self.randomAct(u'act_hello')
 
@@ -206,9 +214,9 @@ class SocialBrain():
         if response == '': # can't find any answer try for BibleHandler
             response = esBibleHandler(msg, words)
 
-        if response == '': # can't find any answer give 50% for pttHandler
-            if random.randint(0,1) < 1:
-                response = pttHandler(msg, words)
+       # if response == '': # can't find any answer give 50% for pttHandler
+       #     if random.randint(0,1) < 1:
+       #         response = pttHandler(msg, words)
         if response == '':
             print("in will do")
             #TODO put in will do list
@@ -243,8 +251,8 @@ if __name__ == '__main__':
     msg = sys.argv[1]
 
 #    print(genBrain.think(msg))
-    print(gBrain.think(msg))
-#    print(fbBrain.think(msg))
+#    print(gBrain.think(msg))
+    print(fbBrain.think(msg))
 
 
 
