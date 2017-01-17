@@ -81,6 +81,7 @@ def lambda_handler(even, context):
     try:
         print("-----learn from message ---")
         msg = even['msg'].strip()
+        fullmsg = msg
         print(even)
         botid = ''
         indexname = 'testi'
@@ -102,7 +103,7 @@ def lambda_handler(even, context):
             responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
-            if bw in msg:
+            if bw in fullmsg:
                 responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
                 responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
                 return "not learnn"
