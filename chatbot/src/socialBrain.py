@@ -106,8 +106,8 @@ class SocialBrain():
         if lenMsg == 1 : # one words
             return self.randomAct(u'act_one_words')
 
-        if lenMsg == 2 : # two words
-            return self.randomAct(u'act_two_words')
+#        if lenMsg == 2 : # two words
+#            return self.randomAct(u'act_two_words')
 
         if lenMsg == 3 : # two words
             list3words = self.kb[u'list_three_words'].split(';')
@@ -200,6 +200,9 @@ class SocialBrain():
                 #print("add to what/who is")
                 handler_list.append(wikiHandler)
                 break
+
+        if wcount <=4 and wikiHandler not in handler_list:
+            handler_list.append(wikiHandler)
 
 
         if esHealthHandler not in handler_list:
