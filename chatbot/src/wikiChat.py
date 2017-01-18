@@ -35,14 +35,25 @@ def getExtract( wikiApiRes):
 #        result = result.replace(i,'')
     return result
 
+def shortenResult(wikiResult):
+   
+    if len(wikiResult) >= 200 :
+        wikiResult = wikiResult[:200]
+        wikiResult = wikiResult+u'...其他可以查一下wiki唷'
+    return wikiResult
 
 def wikiHandler(msg, words):
 
     #TODO for wiki handler, need to use jieba to parse string again. 
     # could be improve in the future
-    #print(msg)
     wikiResult =''
     try:
+        if len(msg) <= 4: ## short message
+            wikiResult = findWiki(msg)
+            wikiResult = shortenResult(wikiResult)
+            if wikiResult != '':
+                return wikiResult
+            
         jieba.load_userdict('data/dict.txt.big')
         words = pseg.cut(msg)
         tWord = ''
@@ -73,22 +84,18 @@ def wikiHandler(msg, words):
 
         print("find "+tWord)
         wikiResult = findWiki(tWord)
-        if len(wikiResult) >= 200 :
-            wikiResult = wikiResult[:200]
-            wikiResult = wikiResult+u'...其他可以查一下wiki唷'
+        wikiResult = shortenResult(wikiResult)
 
         if len(allList) >= 2 and wikiResult =='': # give the string second chance
             tWord = allList[1].strip() #just pick first
             print("find second term "+tWord)
             wikiResult = findWiki(tWord)
-            if len(wikiResult) >= 200 :
-                wikiResult = wikiResult[:200]
-                wikiResult = wikiResult+u'...細節太多可以看wiki.'
+            wikiResult = shortenResult(wikiResult)
 
         return wikiResult
     except: 
         print(sys.exc_info()[0])
-        return ''
+        return 'err'
 
     return wikiResult
 if __name__ == '__main__':
