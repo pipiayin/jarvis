@@ -14,9 +14,13 @@ from requests_aws4auth import AWS4Auth
 from datetime import datetime
 import sys
 import csv
+from awsconfig import ESHOST
+
+host = ESHOST
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
-host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
+#host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
+
 awsauthfile = '/root/.aws/credentials'
 aws_access_key_id = '' 
 aws_secret_access_key = ''
@@ -68,8 +72,9 @@ def basicClean(amsg):
     print('done cleaning')
     return r
 
-f = open('health1.csv','a')
-for i in range(10121,20000):
+f = open('health45to65000.csv','a')
+for i in range(45001,65000):
+    print('working on'+str(i))
     try:
         url='http://sp1.hso.mohw.gov.tw/doctor/All/ShowDetail.php?q_no='
         r = requests.get(url+str(i))

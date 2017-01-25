@@ -45,13 +45,11 @@ def showUids():
         for u in rjson['contacts']:
             print(u)
 
-            
-        print(len(allUid))
+        #print(len(allUid))
 
 
 
 if __name__ == '__main__':
-    print(dir(table_log))
     showUids()
 
     # To try from command line

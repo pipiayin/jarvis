@@ -65,7 +65,7 @@ def lambda_handler(even, context):
             toLog['bossid'] = even['bossid']
 
         print(oneUser)
-        if oneUser != '':
+        if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
         print(toLog)
         table_log.put_item(Item=toLog)

@@ -18,11 +18,13 @@ def pttHandler(msg, words):
         rstring = rstring.replace('google.search.Search.apiary7397(','').replace(');','').replace('// API callback','')
         #print('-----')
         rjson = json.loads(rstring)
+        print(rjson)
         result  = rjson["results"][0]['contentNoFormatting']
         url  = rjson["results"][0]['unescapedUrl']
         result = re.sub(r'\n', '', result)
         result = re.sub(r'推.*?\:', '', result)
         result = result[:60]
+        print(result)
         result = '我在這裡查到相關訊息: '+url+" ....("+result+")"
         return result
 

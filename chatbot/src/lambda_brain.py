@@ -91,6 +91,7 @@ def lambda_handler(even, context):
             fromuid = even['events'][0]['source']['userId']
         if 'groupId' in even['events'][0]['source'] :
             fromuid = even['events'][0]['source']['groupId']
+            print("---- the fromuid is actual groupId")
 
         msg = even['events'][0]['message']['text']
         replyToken = even['events'][0]['replyToken']
@@ -106,10 +107,12 @@ def lambda_handler(even, context):
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
             responseToUser(bossid,notifyData)
-            responseToToken(replyToken,resp,even['botid'])
+            responseToUser(fromuid,resp)
+            #responseToToken(replyToken,resp,even['botid'])
         else:
             resp = lineBrain.think(msg)
-            responseToToken(replyToken,resp)
+            #responseToToken(replyToken,resp)
+            responseToUser(fromuid,resp)
 
         notifyData = dname + bossmsg +"\n"+msg
         responseToUser(tsid,notifyData)

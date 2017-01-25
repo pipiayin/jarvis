@@ -59,7 +59,7 @@ def esHandler(msg, words):
         return result
 
     qb = {
-      "min_score": 1.2,
+      "min_score": 1.9, # well...books kb score should be higher? anyway...require refactorying in this part
       "query" :{
       "multi_match" : {
         "query": msg, 

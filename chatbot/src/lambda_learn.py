@@ -120,13 +120,13 @@ def lambda_handler(even, context):
         msg = parts[0].strip()
         uname = getUserDisplayName(even['uid'])
         if even['uid'] in badfriends:
-            #responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
-            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
+            responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
+#            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
             responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
             if bw in fullmsg:
-                responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
+                responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
                 responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
                 return "not learnn"
         

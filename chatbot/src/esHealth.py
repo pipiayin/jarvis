@@ -17,7 +17,7 @@ from awsconfig import ESHOST, REGION
 #host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 host = ESHOST
 region = REGION
-min_score=0.9
+min_score=1.2
 
 aws_access_key_id = ''
 aws_secret_access_key = ''
@@ -61,7 +61,7 @@ def preProcess(msg):
     return msg
 
 
-def esHealthHandler(msg, words,mscore=0.9):
+def esHealthHandler(msg, words,mscore=1.2):
     result =""
     msg = preProcess(msg)
 
