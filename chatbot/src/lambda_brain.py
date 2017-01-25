@@ -92,6 +92,9 @@ def lambda_handler(even, context):
         if 'groupId' in even['events'][0]['source'] :
             fromuid = even['events'][0]['source']['groupId']
             print("---- the fromuid is actual groupId")
+        if 'roomId' in even['events'][0]['source'] :
+            fromuid = even['events'][0]['source']['roomId']
+            print("---- the fromuid is actual roomId")
 
         msg = even['events'][0]['message']['text']
         replyToken = even['events'][0]['replyToken']

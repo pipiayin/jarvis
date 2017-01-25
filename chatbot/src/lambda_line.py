@@ -56,6 +56,8 @@ def lambda_handler(even, context):
             uid = even['events'][0]['source']['userId']
         if 'groupId' in even['events'][0]['source'] :
             uid = even['events'][0]['source']['groupId']
+        if 'roomId' in even['events'][0]['source'] :
+            uid = even['events'][0]['source']['roomId']
 
         msg = even['events'][0]['message']['text']
     
