@@ -18,13 +18,35 @@ from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyr
 lineBrain = SocialBrain()
 
 
+def responseToToken(replyToken, resp, botid=''):
+#    try:
+        print("to response to line replytoken")
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        if botid == 'happyrun' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        payload = { 
+            "replyToken": replyToken ,
+            "messages":[{
+                "type":"text",
+                "text": resp
+             }]
+        }  
+
+        jdump = json.dumps(payload)
+        print(jdump)
+        url = 'https://api.line.me/v2/bot/message/reply'
+        #url = 'https://trialbot-api.line.me/v1/events'
+        r = requests.post(url, headers=headers, data = jdump)
+        print(r.text)
+        print("did send response")
+        return ''
+
 def responseToUser(uid, resp, botid=''):
 #    try:
         print("to response to line user")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
-        #headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : XLineChannelID , "X-Line-ChannelSecret" : XLineChannelSecret , "X-Line-Trusted-User-With-ACL" : XLineTrustedUserWithACL}
         payload = { 
             "to": uid ,
             "messages":[{
@@ -64,8 +86,14 @@ def getUserDisplayName(fromuid, botid=''):
 def lambda_handler(even, context):
    # try:
         print("-----get message this is lambda brain ---")
-        fromuid = even['events'][0]['source']['userId']
+        fromuid = ''
+        if 'userId' in even['events'][0]['source'] :
+            fromuid = even['events'][0]['source']['userId']
+        if 'groupId' in even['events'][0]['source'] :
+            fromuid = even['events'][0]['source']['groupId']
+
         msg = even['events'][0]['message']['text']
+        replyToken = even['events'][0]['replyToken']
         resp = ''
         tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
@@ -78,10 +106,10 @@ def lambda_handler(even, context):
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
             responseToUser(bossid,notifyData)
-            responseToUser(fromuid,resp,even['botid'])
+            responseToToken(replyToken,resp,even['botid'])
         else:
             resp = lineBrain.think(msg)
-            responseToUser(fromuid,resp)
+            responseToToken(replyToken,resp)
 
         notifyData = dname + bossmsg +"\n"+msg
         responseToUser(tsid,notifyData)

@@ -45,8 +45,12 @@ def lambda_handler(even, context):
         print("-----get message ---")
         ts =  int(time.time())
         print(even) #
+        uid = ''
+        if 'userId' in even['events'][0]['source'] :
+            uid = even['events'][0]['source']['userId']
+        if 'groupId' in even['events'][0]['source'] :
+            uid = even['events'][0]['source']['groupId']
 
-        uid = even['events'][0]['source']['userId']
         msg = even['events'][0]['message']['text']
     
         msg = msg.strip()
@@ -61,7 +65,8 @@ def lambda_handler(even, context):
             toLog['bossid'] = even['bossid']
 
         print(oneUser)
-        table_user.put_item(Item=oneUser)
+        if oneUser != '':
+            table_user.put_item(Item=oneUser)
         print(toLog)
         table_log.put_item(Item=toLog)
         if msg.startswith(learn_trigger) :

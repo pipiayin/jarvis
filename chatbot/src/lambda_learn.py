@@ -56,6 +56,26 @@ def getUserDisplayName(fromuid, botid=''):
         return ''
 
 
+def responseToToken(replyToken, resp, botid=''):
+#    try:
+        print("to response to line user")
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+
+        if botid =='happyrun':
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+
+        payload = {
+            "replyToken": replyToken ,
+            "messages":[{
+                "type":"text",
+                "text": resp
+             }]
+        }
+        jdump = json.dumps(payload)
+        print(jdump)
+        url = 'https://api.line.me/v2/bot/message/reply'
+        r = requests.post(url, headers=headers, data = jdump)
+
 def responseToUser(uid, resp, botid=''):
 #    try:
         print("to response to line user")
@@ -85,6 +105,7 @@ def lambda_handler(even, context):
         print(even)
         botid = ''
         indexname = 'testi'
+        replyToken=even['line'][0]['replyToken']
         if 'botid' in even :
             botid = even['botid']
             indexname = botid
@@ -99,12 +120,13 @@ def lambda_handler(even, context):
         msg = parts[0].strip()
         uname = getUserDisplayName(even['uid'])
         if even['uid'] in badfriends:
-            responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
+            #responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
+            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
             responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
             if bw in fullmsg:
-                responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
+                responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
                 responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
                 return "not learnn"
         
