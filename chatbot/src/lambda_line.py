@@ -24,6 +24,12 @@ learn_trigger = '590590'
 
 def getLineUser(fromuid,botid=''):
     try:
+        item = table_user.get_item( Key={ 'userId': fromuid })
+        if "Item" in item:
+            print('get user from nosql')
+            print(item['Item'])
+            return item['Item']
+
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
@@ -36,7 +42,7 @@ def getLineUser(fromuid,botid=''):
         print(rjson)
         return rjson
     except:
-        print('can not line user profile from uid:'+fromuid)
+        print('can not line user profile from uid: '+fromuid)
         return ''
 
 
@@ -59,6 +65,11 @@ def lambda_handler(even, context):
         if 'botid' in even:
             oneUser = getLineUser(uid,even['botid'])
             oneUser['botid'] = even['botid']
+            if 'botids' in oneUser:
+                oneUser['botids'].append(even['botid'])
+            else: 
+                oneUser['botids'] = [even['botid']]
+
             toLog['botid'] = even['botid'] 
         if 'bossid' in even:
             oneUser['bossid'] = even['bossid']
@@ -67,6 +78,7 @@ def lambda_handler(even, context):
         print(oneUser)
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
+    
         print(toLog)
         table_log.put_item(Item=toLog)
         if msg.startswith(learn_trigger) :
