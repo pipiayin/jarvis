@@ -1,0 +1,5 @@
+
+python lineUsertool.py -m "各位小姍的好友們新年快樂：  過去一段時間承蒙各位的指導 讓人工智慧獲益良多。由於各位是指引小姍的良師益友，因此人工智慧創造者想要幫各位建立專屬於你自己的人工智慧可學習式LINE聊天機器人。" -s SelectedUsers.txt
+python lineUsertool.py -m "擁有自己聊天機器人有什麼用？如果你是個大忙人，就像小姍的創造者一樣，可以將常見問題教會小姍，讓小姍回覆或過濾問題。如果你是顧問類型的企業家，可以將部分常見知識教給機器人，讓機器人回覆問題。如果你只是想找人聊天，當然也可以培育這個專屬機器人，讓他擁有你需要的聊天知識.... 請參考 http://www.5233.space/2016/09/ai.html " -s SelectedUsers.txt
+python lineUsertool.py -m "如果你想要擁有自己的聊天機器人，只要提供以下三個資訊  (1) 機器人的名稱 （2) 機器人的照片或圖片  (3) 機器人的知識庫:可以是文字檔案 excel 或者 問答集皆可     將這三個資訊 email給小姍 ai@talent-service.com  我的創造人會在農曆年前讓你有專屬的可學習式聊天機器人..." -s SelectedUsers.txt
+python lineUsertool.py -m "由於是免費的，所以名額有限，先搶先贏喔！" -s SelectedUsers.txt
