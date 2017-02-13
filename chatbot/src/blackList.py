@@ -1,13 +1,16 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-badfriends = ['U8fac6794d83b4a39614dd1c3f563230e','U23382b41c01869abed7f0b620183b071']
+badfriends = ['U8fac6794d83b4a39614dd1c3f563230e','U23382b41c01869abed7f0b620183b071','U3845f28ae73e0cf6165a7b7d8ab4210e','Udb9af9dd4ee3c75ee4d7e4c078364057']
 badwords = [ u'幹你娘'
     ,u'幹你老師'
     ,u'幹林老師'
     ,u'幹您老師'
     ,u'我幹你'
+    ,u'放屁'
+    ,u'我幹妳'
     ,u'幹你'
+    ,u'幹妳'
     ,u'你幹我'
     ,u'做愛'
     ,u'操你媽'
