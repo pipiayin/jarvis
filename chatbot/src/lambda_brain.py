@@ -45,7 +45,7 @@ def responseToToken(replyToken, resp, botid=''):
 
 def responseToUser(uid, resp, botid=''):
 #    try:
-        print("to response to line user")
+        print("to response to line user, with botid:"+botid+"-end-")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
@@ -63,6 +63,8 @@ def responseToUser(uid, resp, botid=''):
         print(jdump)
         url = 'https://api.line.me/v2/bot/message/push'
         #url = 'https://trialbot-api.line.me/v1/events'
+        print("----headers---")
+        print(headers)
         r = requests.post(url, headers=headers, data = jdump)
         print(r.text)
         print("did send response")
@@ -115,8 +117,8 @@ def lambda_handler(even, context):
             bossmsg = bossmsg + even['botid'] + " "
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
-            responseToUser(bossid,notifyData)
-            responseToUser(fromuid,resp)
+            responseToUser(bossid,notifyData,even['botid'])
+            responseToUser(fromuid,resp,even['botid'])
             #responseToToken(replyToken,resp,even['botid'])
         else:
             resp = lineBrain.think(msg)

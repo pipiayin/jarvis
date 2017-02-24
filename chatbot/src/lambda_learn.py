@@ -16,7 +16,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from datetime import datetime
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken
 from blackList import badfriends,badwords
 
 min_score=1.5
@@ -46,6 +46,8 @@ def getUserDisplayName(fromuid, botid=''):
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid == 'botann' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
 
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
@@ -63,6 +65,8 @@ def responseToToken(replyToken, resp, botid=''):
 
         if botid =='happyrun':
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid =='botann':
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
 
         payload = {
             "replyToken": replyToken ,
@@ -83,6 +87,8 @@ def responseToUser(uid, resp, botid=''):
 
         if botid =='happyrun':
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid =='botann':
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
 
         payload = {
             "to": uid ,
@@ -122,12 +128,12 @@ def lambda_handler(even, context):
         if even['uid'] in badfriends:
             responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
 #            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
-            responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
+            responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
             if bw in fullmsg:
-                responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學:~ ')
-                responseToUser(bossid, uname + u'試圖教以下事情然而小姍不接受 \n'+msg, botid)
+                responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 ')
+                responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)
                 return "not learnn"
         
         if len(msg) <= 2:
@@ -144,7 +150,7 @@ def lambda_handler(even, context):
         print(toInsert)
         r = es.index(index=indexname, doc_type='fb',  body=toInsert)
         es.indices.refresh(index=indexname)
-        responseToUser(even['uid'],u'學到了~謝謝~')
+        responseToUser(even['uid'],u'學到了~謝謝~',botid)
         uname = getUserDisplayName(even['uid'])
         responseToUser(bossid, uname + u' 教會機器人以下事情 \n'+msg+" "+res, botid)
         return "ok"
