@@ -74,5 +74,6 @@ if __name__ == '__main__':
     print("==== result ===")
 #    print(genericHandler('bot1', 'q' ,sys.argv[1]))
     print(genericHandler('happyrun', 'q' ,sys.argv[1]))
+    print(genericHandler('botann', 'q' ,sys.argv[1]))
 
 

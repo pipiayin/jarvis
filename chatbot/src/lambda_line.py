@@ -11,7 +11,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -35,6 +35,9 @@ def getLineUser(fromuid,botid=''):
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun':
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+
+        if botid == 'botann':
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
 
         print(line_url)
         r = requests.get(line_url, headers=headers)

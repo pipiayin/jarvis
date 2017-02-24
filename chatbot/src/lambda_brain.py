@@ -13,7 +13,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken
 
 lineBrain = SocialBrain()
 
@@ -24,6 +24,8 @@ def responseToToken(replyToken, resp, botid=''):
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid == 'botann' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
         payload = { 
             "replyToken": replyToken ,
             "messages":[{
@@ -47,6 +49,8 @@ def responseToUser(uid, resp, botid=''):
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid == 'botann' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
         payload = { 
             "to": uid ,
             "messages":[{
@@ -75,6 +79,8 @@ def getUserDisplayName(fromuid, botid=''):
 
         if botid == 'happyrun' :
             headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
+        if botid == 'botann' :
+            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         ruser = rjson['displayName']

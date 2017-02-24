@@ -50,3 +50,9 @@ A config-able chat microservice for better customer support.
 - check deployToAWS_AITS.sh
 
 
+# Create Bot Ann
+** name botann
+** a stranger from original SandyAI request for new bot
+steps
+
+<TBD>
