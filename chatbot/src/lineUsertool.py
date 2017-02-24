@@ -111,6 +111,7 @@ if __name__ == '__main__':
                 uid=parts[0].strip()
                 ulist.append(uid)
             print(ulist)
+            sendToUserList(ulist,args.msg)
         else:
             ulist = listLineUserId()
             print(ulist)
