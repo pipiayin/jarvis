@@ -38,7 +38,7 @@ es = Elasticsearch(
 )
 
 
-learn_trigger = '590590'
+learn_triggers = ['590590', u'小安學', u'小安 學']
 
 def getUserDisplayName(fromuid, botid=''):
     try:
@@ -104,26 +104,29 @@ def responseToUser(uid, resp, botid=''):
 
 
 def lambda_handler(even, context):
-    try:
+#    try:
         print("-----learn from message ---")
         msg = even['msg'].strip()
         fullmsg = msg
         print(even)
         botid = ''
         indexname = 'testi'
-        replyToken=even['line'][0]['replyToken']
+        #replyToken=even['line'][0]['replyToken']
         if 'botid' in even :
             botid = even['botid']
             indexname = botid
 
-        if not msg.startswith(learn_trigger):
+        if not msg.startswith(tuple(learn_triggers)):
             print('should not learn things here !!')
             print(msg)
             return ''
-        msg = msg.replace(learn_trigger,'')
+        for learn_trigger in learn_triggers :
+            msg = msg.replace(learn_trigger,'')
+        msg = msg.replace('#',' ')
         msg = msg.strip()
         parts = msg.split(" ")
-        msg = parts[0].strip()
+        msg_except_empty = list(filter(lambda x: x!= '', parts))    
+        msg = msg_except_empty[0].strip()
         uname = getUserDisplayName(even['uid'])
         if even['uid'] in badfriends:
             responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
@@ -140,8 +143,9 @@ def lambda_handler(even, context):
             responseToUser(even['uid'],u'抱歉 學習目標不能少於兩個字，你想要教我"'+msg+ u'" 但是單靠兩個字就希望人工智慧有絕對正確反映也太強人所難')
             responseToUser(bossid, uname + u'試圖教以下事情不過失敗了 \n'+msg, botid)
             return "not leart"
-        
-        res = " ".join(parts[1:]) 
+    
+        res = " ".join(msg_except_empty[1:]) 
+    
         toInsert={u'pkey':msg, u'res':[res], u'similar':msg,u'uid':even['uid']}
 
         if botid != '':
@@ -154,9 +158,9 @@ def lambda_handler(even, context):
         uname = getUserDisplayName(even['uid'])
         responseToUser(bossid, uname + u' 教會機器人以下事情 \n'+msg+" "+res, botid)
         return "ok"
-    except:
-        print(even)
-        return "something wrong"
+#    except:
+#        print(even)
+#        return "something wrong"
    
 
 if __name__ == '__main__':

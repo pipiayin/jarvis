@@ -20,7 +20,7 @@ table_log = dynamodb.Table('linelog')
 table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
-learn_trigger = '590590'
+learn_triggers = ['590590',u'小安 學',u'小安學']
 
 def getLineUser(fromuid,botid=''):
     try:
@@ -86,7 +86,7 @@ def lambda_handler(even, context):
     
         print(toLog)
         table_log.put_item(Item=toLog)
-        if msg.startswith(learn_trigger) :
+        if msg.startswith(tuple(learn_triggers)) :
             print("to learn...")
             lresponse = lambda_client.invoke(
                 FunctionName='ailearn',
