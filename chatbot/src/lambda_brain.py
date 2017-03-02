@@ -13,19 +13,32 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken
 
 lineBrain = SocialBrain()
+
+def getBotHeader(botid):
+    botMap = {'happyrun':happyrunXLineToken,
+              'botann':botannXLineToken,
+              'botyunyun':botyunyunXLineToken}
+    if botid in botMap:
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
+        return headers
+    else:
+        return ""
 
 
 def responseToToken(replyToken, resp, botid=''):
 #    try:
         print("to response to line replytoken")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
-        if botid == 'happyrun' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
-        if botid == 'botann' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
+
+
+        if botid != '':
+            botHeaders = getBotHeader(botid)
+            if botHeaders != '':
+                headers = botHeaders
+
         payload = { 
             "replyToken": replyToken ,
             "messages":[{
@@ -47,10 +60,13 @@ def responseToUser(uid, resp, botid=''):
 #    try:
         print("to response to line user, with botid:"+botid+"-end-")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
-        if botid == 'happyrun' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
-        if botid == 'botann' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
+
+
+        if botid != '':
+            botHeaders = getBotHeader(botid)
+            if botHeaders != '':
+                headers = botHeaders
+
         payload = { 
             "to": uid ,
             "messages":[{
@@ -79,10 +95,11 @@ def getUserDisplayName(fromuid, botid=''):
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
 
-        if botid == 'happyrun' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
-        if botid == 'botann' :
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
+        if botid != '':
+            botHeaders = getBotHeader(botid)
+            if botHeaders != '':
+                headers = botHeaders
+
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         ruser = rjson['displayName']

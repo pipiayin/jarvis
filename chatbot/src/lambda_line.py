@@ -11,7 +11,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -21,6 +21,16 @@ table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
 learn_triggers = ['590590',u'小安 學',u'小安學']
+
+def getBotHeader(botid):
+    botMap = {'happyrun':happyrunXLineToken, 
+              'botann':botannXLineToken,
+              'botyunyun':botyunyunXLineToken}
+    if botid in botMap:
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
+        return headers 
+    else:
+        return ""
 
 def getLineUser(fromuid,botid=''):
     try:
@@ -33,11 +43,12 @@ def getLineUser(fromuid,botid=''):
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
-        if botid == 'happyrun':
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ happyrunXLineToken}
 
-        if botid == 'botann':
-            headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+ botannXLineToken}
+        if botid != '':
+            botHeaders = getBotHeader(botid)
+            if botHeaders != '':
+                headers = botHeaders
+            print(headers)
 
         print(line_url)
         r = requests.get(line_url, headers=headers)
@@ -71,7 +82,8 @@ def lambda_handler(even, context):
             oneUser = getLineUser(uid,even['botid'])
             oneUser['botid'] = even['botid']
             if 'botids' in oneUser:
-                oneUser['botids'].append(even['botid'])
+                if even['botid'] not in oneUser['botids']:
+                    oneUser['botids'].append(even['botid'])
             else: 
                 oneUser['botids'] = [even['botid']]
 
@@ -96,6 +108,7 @@ def lambda_handler(even, context):
                 Payload=json.dumps(toLog),
             )
         else:
+            print("to trigger ai brain \n\n")
             lresponse = lambda_client.invoke(
                 FunctionName='aibrain',
                 InvocationType='Event',
@@ -122,7 +135,7 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             u'message': {'text':msg},
-            u'botid' : 'happyrun',
+            u'botid' : 'botyunyun',
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
            }]}
 
