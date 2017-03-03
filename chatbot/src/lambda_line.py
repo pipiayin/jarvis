@@ -91,13 +91,16 @@ def lambda_handler(even, context):
         if 'bossid' in even:
             oneUser['bossid'] = even['bossid']
             toLog['bossid'] = even['bossid']
+        if 'bossids' in even:
+            oneUser['bossids'] = even['bossids']
+            toLog['bossids'] = even['bossids']
 
         print(oneUser)
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
     
-        print(toLog)
-        table_log.put_item(Item=toLog)
+        #print(toLog)
+        #table_log.put_item(Item=toLog)
         if msg.startswith(tuple(learn_triggers)) :
             print("to learn...")
             lresponse = lambda_client.invoke(
@@ -136,7 +139,8 @@ if __name__ == '__main__':
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             u'message': {'text':msg},
             u'botid' : 'botyunyun',
-            u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+            u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
+            u'bossids' : ['Uc9b95e58acb9ab8d2948f8ac1ee48fad']
            }]}
 
     print(lambda_handler(tmp, None))

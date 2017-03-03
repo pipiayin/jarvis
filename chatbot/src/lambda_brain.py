@@ -17,6 +17,10 @@ from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyr
 
 lineBrain = SocialBrain()
 
+dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+
+table_log = dynamodb.Table('linelog')
+
 def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken,
               'botann':botannXLineToken,
@@ -137,6 +141,9 @@ def lambda_handler(even, context):
             bossmsg = bossmsg + even['botid'] + " "
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
+            toLog = even
+            toLog['resp'] = resp
+            table_log.put_item(Item=toLog)
             for oneBoss in bossNotifyList:
                 responseToUser(oneBoss,notifyData,even['botid'])
             responseToUser(fromuid,resp,even['botid'])
