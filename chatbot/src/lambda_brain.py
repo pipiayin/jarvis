@@ -132,6 +132,8 @@ def lambda_handler(even, context):
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         bossmsg = u'傳下列訊息給聊天機器人 '
         dname = getUserDisplayName(fromuid)
+        ts =  int(time.time())
+        toLog = {'uid':fromuid, 'ts':ts, 'line':even['events'], 'msg':msg, 'resp':""}
         if 'botid' in even :
             genericBrain = GenericBrain(even['botid'],'q')
             bossid = even['bossid']
@@ -141,7 +143,6 @@ def lambda_handler(even, context):
             bossmsg = bossmsg + even['botid'] + " "
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
-            toLog = even
             toLog['resp'] = resp
             table_log.put_item(Item=toLog)
             for oneBoss in bossNotifyList:
@@ -151,6 +152,8 @@ def lambda_handler(even, context):
         else:
             resp = lineBrain.think(msg)
             #responseToToken(replyToken,resp)
+            toLog['resp'] = resp
+            table_log.put_item(Item=toLog)
             responseToUser(fromuid,resp)
 
         notifyData = dname + bossmsg +"\n"+msg
