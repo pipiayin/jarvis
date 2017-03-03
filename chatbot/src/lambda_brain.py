@@ -131,10 +131,14 @@ def lambda_handler(even, context):
         if 'botid' in even :
             genericBrain = GenericBrain(even['botid'],'q')
             bossid = even['bossid']
+            bossNotifyList = [bossid]
+            if 'bossids' in even:
+                bossNotifyList = bossNotifyList + even['bossids']
             bossmsg = bossmsg + even['botid'] + " "
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
-            responseToUser(bossid,notifyData,even['botid'])
+            for oneBoss in bossNotifyList:
+                responseToUser(oneBoss,notifyData,even['botid'])
             responseToUser(fromuid,resp,even['botid'])
             #responseToToken(replyToken,resp,even['botid'])
         else:
