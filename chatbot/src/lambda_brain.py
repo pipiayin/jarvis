@@ -144,6 +144,7 @@ def lambda_handler(even, context):
             resp = genericBrain.think(msg)
             notifyData = dname + bossmsg +"\n"+msg
             toLog['resp'] = resp
+            toLog['botid'] = even['botid']
             table_log.put_item(Item=toLog)
             for oneBoss in bossNotifyList:
                 responseToUser(oneBoss,notifyData,even['botid'])
