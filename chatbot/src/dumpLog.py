@@ -7,6 +7,8 @@ import requests
 import boto3
 import sys
 import json
+import decimal
+from decimal import Decimal
 import random
 import argparse
 import time
@@ -16,18 +18,38 @@ from nocheckin import XLineToken
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
-
-
 table_log = dynamodb.Table('linelog')
 
 
 
 def listLog():
     allUid = []
-    r = table_log.scan(Limit=500000)
-    for item in r['Items']:
-        print(item)
-    
+    i = 1
+    last = None
+    while True :
+        if last == None:
+            r = table_log.scan()
+        else :
+            r = table_log.scan(ExclusiveStartKey=last)
+
+        for item in r['Items']:
+            toPrint = {}
+            last = item
+            toPrint['ts'] = int(item['ts'])
+            toPrint['uid'] = item['uid']
+            if 'botid' in item:
+                toPrint['botid'] = item['botid']
+            if type(item['msg']) == type(''):
+                toPrint['msg'] = item['msg']
+            if 'resp' in item:
+                toPrint['resp'] = item['resp']
+
+            print(json.dumps(toPrint))
+ 
+        if 'LastEvaluatedKey' not in r or r['LastEvaluatedKey'] == None:
+            break
+        else:
+            last = r['LastEvaluatedKey']
 
 
 if __name__ == '__main__':
