@@ -35,7 +35,7 @@ def loadToEs( csvfile, idx, dtype):
         slines = csv.reader(sfile, delimiter=',', quotechar='"')
         for line in slines:
             q = line[0].strip()
-            a = line[1:]
+            a = [line[1]]
             # build in each word
             toInsert = {u'q':q , u'a':a}
             print(toInsert)

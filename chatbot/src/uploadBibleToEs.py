@@ -7,23 +7,12 @@ from datetime import datetime
 import sys
 import csv
 from awsconfig import ESHOST
+from nocheckin import aws_access_key_id,aws_secret_access_key
 
 host = ESHOST
 
 
 #host = 'search-tsai-t5aqxu4dppacep22fq5b4uvj6m.us-east-1.es.amazonaws.com'
-awsauthfile = 'credentials_ai'
-aws_access_key_id = '' 
-aws_secret_access_key = ''
-
-with open(awsauthfile) as f:
-    content = f.readlines()
-    for line in content:
-
-        if 'aws_access_key_id' in line :
-            aws_access_key_id = line.split("=")[1].strip()
-        if 'aws_secret_access_key' in line :
-            aws_secret_access_key = line.split("=")[1].strip()
 
 awsauth = AWS4Auth(aws_access_key_id, aws_secret_access_key, 'us-west-2', 'es')
 
