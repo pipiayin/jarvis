@@ -185,6 +185,8 @@ class SocialBrain():
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
                 ncount +=1
+        if wcount == 0:
+            wcount = 0.5
         nrate = nounwcount / float(wcount)
 
         howtolist = self.kb['how_to'].split(";") 
