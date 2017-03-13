@@ -21,6 +21,7 @@ table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
 learn_triggers = ['590590',u'小安 學',u'小安學']
+group_triggers = [u'小姍',u'小安']
 
 def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken, 
@@ -66,17 +67,20 @@ def lambda_handler(even, context):
         ts =  int(time.time())
         print(even) #
         uid = ''
+        isGroup = False
         if 'userId' in even['events'][0]['source'] :
             uid = even['events'][0]['source']['userId']
         if 'groupId' in even['events'][0]['source'] :
+            isGroup = True
             uid = even['events'][0]['source']['groupId']
         if 'roomId' in even['events'][0]['source'] :
+            isGroup = True
             uid = even['events'][0]['source']['roomId']
 
         msg = even['events'][0]['message']['text']
-    
+        even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
-        toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg}
+        toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
         oneUser = getLineUser(uid)
         if 'botid' in even:
             oneUser = getLineUser(uid,even['botid'])
@@ -102,23 +106,36 @@ def lambda_handler(even, context):
         #print(toLog)
         #table_log.put_item(Item=toLog)
         if msg.startswith(tuple(learn_triggers)) :
-            print("to learn...")
-            lresponse = lambda_client.invoke(
-                FunctionName='ailearn',
-                InvocationType='Event',
-                LogType='None',
-                ClientContext='string',
-                Payload=json.dumps(toLog),
-            )
+            if isGroup:
+                print("ignore learn from group")
+            else: 
+                print("to learn")
+                lresponse = lambda_client.invoke(
+                    FunctionName='ailearn',
+                    InvocationType='Event',
+                    LogType='None',
+                    ClientContext='string',
+                    Payload=json.dumps(toLog),
+                )
         else:
             print("to trigger ai brain \n\n")
-            lresponse = lambda_client.invoke(
-                FunctionName='aibrain',
-                InvocationType='Event',
-                LogType='None',
-                ClientContext='string',
-                Payload=json.dumps(even),
-            )
+            if msg.startswith(tuple(group_triggers)):
+                tmpmsg = msg
+
+                for t in group_triggers:
+                    tmpmsg = tmpmsg.replace(t,'')
+
+                even['events'][0]['message']['text'] = tmpmsg
+
+                lresponse = lambda_client.invoke(
+                    FunctionName='aibrain',
+                    InvocationType='Event',
+                    LogType='None',
+                    ClientContext='string',
+                    Payload=json.dumps(even),
+                )
+            else:
+                print("not in group trigger")
 
         print("responsed (tolog->)"+str(toLog))
         return "ok"
