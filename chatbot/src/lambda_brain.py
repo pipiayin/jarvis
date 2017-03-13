@@ -154,6 +154,7 @@ def lambda_handler(even, context):
             resp = lineBrain.think(msg)
             #responseToToken(replyToken,resp)
             toLog['resp'] = resp
+            print(toLog)
             table_log.put_item(Item=toLog)
             responseToUser(fromuid,resp)
 

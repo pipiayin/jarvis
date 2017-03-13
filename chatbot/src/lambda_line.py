@@ -119,14 +119,23 @@ def lambda_handler(even, context):
                 )
         else:
             print("to trigger ai brain \n\n")
-            if msg.startswith(tuple(group_triggers)):
-                tmpmsg = msg
+            if isGroup:
+                if msg.startswith(tuple(group_triggers)):
+                    print("in group trigger")
+                    tmpmsg = msg
+                    for t in group_triggers:
+                        tmpmsg = tmpmsg.replace(t,'')
 
-                for t in group_triggers:
-                    tmpmsg = tmpmsg.replace(t,'')
-
-                even['events'][0]['message']['text'] = tmpmsg
-
+                    even['events'][0]['message']['text'] = tmpmsg
+                    lresponse = lambda_client.invoke(
+                        FunctionName='aibrain',
+                        InvocationType='Event',
+                        LogType='None',
+                        ClientContext='string',
+                        Payload=json.dumps(even),
+                    )
+            else:
+                print('not group...')
                 lresponse = lambda_client.invoke(
                     FunctionName='aibrain',
                     InvocationType='Event',
@@ -134,8 +143,6 @@ def lambda_handler(even, context):
                     ClientContext='string',
                     Payload=json.dumps(even),
                 )
-            else:
-                print("not in group trigger")
 
         print("responsed (tolog->)"+str(toLog))
         return "ok"
