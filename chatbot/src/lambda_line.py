@@ -11,7 +11,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -26,6 +26,7 @@ group_triggers = [u'小姍',u'小安']
 def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken, 
               'botann':botannXLineToken,
+              'botpm':botpmXLineToken,
               'botyunyun':botyunyunXLineToken}
     if botid in botMap:
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
@@ -104,7 +105,7 @@ def lambda_handler(even, context):
             table_user.put_item(Item=oneUser)
     
         #print(toLog)
-        #table_log.put_item(Item=toLog)
+        table_log.put_item(Item=toLog)
         if msg.startswith(tuple(learn_triggers)) :
             if isGroup:
                 print("ignore learn from group")
