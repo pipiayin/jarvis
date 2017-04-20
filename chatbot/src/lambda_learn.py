@@ -16,7 +16,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from datetime import datetime
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 from blackList import badfriends,badwords
 
 min_score=1.5
@@ -44,6 +44,7 @@ def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken,
               'botann':botannXLineToken,
               'botpm':botpmXLineToken,
+              'botjhc':botjhcXLineToken,
               'botyunyun':botyunyunXLineToken}
     if botid in botMap:
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}

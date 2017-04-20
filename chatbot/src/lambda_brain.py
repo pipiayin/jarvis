@@ -13,7 +13,7 @@ import time
 import random
 import botocore.session
 import requests
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
 lineBrain = SocialBrain()
 
@@ -25,6 +25,7 @@ def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken,
               'botann':botannXLineToken,
               'botpm':botpmXLineToken,
+              'botjhc':botjhcXLineToken,
               'botyunyun':botyunyunXLineToken}
     if botid in botMap:
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
