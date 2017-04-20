@@ -21,7 +21,7 @@ table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
 learn_triggers = ['590590',u'小安 學',u'小安學']
-group_triggers = [u'小姍',u'小安']
+group_triggers = [u'小姍',u'小安','JHC']
 
 def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken, 
