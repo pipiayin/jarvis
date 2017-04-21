@@ -58,16 +58,16 @@ def wikiHandler(msg, words):
         words = pseg.cut(msg)
         tWord = ''
         for word in words:
+            #print("debug:: "+str(word.word)+ " "+str(word.flag))
             if word.flag in ['n','j','nr','ns','nt','an','nt']:
                 tWord = tWord + str(word.word)
-                #print("to find "+ tWord)
+                print("to find "+ tWord)
                     #print("yes")
                
             else:
-                #print("to ignore "+str(word.word)+ " "+str(word.flag))
                 tWord = tWord+"!"
              
-        #print(tWord)
+        print(tWord)
         tmpL = tWord.split("!")
         allList = list(set(tmpL))
         #print(allList)
@@ -103,4 +103,4 @@ if __name__ == '__main__':
     msg = sys.argv[1]
 
     print(wikiHandler(msg,[]))
-    
+    #
