@@ -10,7 +10,7 @@ import jieba.posseg as pseg
 import re
 
 def findWiki( word):
-    url = u'https://zh.wikipedia.org/w/api.php?uselang=zh_tw&action=query&prop=extracts&format=xml&exintro=&redirects=&titles={0}'
+    url = u'https://zh.wikipedia.org/w/api.php?uselang=zh-tw&action=query&prop=extracts&format=xml&exintro=&redirects=&titles={0}'
     r  = requests.get(url.format(word) )
     result = getExtract(r.text)
     #print(result)
