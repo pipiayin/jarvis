@@ -9,6 +9,7 @@ badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
               'Ue4ce06741b8e8bfad3378c35aeef12fa',
               'U1c77efb9c44d1a825ea26d8e838cf5aa',
               'Uf364d37a0b234874c1bf15b3b401aac1',
+              'U70950279e3c10fb7ab51d62bfd6ad4ef',
               'Ue39a1988990eee4c59448a9757b5f932',
               'Ua7657307e984cb9972fdbe8e948e8b0c']
 badwords = [ u'幹你娘'
