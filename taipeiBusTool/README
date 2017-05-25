@@ -1,0 +1,9 @@
+
+
+simple python script for Taipei bus information
+source->
+https://taipeicity.github.io/traffic_realtime/
+
+route -> http://data.taipei/bus/ROUTE
+bus -> http://data.taipei/bus/BUSDATA
+
