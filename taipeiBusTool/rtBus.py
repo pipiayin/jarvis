@@ -6,6 +6,7 @@
 #bus -> http://data.taipei/bus/BUSDATA
 import gzip
 import requests
+import json
 
 def buildRTBuses():
     busdata = requests.get("http://data.taipei/bus/BUSDATA")
@@ -36,13 +37,33 @@ def getBus(busDict, routeDict, nameZh):
     
     return blist
 
+def buildRouteBus(busDict, routeDict):
+    mapRouteZh = {}
+    for k in routeDict['BusInfo']:
+        mapRouteZh[str(k['pathAttributeId'])] = k['nameZh'] 
 
-#def showBus(busNo):
-#    print(busNo)
-    
+    for b in busDict['BusInfo']:
+        if b['RouteID'] not in mapRouteZh:
+#            print(b)
+            continue 
+        busNameZh = mapRouteZh[b['RouteID']]
+#        print(busNameZh)
+        b['nameZh'] = busNameZh
+
+#    print(len(busDict['BusInfo']))
+    return busDict['BusInfo']
+
+def buildGmapCallBack(blist):
+    result = "bus_callback("
+    result = result + json.dumps(blist)
+    result = result +");"
+    return result
 
 if __name__ == '__main__' :
     #try 藍15
     busDict, routeDict = buildRTBuses()
-    blist = getBus(busDict, routeDict, u'236')
+    allRouteBus = buildRouteBus(busDict, routeDict)
+    print(buildGmapCallBack(allRouteBus))
+#    blist = getBus(busDict, routeDict, u'藍27')
+#    print(buildGmapMarker(blist))
     
