@@ -5,6 +5,7 @@
 #route -> http://data.taipei/bus/ROUTE
 #bus -> http://data.taipei/bus/BUSDATA
 import gzip
+import gzip
 import requests
 import json
 
