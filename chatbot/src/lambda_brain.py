@@ -128,7 +128,6 @@ def lambda_handler(even, context):
             print("---- the fromuid is actual roomId")
 
         msg = even['events'][0]['message']['text']
-        replyToken = even['events'][0]['replyToken']
         resp = ''
         tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
@@ -151,14 +150,25 @@ def lambda_handler(even, context):
             for oneBoss in bossNotifyList:
                 responseToUser(oneBoss,notifyData,even['botid'])
             responseToUser(fromuid,resp,even['botid'])
-            #responseToToken(replyToken,resp,even['botid'])
         else:
-            resp = lineBrain.think(msg)
-            #responseToToken(replyToken,resp)
-            toLog['resp'] = resp
-            print(toLog)
-            table_log.put_item(Item=toLog)
-            responseToUser(fromuid,resp)
+            #TODO FIXME: a short cut here to invoke bus search
+            if msg.strip().startswith(u'幫我查公車'): 
+                busname = msg.strip().replace(u'幫我查公車','').replace(" ","")
+                lambda_client = boto3.client('lambda')
+                taipeiBusReq={'uid':fromuid, 'busname':busname}
+                lresponse = lambda_client.invoke(
+                    FunctionName='taipeibus',
+                    InvocationType='Event',
+                    LogType='None',
+                    ClientContext='string',
+                    Payload=json.dumps(taipeiBusReq),
+                 )
+            else:
+                resp = lineBrain.think(msg)
+                toLog['resp'] = resp
+                print(toLog)
+                table_log.put_item(Item=toLog)
+                responseToUser(fromuid,resp)
 
         notifyData = dname + bossmsg +"\n"+msg
         responseToUser(tsid,notifyData)

@@ -24,7 +24,16 @@ lambda_client = boto3.client('lambda')
 def lambda_handler(even, context):
     try:
         print("-----get message ---")
-        # even format: {"uid": , "busname": , "callback"}
+        # even format: {"uid": , "busname": , "callback":"lineResponse"}
+        # TODO: at this moment, all callback assume go for lineResponse
+        uid = '' 
+        busname = ''
+        if 'uid' in even and 'busname' in even:
+            uid = even['uid']
+            busname = even['busname']
+        else:
+            return 
+
         print(even)
         busDict, routeDict = buildRTBuses()
         allRouteBus = buildRouteBus(busDict, routeDict)
@@ -38,9 +47,21 @@ def lambda_handler(even, context):
             busfile.put(Body=newalljs)
             busfile.Acl().put(ACL='public-read')
             print("rebuild businfo to all.js")
-        url = "http://taipeibus.s3-website-us-west-2.amazonaws.com/taipeibus.html?busid="+even['busname']
+        url = "http://taipeibus.s3-website-us-west-2.amazonaws.com/taipeibus.html?busid="+busname
         surl =  json.loads(goo_shorten_url(url))
-        print(surl['id'])
+        shortUrlId = surl['id']
+        msg = u'請參考這個地圖-> ' + shortUrlId
+        toLineResponse={'uid':uid, 'msg':msg}
+
+        lresponse = lambda_client.invoke(
+             FunctionName='lineResponse',
+             InvocationType='Event',
+             LogType='None',
+             ClientContext='string',
+             Payload=json.dumps(toLineResponse),
+         )
+
+
         return 
     except:
         print(even)
