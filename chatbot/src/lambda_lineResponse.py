@@ -1,17 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-
 from __future__ import print_function 
-from socialBrain import SocialBrain, GenericBrain
-
-import json
-import boto3
-import sys
 import json
 import time
-import random
-import botocore.session
 import requests
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
@@ -114,7 +106,6 @@ def lambda_handler(even, context):
    
 
 if __name__ == '__main__':
-    import sys
 
     # To try from command line
     tmp={'uid':u'Uc9b95e58acb9ab8d2948f8ac1ee48fad','msg':'a short url'}
