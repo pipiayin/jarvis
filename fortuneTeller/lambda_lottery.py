@@ -24,7 +24,7 @@ def lambda_handler(even, context):
 
         print(even)
         (title, context) = random.choice(Lottery_Poem)
-        msg = title+ "     "+ context
+        msg = "幫你抽到這隻籤=>"+title+ "     "+ context
         toLineResponse={'uid':uid, 'msg':msg}
 
         lresponse = lambda_client.invoke(
