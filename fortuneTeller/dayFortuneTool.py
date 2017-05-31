@@ -2,6 +2,7 @@
 import requests
 import sys
 from hanziconv import HanziConv
+from datetime import datetime
 
 DAY_TELLER_URL = "http://www.53bang.com/shengri/{}.html"
 
@@ -17,10 +18,19 @@ def getTitleContext(allText):
     return text
 
 def getAllContext(birthday):
-    getUrl = DAY_TELLER_URL.format(birthday)
-    print(getUrl)
-    r = requests.get(getUrl)
-    return r.text
+    result = ""
+    try:
+        datetime.datetime.strptime(birthday, '%Y%m%d')
+    except ValueError:
+        result = "你輸入的似乎不是真的日期 ("+birthday+")"
+       
+    if result == "":
+        getUrl = DAY_TELLER_URL.format(birthday)
+        print(getUrl)
+        r = requests.get(getUrl)
+        return r.text
+    else:
+        return result
 
 def tellTheDay(birthday):
     allText = getAllContext(birthday)
