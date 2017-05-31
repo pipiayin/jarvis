@@ -10,6 +10,7 @@ import boto3
 import sys
 import json
 import time
+import re
 import random
 import botocore.session
 import requests
@@ -142,6 +143,9 @@ def predefineAction(msg,uid):
         },
         {'call_back':actAstro,
          'terms':[u'今天星座運勢',u'跟我說今天星座運勢',u'小姍幫我查星座運勢',u'幫我看星座運勢',u'幫我看今日星座運勢',u'今日星座運勢']
+        },
+        {'call_back':actDayfortune,
+         'terms':[u'幫我算命 ',u'出生運勢',u'小姍幫我查出生運勢',u'幫我看出生運勢',u'請幫我算命 生日是',u'請幫我算命']
         }
    ]
     for a in mapActions:
@@ -154,6 +158,16 @@ def predefineAction(msg,uid):
 
     return False
 
+def actDayfortune(msg, uid):
+    match = re.search(r'([0-9]{8})', msg)
+    if len(match.groups()) >= 1:
+        bdate = match.group(1)
+        dayReq = {'uid':uid, 'day':bdate}
+        invokeLambdaEvent('dayfortune', dayReq)
+        return True
+
+    return False
+    
 def actAstro(msg, uid):
     print("act Astro")
     astroList = {"水瓶":["水瓶","寶瓶","水平"], "雙魚":["雙魚",'双魚'], "牡羊":["牡羊",'白羊'], "金牛":["金牛"], "雙子":["雙子","双子"], "巨蟹":["巨蟹"], "獅子":["獅子"], "處女":["處女","室女"], "天秤":["天秤","天枰","天平"], "天蠍":["天蠍"], "射手":["射手","人馬"], "魔羯":["摩羯","山羊"]}
