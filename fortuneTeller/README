@@ -1,4 +1,13 @@
 
 a few script to gather information from public web site.
-just for fun
+* just for fun
+(1) 12 astro daily fortune teller
+    - astroTool.py
+(2) 60 traditional taiwanest lottery poems
+    - lottery60.py
+(3) birthday story
+    - dayFortuneTool.py
+
+
+* design decision? build 3 different lambda
 
