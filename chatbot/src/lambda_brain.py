@@ -139,13 +139,36 @@ def predefineAction(msg,uid):
         },     
         {'call_back':actLottery,
          'terms':[u'幫我抽根籤',u'請幫我抽個籤',u'小姍幫我抽簽',u'幫我抽簽看看',u'再幫我抽一次']
+        },
+        {'call_back':actAstro,
+         'terms':[u'今天星座運勢',u'跟我說今天星座運勢',u'小姍幫我查星座運勢',u'幫我看星座運勢',u'幫我看今日星座運勢',u'今日星座運勢']
         }
    ]
     for a in mapActions:
        for term in a['terms']:
            if similar(term, msg) >= 0.75 or msg.startswith(term):
                return a['call_back'](msg,uid)
+           parts = msg.split(" ")
+           if similar(term, parts[0]) >= 0.75:
+               return a['call_back'](msg,uid)
+
     return False
+
+def actAstro(msg, uid):
+    print("act Astro")
+    astroList = {"水瓶":["水瓶","寶瓶","水平"], "雙魚":["雙魚",'双魚'], "牡羊":["牡羊",'白羊'], "金牛":["金牛"], "雙子":["雙子","双子"], "巨蟹":["巨蟹"], "獅子":["獅子"], "處女":["處女","室女"], "天秤":["天秤","天枰","天平"], "天蠍":["天蠍"], "射手":["射手","人馬"], "魔羯":["摩羯","山羊"]}
+
+    astro = ""
+    for aName, nNames in astroList.items():
+        for nName in nNames:
+            if nName in msg: 
+                astro = aName
+                astroReq = {'uid':uid, 'astro':astro}
+                invokeLambdaEvent('astro', astroReq)
+                return True
+
+    return False
+    
 
 def actTaipeiBus(msg, uid):
     print("act TaipeiBus")
