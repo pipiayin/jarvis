@@ -17,13 +17,13 @@ def getTitleContext(allText):
     return text
 
 def getAllContext(birthday):
-    getUrl = DAY_TELLER_URL.format(day)
+    getUrl = DAY_TELLER_URL.format(birthday)
     print(getUrl)
     r = requests.get(getUrl)
     return r.text
 
 def tellTheDay(birthday):
-    allText = getAllContext(day)
+    allText = getAllContext(birthday)
     text = getDayContext(allText)
     titleText = getTitleContext(allText)
     return (titleText + "\n" + text)
