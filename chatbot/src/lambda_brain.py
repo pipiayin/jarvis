@@ -13,13 +13,19 @@ import time
 import random
 import botocore.session
 import requests
+from difflib import SequenceMatcher
+
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
 lineBrain = SocialBrain()
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
+lambda_client = boto3.client('lambda')
 
 table_log = dynamodb.Table('linelog')
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
 
 def getBotHeader(botid):
     botMap = {'happyrun':happyrunXLineToken,
@@ -114,6 +120,48 @@ def getUserDisplayName(fromuid, botid=''):
         print('can not get displayName from uid:'+fromuid)
         return ''
 
+
+def invokeLambdaEvent(functionName, payloadDict):
+    lresponse = lambda_client.invoke(
+        FunctionName = functionName,
+        InvocationType ='Event',
+        LogType = 'None',
+        ClientContext = 'string',
+        Payload = json.dumps(payloadDict),
+     )
+
+
+def predefineAction(msg,uid):
+    msg = msg.strip()
+    mapActions = [
+        {'call_back':actTaipeiBus, 
+         'terms':[u'幫我查公車',u'請幫我查公車',u'小姍幫我查公車', u'公車在哪裡']
+        },     
+        {'call_back':actLottery,
+         'terms':[u'幫我抽根籤',u'請幫我抽個籤',u'小姍幫我抽簽',u'幫我抽簽看看',u'再幫我抽一次']
+        }
+   ]
+    for a in mapActions:
+       for term in a['terms']:
+           if similar(term, msg) >= 0.75 or msg.startswith(term):
+               return a['call_back'](msg,uid)
+    return False
+
+def actTaipeiBus(msg, uid):
+    print("act TaipeiBus")
+    busname = msg.strip().replace(u'幫我查公車','').replace(" ","")
+    taipeiBusReq = {'uid':uid, 'busname':busname}
+    invokeLambdaEvent('taipeibus', taipeiBusReq)
+    return True
+
+def actLottery(msg, uid):
+    print("act Lottery")
+    lotteryReq = {'uid':uid, 'botid':""}
+    invokeLambdaEvent('lottery', lotteryReq)
+    return True
+    
+
+
 def lambda_handler(even, context):
    # try:
         print("-----get message this is lambda brain ---")
@@ -152,18 +200,9 @@ def lambda_handler(even, context):
             responseToUser(fromuid,resp,even['botid'])
         else:
             #TODO FIXME: a short cut here to invoke bus search
-            if msg.strip().startswith(u'幫我查公車'): 
-                busname = msg.strip().replace(u'幫我查公車','').replace(" ","")
-                lambda_client = boto3.client('lambda')
-                taipeiBusReq={'uid':fromuid, 'busname':busname}
-                lresponse = lambda_client.invoke(
-                    FunctionName='taipeibus',
-                    InvocationType='Event',
-                    LogType='None',
-                    ClientContext='string',
-                    Payload=json.dumps(taipeiBusReq),
-                 )
-            else:
+            didSendMsg = predefineAction(msg,fromuid)
+            
+            if not didSendMsg :
                 resp = lineBrain.think(msg)
                 toLog['resp'] = resp
                 print(toLog)
@@ -191,5 +230,7 @@ if __name__ == '__main__':
             u'message': {'text':msg}
            }]}   
     print(lambda_handler(tmp, None))
+    predefineAction(msg, u'Uc9b95e58acb9ab8d2948f8ac1ee48fad')
+
 
     
