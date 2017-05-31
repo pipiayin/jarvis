@@ -18,21 +18,20 @@ def getTitleContext(allText):
     return text
 
 def getAllContext(birthday):
-    result = ""
-    try:
-        datetime.datetime.strptime(birthday, '%Y%m%d')
-    except ValueError:
-        result = "你輸入的似乎不是真的日期 ("+birthday+")"
-       
-    if result == "":
-        getUrl = DAY_TELLER_URL.format(birthday)
-        print(getUrl)
-        r = requests.get(getUrl)
-        return r.text
-    else:
-        return result
+    getUrl = DAY_TELLER_URL.format(birthday)
+    print(getUrl)
+    r = requests.get(getUrl)
+    return r.text
 
 def tellTheDay(birthday):
+    result = ""
+    try:
+        datetime.strptime(birthday, '%Y%m%d')
+        print("ok")
+    except ValueError:
+        result = "你輸入的似乎不是真的日期 ("+birthday+")"
+    if result != "" :
+        return result
     allText = getAllContext(birthday)
     text = getDayContext(allText)
     titleText = getTitleContext(allText)
