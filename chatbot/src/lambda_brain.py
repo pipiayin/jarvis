@@ -137,7 +137,12 @@ def invokeLambdaEvent(functionName, payloadDict):
 
 def predefineAction(msg, uid):
     msg = msg.strip()
+    msg = msg.replace("「",'').replace("」",'')
+    
     mapActions = [
+        {'call_back': actWishes,
+         'terms': [u'我想許願']
+         },
         {'call_back': actTaipeiBus,
          'terms': [u'幫我查公車', u'請幫我查公車', u'小姍幫我查公車', u'公車在哪裡', u'請幫我查公車']
          },
@@ -145,15 +150,15 @@ def predefineAction(msg, uid):
          'terms': [u'幫我抽根籤', u'請幫我抽個籤', u'小姍幫我抽簽', u'幫我抽簽看看', u'再幫我抽一次', u'請幫我抽支籤', u'請幫大姐抽支籤', u'請幫我抽籤']
          },
         {'call_back': actAstro,
-         'terms': [u'今天星座運勢', u'跟我說今天星座運勢', u'小姍幫我查星座運勢', u'幫我看星座運勢', u'幫我看今日星座運勢', u'今日星座運勢']
+         'terms': [u'今天星座運勢', u'跟我說今天星座運勢', u'小姍幫我查星座運勢', u'幫我看星座運勢', u'幫我查今日星座運勢', u'今日星座運勢',u'小姍幫我查今日星座']
          },
         {'call_back': actDayfortune,
-         'terms': [u'幫我算命 ', u'出生運勢', u'小姍幫我查出生運勢', u'幫我看出生運勢', u'請幫我算命 生日是', u'請幫我算命']
+         'terms': [u'幫我算命 ', u'出生運勢', u'小姍幫我查出生運勢', u'幫我看出生運勢', u'請幫我算命 生日是', u'請幫我算命',u'幫我算命生日是',u'請幫我算命生日是']
          }
     ]
     for a in mapActions:
         for term in a['terms']:
-            if similar(term, msg) >= 0.75 or msg.startswith(term):
+            if similar(term, msg) >= 0.7 or msg.startswith(term):
                 return a['call_back'](msg, uid)
             parts = msg.split(" ")
             if similar(term, parts[0]) >= 0.75:
@@ -161,6 +166,10 @@ def predefineAction(msg, uid):
 
     return False
 
+
+def actWishes(msg, uid):
+    responseToUser(uid, u'您的願望已經被記錄下來...希望有朝一日會實現')
+    return True
 
 def actDayfortune(msg, uid):
     match = re.search(r'([0-9]{8})', msg)
@@ -200,7 +209,7 @@ def actTaipeiBus(msg, uid):
 
 def actLottery(msg, uid):
     print("act Lottery")
-    lotteryReq = {'uid': uid, 'botid': ""}
+    lotteryReq = {'uid': uid, 'botid': "", 'msg': msg}
     invokeLambdaEvent('lottery', lotteryReq)
     return True
 
