@@ -8,6 +8,7 @@ import boto3
 import sys
 import json
 import time
+import datetime
 import random
 import botocore.session
 import requests
@@ -38,10 +39,10 @@ def getBotHeader(botid):
 def getLineUser(fromuid,botid=''):
     try:
         item = table_user.get_item( Key={ 'userId': fromuid })
-        if "Item" in item:
-            print('get user from nosql')
-            print(item['Item'])
-            return item['Item']
+#        if "Item" in item:
+#            print('get user from nosql')
+#            print(item['Item'])
+ 
 
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
@@ -101,6 +102,7 @@ def lambda_handler(even, context):
             oneUser['bossids'] = even['bossids']
             toLog['bossids'] = even['bossids']
 
+        oneUser['last'] = int(datetime.datetime.now().timestamp())
         print(oneUser)
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
