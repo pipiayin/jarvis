@@ -8,7 +8,6 @@ import boto3
 import sys
 import json
 import time
-import datetime
 import random
 import botocore.session
 import requests
@@ -102,7 +101,7 @@ def lambda_handler(even, context):
             oneUser['bossids'] = even['bossids']
             toLog['bossids'] = even['bossids']
 
-        oneUser['last'] = int(datetime.datetime.now().timestamp())
+        oneUser['last'] = ts
         print(oneUser)
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
