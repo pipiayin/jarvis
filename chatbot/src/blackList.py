@@ -6,6 +6,7 @@ badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
               'U3845f28ae73e0cf6165a7b7d8ab4210e',
               'Udb9af9dd4ee3c75ee4d7e4c078364057',
               'U5d6b90c98e9789236eb23b24f001ba61',
+              'Ua208c93e936b1267981512076381f132',
               'Ue4ce06741b8e8bfad3378c35aeef12fa',
               'U1c77efb9c44d1a825ea26d8e838cf5aa',
               'Uf364d37a0b234874c1bf15b3b401aac1',
@@ -53,5 +54,4 @@ badwords = [ u'幹你娘'
     ,u'肏他媽'
     ,u'雞雞'
     ,u'Gay'
-    ,u'舔'
     ]
