@@ -19,6 +19,15 @@ table_log = dynamodb.Table('lineuser')
 table_usert = dynamodb.Table('lineusert')
 table_user = dynamodb.Table('lineuser')
 
+def getLineUser(uid):
+
+        line_url = 'https://api.line.me/v2/bot/profile/' + uid
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+
+        r = requests.get(line_url, headers=headers)
+        rjson = json.loads(r.text)
+        return rjson
+
 def sendToUser(uid, msg):
 #    try:
         print("to response to line user")
@@ -94,8 +103,14 @@ if __name__ == '__main__':
     parser.add_argument('--list','-l', action='store_true', help='list all user')
     parser.add_argument('--msg','-m', help='send message to all user')
     parser.add_argument('--select','-s', help='selected user list file')
+    parser.add_argument('--profile','-p', help='get one user profile')
 
     args = parser.parse_args()
+    if args.profile is not None :
+        print("show single user profile")
+        print(getLineUser(args.profile))
+        exit(0)
+
     if args.list :
         print("show all current line users")
         showLineUsers()
