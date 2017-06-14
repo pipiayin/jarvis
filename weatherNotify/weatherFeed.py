@@ -10,8 +10,11 @@ def getNotify(pastHours):
     result = []
     
     for e in d['entries']:
-        dt = datetime(*e['updated_parsed'][:6])
-        result.append(e['summary'])
+        #dt = datetime(*e['updated_parsed'][:6])
+        dt = datetime(*e['published_parsed'][:6])
+        diffseconds = (current - dt).total_seconds()
+        if diffseconds <= timeRange :
+            result.append(e['summary'])
 
     return result
 
