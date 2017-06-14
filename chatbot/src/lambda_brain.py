@@ -140,6 +140,16 @@ def predefineAction(msg, uid):
     msg = msg.replace("「",'').replace("」",'')
     
     mapActions = [
+        { 'call_back': actEventReg,
+          'terms' :
+                    [u'請通知我天氣特報' ,
+                     u'請通知激烈天氣特報',
+                     u'小姍請通知我天氣特報',
+                     u'小姍通知我激烈天氣特報',
+                     u'通知激烈天氣特報',
+                     u'通知天氣特報',]
+
+        },
         {'call_back': actWishes,
          'terms': [u'我想許願']
          },
@@ -213,6 +223,11 @@ def actLottery(msg, uid):
     invokeLambdaEvent('lottery', lotteryReq)
     return True
 
+def actEventReg(msg, uid):
+    print("act register event")
+    req = {'uid': uid, 'botid': "", 'evenName': msg}
+    invokeLambdaEvent('eventreg', req)
+    return True
 
 def lambda_handler(even, context):
    # try:
