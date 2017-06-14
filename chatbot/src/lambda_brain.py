@@ -139,6 +139,7 @@ def predefineAction(msg, uid):
     msg = msg.strip()
     msg = msg.replace("「",'').replace("」",'')
     
+    #TODO find a better mapping way instead of hardcoding
     mapActions = [
         { 'call_back': actEventReg,
           'terms' :
@@ -147,8 +148,13 @@ def predefineAction(msg, uid):
                      u'小姍請通知我天氣特報',
                      u'小姍通知我激烈天氣特報',
                      u'通知激烈天氣特報',
+                     u'請每天教我一句英文',
+                     u'請給我每日一句學英文',
+                     u'小姍請給我每日一句學英文',
+                     u'小姍給我每日一句學英文',
+                     u'每日一句學英文',
+                     u'自動給我每日一句學英文',
                      u'通知天氣特報',]
-
         },
         {'call_back': actWishes,
          'terms': [u'我想許願']
