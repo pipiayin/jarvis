@@ -22,7 +22,8 @@ def getRegisterUsers(eventName='dailyenglish'):
         KeyConditionExpression=Key('eventName').eq(eventName)
     )
     for u in response['Items']:
-        result.append(u['uid'])
+        if 'status' in u and u['status'] == 'active':
+            result.append(u['uid'])
     
     return result
     
