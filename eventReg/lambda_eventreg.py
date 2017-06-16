@@ -16,7 +16,17 @@ lambda_client = boto3.client('lambda')
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table_event = dynamodb.Table('lineevent')
 # TODO a better mapping method
-eventMap = {'disweathernotify' :{ 'fuzzy':[
+eventMap = {
+            'myth':{ 'fuzzy':[
+                             u'請通知最近謠言破解',
+                             u'請通知我最近謠言破解',
+                             u'請協助我謠言破解',
+                             ],
+                      'registerMsg' :'當小姍發現有最新謠言破解時 會自動通知你',
+                      'act' : 'active',
+                      'callback' : 'myth',
+             }, 
+            'disweathernotify' :{ 'fuzzy':[
                                 u'停止通知我天氣特報',
                                 u'停止通知天氣特報',
                                 u'不要通知我天氣特報',
