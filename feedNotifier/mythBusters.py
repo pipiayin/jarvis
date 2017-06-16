@@ -27,7 +27,7 @@ def getNotify(pastHours):
             diffseconds = (current - dt).total_seconds()
             if diffseconds <= timeRange :
                 print('=====')
-                tmp = "---終結謠言!---\n"cleanhtml(e['title']) + " \n"
+                tmp = "---終結謠言!---\n" + cleanhtml(e['title']) + " \n"
                 tmp = tmp + cleanhtml(e['summary'])
                 print(tmp)
                 result.append(tmp)
