@@ -32,7 +32,7 @@ def lambda_handler(even, context):
     """
     try:
         print("-----In Lambda_myth---")
-        mythNotify = getNotify(48) # Get past 24 hours
+        mythNotify = getNotify(24) # Get past 24 hours
         print(len(mythNotify))
         toNotifyUsers = getRegisterUsers()
         for msg in mythNotify:
