@@ -22,7 +22,8 @@ def getRegisterUsers(eventName='weathernotify'):
         KeyConditionExpression=Key('eventName').eq(eventName)
     )
     for u in response['Items']:
-        result.append(u['uid'])
+        if 'status' in u and u['status'] == 'active':
+            result.append(u['uid'])
     
     return result
     
@@ -57,5 +58,5 @@ def lambda_handler(even, context):
    
 
 if __name__ == '__main__':
-    lambda_handler({}, {})
-    #print(getRegisterUsers())
+    #lambda_handler({}, {})
+    print(getRegisterUsers())
