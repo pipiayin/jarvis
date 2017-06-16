@@ -52,7 +52,7 @@ eventMap = {'disweathernotify' :{ 'fuzzy':[
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def invokeLineSend(uid, msg ):
+def invokeLineSend(uid, msg):
     toLineResponse={'uid':uid, 'msg':msg}
     lresponse = lambda_client.invoke(
         FunctionName='lineResponse',
@@ -70,10 +70,14 @@ def lambda_handler(even, context):
     fuzzyName = even['evenName'].strip().replace(' ','')
     for k in eventMap:
         for n in eventMap[k]['fuzzy']:
-            if similar(n, fuzzyName) > 0.80 :
+            if similar(n, fuzzyName) > 0.85 :
                 act = eventMap[k]['act']
                 lambdaName = eventMap[k]['callback']
                 if act == 'active' and ('停止' in fuzzyName or '不' in fuzzyName):
+                    continue
+                if act == 'inactive' and ('停止' not in fuzzyName and '不' not in fuzzyName):
+                    #print(fuzzyName +" -->" +act) 
+                    
                     continue
 
                 print("to "+act+" "+even['uid']+" in "+k)
