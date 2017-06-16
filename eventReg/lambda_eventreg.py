@@ -79,11 +79,12 @@ def lambda_handler(even, context):
                 print("to "+act+" "+even['uid']+" in "+k)
                 if act == 'inactive' :
                     unRegistEvent(lambdaName, even['uid'])
+                    invokeLineSend(even['uid'], eventMap[k]['registerMsg'])
                     return 
                 if act == 'active' :
                     registEvent(lambdaName, even['uid'])
+                    invokeLineSend(even['uid'], eventMap[k]['registerMsg'])
                     return 
-                #invokeLineSend(even['uid'], eventMap[k]['registerMsg'])
 
     return 
    # except:
