@@ -34,10 +34,10 @@ def lambda_handler(even, context):
     try:
         print("-----In Lambda_weathernotify---")
         weatherNotify = getNotify(1) # Get past 1 hours
+        toNotifyUsers = getRegisterUsers()
         for msg in weatherNotify:
 
             msg = msg + "\n http://www.cwb.gov.tw/"  
-            toNotifyUsers = getRegisterUsers()
             for uid in toNotifyUsers:
                 toLineResponse={'uid':uid, 'msg':msg}
                 print(toLineResponse)

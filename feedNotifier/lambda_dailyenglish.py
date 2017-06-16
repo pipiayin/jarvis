@@ -33,8 +33,8 @@ def lambda_handler(even, context):
     try:
         print("-----In Lambda_dailyenglish---")
         weatherNotify = getNotify(24) # Get past 24 hours
+        toNotifyUsers = getRegisterUsers()
         for msg in weatherNotify:
-            toNotifyUsers = getRegisterUsers()
             for uid in toNotifyUsers:
                 toLineResponse={'uid':uid, 'msg':msg}
                 print(toLineResponse)
