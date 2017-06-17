@@ -10,6 +10,7 @@ import json
 import random
 import argparse
 import time
+import datetime
 from nocheckin import XLineToken
 
 
@@ -76,13 +77,26 @@ def listLineUserId():
     return allUid
     
 
-def showLineUsers():
+def showLineUsers(lastdays=None):
         allUid = []
         r = table_user.scan(Limit=5000)
         cnt = 1
         for item in r['Items']:
-            print(cnt)
-            print(item)
+            tmp = "{},{},{},".format(item['displayName'],item['pictureUrl'],item['userId'])
+ #     {'displayName': 'Y G', 'pictureUrl': 'http://dl.profile.line-cdn.net/0hOw6jMh39EFgLEz8kzRBvDzdWHjV8PRYQcyFbOS0VRmEuIlVaYiFcPyxEG28mIgILMn0PPSwWTG4i', 'userId': 'Ua60d254375033b0a8cd170dab02ea453', 'statusMessage': '思念太猖狂(煩惱)', 'last': Decimal('1497232992')}
+            n = datetime.datetime.now().timestamp()
+
+            if lastdays is not None and 'last' in item:
+                toCheck = n - (lastdays*24*60*60)
+                last = item['last']
+                tmp = tmp + str(last)
+                if int(last) >= int(toCheck):
+                    print(tmp)
+
+            elif lastdays is None:
+                print(tmp)
+            else:
+                pass
             cnt += 1
 
 def getUserSession(uid):
@@ -104,6 +118,7 @@ if __name__ == '__main__':
     parser.add_argument('--msg','-m', help='send message to all user')
     parser.add_argument('--select','-s', help='selected user list file')
     parser.add_argument('--profile','-p', help='get one user profile')
+    parser.add_argument('--lastdays','-d', help='show only user who actually use in past N days')
 
     args = parser.parse_args()
     if args.profile is not None :
@@ -113,7 +128,10 @@ if __name__ == '__main__':
 
     if args.list :
         print("show all current line users")
-        showLineUsers()
+        lastdays = None
+        if args.lastdays is not None:
+            lastdays = int(args.lastdays)
+        showLineUsers(lastdays)
         exit(0)
 
     if args.msg is not None:
