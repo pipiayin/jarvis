@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from elasticsearch import Elasticsearch, RequestsHttpConnection
@@ -40,24 +40,30 @@ def rebuild(indexname, jsonfile):
 
     es.indices.refresh(index=indexname)
 
+def delete(indexname, docid):
+    es.delete(index=indexname, id=docid, doc_type='fb')
+    es.indices.refresh(index=indexname)
 
-def listAll(indexname):
+def listAll(indexname, query=""):
+
     q = {
         "min_score": 0.0000001,
         "query" :{
-          "match_all" : {
+          "multi_match" : {
+              "query": query,
+              "fields": [ "pkey", "similar","res" ]
           } 
       },
          "size": 5000
     }
 
 
-    es.indices.refresh(index=indexname)
+#    es.indices.refresh(index=indexname)
     res = es.search(index=indexname, body=q)
 #print(res)
     print("Got %d Hits:" % res['hits']['total'])
     for h in res['hits']['hits']:
-        print(h['_source'])
+        print(h['_id']+ " "+ str(h['_source']))
 
 if __name__ == '__main__':
     bossid='Uc9b95e58acb9ab8d2948f8ac1ee48fad'
@@ -65,13 +71,20 @@ if __name__ == '__main__':
     parser.add_argument('--list','-l', action='store_true', help='list all docs')
     parser.add_argument('--rebuild','-r',action='store_true', help='rebuild index via upload a json file')
     parser.add_argument('--indexname','-i', help='index name')
+    parser.add_argument('--query','-q', help='query string')
     parser.add_argument('--jsondump','-j', help='jsondump file name, one line per json doc')
+    parser.add_argument('--delete','-d', action='store_true', help='to delete document')
+    parser.add_argument('--docid','-c', help='document _id')
 
     args = parser.parse_args()
 
+    if args.delete:
+        print('to delete a single document')
+        delete(args.indexname, args.docid)
+
     if args.list :
         print('list all')
-        listAll(args.indexname)
+        listAll(args.indexname, args.query)
         exit(0)
 
     if args.rebuild:
