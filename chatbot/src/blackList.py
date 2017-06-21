@@ -1,7 +1,9 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
+#TODO a better way to get black list
 badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
+              'Uec200f8b1434c9d172dad49da7b1908e',
               'U23382b41c01869abed7f0b620183b071',
               'U3845f28ae73e0cf6165a7b7d8ab4210e',
               'Ue3fbac475776995ee2deecd706913719',
