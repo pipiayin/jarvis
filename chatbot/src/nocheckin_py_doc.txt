@@ -1,0 +1,23 @@
+
+# This is a placehole document for nocheckin.py
+
+headers = {"Content-type": "application/json; charset=utf-8","X-Line-ChannelID" : "<>" , "X-Line-ChannelSecret" : "" , "X-Line-Trusted-User-With-ACL" : ""}
+
+
+line_url = 'https://trialbot-api.line.me/v1/profiles'
+
+aws_access_key_id = ''
+aws_secret_access_key = ''
+
+XLineToken = ''
+
+happyrunXLineToken = ''
+
+botannXLineToken = ''
+
+botyunyunXLineToken = ''
+
+botpmXLineToken = ''
+
+botjhcXLineToken = ''
+
