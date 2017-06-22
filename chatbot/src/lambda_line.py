@@ -11,6 +11,7 @@ import time
 import random
 import botocore.session
 import requests
+from lineTools import getBotHeader
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
 
@@ -23,17 +24,6 @@ lambda_client = boto3.client('lambda')
 learn_triggers = ['590590',u'小安 學',u'小安學']
 group_triggers = [u'小姍',u'小安','JHC']
 
-def getBotHeader(botid):
-    botMap = {'happyrun':happyrunXLineToken, 
-              'botann':botannXLineToken,
-              'botpm':botpmXLineToken,
-              'botjhc':botjhcXLineToken,
-              'botyunyun':botyunyunXLineToken}
-    if botid in botMap:
-        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
-        return headers 
-    else:
-        return ""
 
 def getLineUser(fromuid,botid=''):
     try:

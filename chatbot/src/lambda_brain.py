@@ -12,7 +12,7 @@ import time
 import re
 import requests
 from difflib import SequenceMatcher
-
+from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
 lineBrain = SocialBrain()
@@ -25,20 +25,6 @@ table_log = dynamodb.Table('linelog')
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
-
-
-def getBotHeader(botid):
-    botMap = {'happyrun': happyrunXLineToken,
-              'botann': botannXLineToken,
-              'botpm': botpmXLineToken,
-              'botjhc': botjhcXLineToken,
-              'botyunyun': botyunyunXLineToken}
-    if botid in botMap:
-        headers = {"Content-type": "application/json; charset=utf-8",
-                   "Authorization": "Bearer " + botMap[botid]}
-        return headers
-    else:
-        return ""
 
 
 def responseToToken(replyToken, resp, botid=''):
@@ -104,25 +90,6 @@ def responseToUser(uid, resp, botid=''):
 #        return ''
 
 
-def getUserDisplayName(fromuid, botid=''):
-    try:
-        line_url = 'https://api.line.me/v2/bot/profile/' + fromuid
-        headers = {"Content-type": "application/json; charset=utf-8",
-                   "Authorization": "Bearer " + XLineToken}
-
-        if botid != '':
-            botHeaders = getBotHeader(botid)
-            if botHeaders != '':
-                headers = botHeaders
-
-        r = requests.get(line_url, headers=headers)
-        rjson = json.loads(r.text)
-        ruser = rjson['displayName']
-        return ruser
-    except:
-        print('can not get displayName from uid:' + fromuid)
-        return ''
-
 
 def invokeLambdaEvent(functionName, payloadDict):
     lresponse = lambda_client.invoke(
@@ -145,6 +112,10 @@ def predefineAction(msg, uid):
           'terms' :
                     [u'請通知我天氣特報' ,
                      u'請通知激烈天氣特報',
+                     u'停止通知我天氣特報',
+                     u'停止通知天氣特報',
+                     u'不要通知我天氣特報',
+                     u'不要通知天氣特報',
                      u'小姍請通知我天氣特報',
                      u'小姍通知我激烈天氣特報',
                      u'通知激烈天氣特報',
@@ -154,7 +125,13 @@ def predefineAction(msg, uid):
                      u'小姍給我每日一句學英文',
                      u'每日一句學英文',
                      u'自動給我每日一句學英文',
-                     u'通知天氣特報',]
+                     u'通知天氣特報', 
+                     u'請通知最近謠言破解',
+                     u'請通知我最近謠言破解',
+                     u'請協助我破解網路謠言',
+                     u'請幫我破解網路謠言',
+                     u'請協助我謠言破解',
+                     ]
         },
         {'call_back': actWishes,
          'terms': [u'我想許願']
@@ -302,4 +279,4 @@ if __name__ == '__main__':
             u'message': {'text': msg}
             }]}
     print(lambda_handler(tmp, None))
-    predefineAction(msg, u'Uc9b95e58acb9ab8d2948f8ac1ee48fad')
+    #predefineAction(msg, u'Uc9b95e58acb9ab8d2948f8ac1ee48fad')

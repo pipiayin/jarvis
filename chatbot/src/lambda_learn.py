@@ -16,6 +16,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from datetime import datetime
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
+from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 from blackList import badfriends,badwords
 
@@ -40,36 +41,6 @@ es = Elasticsearch(
 
 learn_triggers = ['590590', u'小安學', u'小安 學']
 
-def getBotHeader(botid):
-    botMap = {'happyrun':happyrunXLineToken,
-              'botann':botannXLineToken,
-              'botpm':botpmXLineToken,
-              'botjhc':botjhcXLineToken,
-              'botyunyun':botyunyunXLineToken}
-    if botid in botMap:
-        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
-        return headers
-    else:
-        return ""
-
-def getUserDisplayName(fromuid, botid=''):
-    try:
-        line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
-        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
-
-        if botid != '':
-            botHeaders = getBotHeader(botid)
-            if botHeaders != '':
-                headers = botHeaders
-
-
-        r = requests.get(line_url, headers=headers)
-        rjson = json.loads(r.text)
-        ruser = rjson['displayName']
-        return ruser
-    except:
-        print('can not get displayName from uid:'+fromuid)
-        return ''
 
 
 def responseToToken(replyToken, resp, botid=''):
