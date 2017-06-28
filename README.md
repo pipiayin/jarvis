@@ -36,4 +36,4 @@ This repository contains a few different projects.
     * A tool to analysis AD
 
 Authors:
-* Tao-Sheng 
+* Tao-Sheng (taosheng.chen@gmail.com)
