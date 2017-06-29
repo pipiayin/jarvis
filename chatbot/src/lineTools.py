@@ -1,4 +1,6 @@
 
+import json
+import requests
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 
 def getBotHeader(botid):
@@ -38,3 +40,4 @@ def getUserDisplayName(fromuid, botid=''):
 
 if __name__ == '__main__' :
     print(getBotHeader('happyrun'))
+    print(getUserDisplayName(u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'))
