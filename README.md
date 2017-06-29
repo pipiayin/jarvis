@@ -34,3 +34,6 @@ This repository contains a few different projects.
 
 3. talentAnalysis
     * A tool to analysis AD
+
+Authors:
+* Tao-Sheng (taosheng.chen@gmail.com)
