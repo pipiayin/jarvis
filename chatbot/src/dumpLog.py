@@ -22,7 +22,7 @@ table_log = dynamodb.Table('linelog')
 
 
 
-def listLog():
+def listLog(botid ='',uid=''):
     allUid = []
     i = 1
     last = None
@@ -37,14 +37,27 @@ def listLog():
             last = item
             toPrint['ts'] = int(item['ts'])
             toPrint['uid'] = item['uid']
+            if uid != '' and toPrint['uid'] != uid:
+                continue
+            if botid != '' and 'botid' not in item:
+                continue
+            if botid != '' and item['botid'] != botid:
+                continue
+
             if 'botid' in item:
                 toPrint['botid'] = item['botid']
+            else:
+                toPrint['botid'] = ""
             if type(item['msg']) == type(''):
                 toPrint['msg'] = item['msg']
+            else:
+                toPrint['msg'] = ''
             if 'resp' in item:
                 toPrint['resp'] = item['resp']
+            else:
+                toPrint['resp'] = ''
 
-            print(json.dumps(toPrint))
+            print(str(toPrint['ts'])+";; "+toPrint['uid']+";; "+toPrint['botid']+";; "+toPrint['msg']+ ";; "+toPrint['resp'])
  
         if 'LastEvaluatedKey' not in r or r['LastEvaluatedKey'] == None:
             break
@@ -56,10 +69,12 @@ if __name__ == '__main__':
     bossid='Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     parser = argparse.ArgumentParser(description='line user tool')
     parser.add_argument('--list','-l', action='store_true', help='list log')
+    parser.add_argument('--uid','-u',default='', help='list only for this uid')
+    parser.add_argument('--botid','-b',default='', help='list only for this bot')
 
     args = parser.parse_args()
     if args.list :
         print("show all current log")
-        listLog()
+        listLog(uid = args.uid, botid = args.botid)
         exit(0)
 

@@ -12,7 +12,7 @@ import random
 import botocore.session
 import requests
 from lineTools import getBotHeader
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -155,9 +155,7 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             u'message': {'text':msg},
-            u'botid' : 'botyunyun',
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
-            u'bossids' : ['Uc9b95e58acb9ab8d2948f8ac1ee48fad']
            }]}
 
     print(lambda_handler(tmp, None))
