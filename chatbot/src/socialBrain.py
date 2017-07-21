@@ -166,15 +166,16 @@ class SocialBrain():
     def think(self, msg):
         response = ""
         self.processmsg = msg # supposedly, basicParser will change processmsg
-        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
+        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler]
+        #all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
         short_list = [self.basicParser, esHandler]
-        bible_first_list = [self.basicParser, esHandler,esBibleHandler]
+        #bible_first_list = [self.basicParser, esHandler,esBibleHandler]
         handler_list = short_list
-        bList = [u'聖經',u'信仰',u'基督教',u'基督']
-        for bw in bList:
-            if self.processmsg.count(bw) > 0:
-                handler_list = bible_first_list
-                break
+       # bList = [u'聖經',u'信仰',u'基督教',u'基督']
+       # for bw in bList:
+       #     if self.processmsg.count(bw) > 0:
+       #         handler_list = bible_first_list
+       #         break
         words = pseg.cut(msg)
         
         words, wordtypes = self.simpleListWords(words)
