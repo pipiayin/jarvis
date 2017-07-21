@@ -220,11 +220,10 @@ class SocialBrain():
        # if response == '': # can't find any answer try for BibleHandler
        #     response = esBibleHandler(msg, words)
 
-        if response == '': # can't find any answer give 50% for pttHandler
-            if random.randint(0,1) < 1:
+        if response == '': # can't find any answer give 20% for pttHandler
+            if random.randint(0,7) < 1:
                 response = pttHandler(msg, words)
         if response == '':
-            print("in will do")
             #TODO put in will do list
             willDoList = self.kb['will_do'].split(";")
             for wd in willDoList:
