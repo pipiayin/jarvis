@@ -217,12 +217,12 @@ class SocialBrain():
             if basic_res != '':
                 return basic_res
          
-        if response == '': # can't find any answer try for BibleHandler
-            response = esBibleHandler(msg, words)
+       # if response == '': # can't find any answer try for BibleHandler
+       #     response = esBibleHandler(msg, words)
 
-       # if response == '': # can't find any answer give 50% for pttHandler
-       #     if random.randint(0,1) < 1:
-       #         response = pttHandler(msg, words)
+        if response == '': # can't find any answer give 50% for pttHandler
+            if random.randint(0,1) < 1:
+                response = pttHandler(msg, words)
         if response == '':
             print("in will do")
             #TODO put in will do list
