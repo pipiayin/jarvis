@@ -47,11 +47,11 @@ def delete(indexname, docid):
 def listAll(indexname, query=""):
 
     q = {
-        "min_score": 0.0000001,
+        "min_score": 0.3,
         "query" :{
           "multi_match" : {
               "query": query,
-              "fields": [ "pkey", "similar","res" ]
+              "fields": [ "pkey", "similar","res" ,'uid']
           } 
       },
          "size": 5000

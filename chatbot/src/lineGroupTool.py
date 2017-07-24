@@ -10,6 +10,7 @@ import json
 import random
 import time
 import datetime
+from datetime import date
 import argparse
 from nocheckin import XLineToken
 
@@ -23,6 +24,7 @@ def toCheckTimestamp(days=0):
     toCheck = 0
     if days > 0:
         toCheck = int(n - (days*24*60*60))
+    print(date.fromtimestamp(toCheck))
     return toCheck
     
 def listAllGroup(days=0):
@@ -35,23 +37,34 @@ def listAllGroup(days=0):
         KeyConditionExpression=Key('isGroup').eq('True') & Key('ts').gt(toCheck) 
     )
 
-    while(True):
+    cnt = 0
+    pages = 0
+    for k in response:
+        print(k)
 
+    while(True):
+        pages += 1
+        print("pages {}".format(pages))
         for item in response['Items']:
             if item['uid'] not in uidList:
                 uidList.append(item['uid'])
+            cnt+=1
 
-        if 'lastEvaluateKey' in response:
-            last = response['lastEvaluateKey']
+        if 'LastEvaluatedKey' in response:
+            last = response['LastEvaluatedKey']
+            print(last)
             response = table_log.query(
                 TableName='linelog',
                 IndexName='isGroup-ts-index',
                 KeyConditionExpression=Key('isGroup').eq('True') & Key('ts').gt(toCheck) ,
                 ExclusiveStartKey = last 
             )
+            print("to next page")
         else:
+            print("no need to next page")
             break
 
+    print("total items= {}".format(cnt))
     print(len(uidList))
     for g in uidList:
         print(g)

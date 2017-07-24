@@ -31,7 +31,7 @@ def getLineUser(uid):
 
 def sendToUser(uid, msg):
 #    try:
-        print("to response to line user")
+        print("send text to line user")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
         payload = {
             "to": uid ,
@@ -46,9 +46,37 @@ def sendToUser(uid, msg):
         url = 'https://api.line.me/v2/bot/message/push'
         #url = 'https://trialbot-api.line.me/v1/events'
         r = requests.post(url, headers=headers, data = jdump)
+        if "Failed" in r.text:
+            print(r.text+" --> "+uid)
+
+        return ''
+
+def sendImageToUser(uid, imageurl):
+        print("send image to line user")
+        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
+        payload = {
+            "to": uid ,
+            "messages":[{
+                "type":"image",
+                "originalContentUrl":  imageurl,
+                "previewImageUrl": imageurl
+             }]
+        }
+
+        jdump = json.dumps(payload)
+        print(jdump)
+        url = 'https://api.line.me/v2/bot/message/push'
+        #url = 'https://trialbot-api.line.me/v1/events'
+        r = requests.post(url, headers=headers, data = jdump)
         print(r.text)
 
         return ''
+
+def sendImageToUserList(ulist, imageurl):
+    for u in ulist:
+        sendImageToUser(u, imageurl)
+        time.sleep(0.5)
+        print("done: "+u)
 
 def sendToUserList(ulist, msg):
     for u in ulist:
@@ -82,7 +110,10 @@ def showLineUsers(lastdays=None):
         r = table_user.scan(Limit=5000)
         cnt = 1
         for item in r['Items']:
-            tmp = "{},{},{},".format(item['displayName'],item['pictureUrl'],item['userId'])
+            pictureUrl = ''
+            if 'pictureUrl' in item:
+                pictureUrl=item['pictureUrl']
+            tmp = "{},{},{},".format(item['displayName'],pictureUrl,item['userId'])
  #     {'displayName': 'Y G', 'pictureUrl': 'http://dl.profile.line-cdn.net/0hOw6jMh39EFgLEz8kzRBvDzdWHjV8PRYQcyFbOS0VRmEuIlVaYiFcPyxEG28mIgILMn0PPSwWTG4i', 'userId': 'Ua60d254375033b0a8cd170dab02ea453', 'statusMessage': '思念太猖狂(煩惱)', 'last': Decimal('1497232992')}
             n = datetime.datetime.now().timestamp()
 
@@ -119,6 +150,7 @@ if __name__ == '__main__':
     parser.add_argument('--select','-s', help='selected user list file')
     parser.add_argument('--profile','-p', help='get one user profile')
     parser.add_argument('--lastdays','-d', help='show only user who actually use in past N days')
+    parser.add_argument('--imageurl','-i', help='message attached image url') 
 
     args = parser.parse_args()
     if args.profile is not None :
@@ -130,12 +162,14 @@ if __name__ == '__main__':
         print("show all current line users")
         lastdays = None
         if args.lastdays is not None:
-            lastdays = int(args.lastdays)
+            lastdays = float(args.lastdays)
         showLineUsers(lastdays)
         exit(0)
 
     if args.msg is not None:
-        print("send message:"+args.msg)
+        print("send message:" + args.msg)
+        if args.imageurl is not None:
+            print("with image"+args.imageurl)
         ulist =  [bossid]
         if args.select is not None:
             userListFile = open(args.select)
@@ -143,10 +177,15 @@ if __name__ == '__main__':
                 parts = line.split(",")
                 uid=parts[0].strip()
                 ulist.append(uid)
-            print(ulist)
+#            print(ulist)
+            if args.imageurl is not None:
+                sendImageToUserList(ulist,args.imageurl)
+
             sendToUserList(ulist,args.msg)
         else:
             ulist = listLineUserId()
             print(ulist)
+            if args.imageurl is not None:
+                sendImageToUserList(ulist,args.imageurl)
             sendToUserList(ulist,args.msg)
 
