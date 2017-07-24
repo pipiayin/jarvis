@@ -7,6 +7,7 @@ import sys
 import datetime
 import requests
 from nocheckin import XLineToken
+from wikiFinder import findWikiCN
 
 
 lambda_client = boto3.client('lambda')
@@ -18,10 +19,12 @@ def uploadLineImageToS3(uid, imageId, bucket='sandyiface'):
     r = requests.get(imageUrl, headers=headers, stream=True)
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket)
-    objkey = uid + "_" + imageId
+    objkey = uid + "_" + imageId+".jpg"
     obj = bucket.Object(objkey)
     with r.raw as data:
         obj.upload_fileobj(data)
+
+    obj.Acl().put(ACL='public-read') 
 
     return objkey
 
@@ -46,8 +49,10 @@ def analysisFaceRec(response):
         msg = u'這個相片裡的人都不太有名...'
 
     if len(response['CelebrityFaces']) > 0 :
+        msg = ''
         for f in response['CelebrityFaces']:
-            msg = u'這張相片中的人 似乎和 {} 有 {}的相似度 '.format(f['Name'], f['MatchConfidence'])
+            cname = findWikiCN(f['Name'])
+            msg = msg +  u'這張相片中的人 似乎和 {} {}有 {}的相似度 '.format(f['Name'],cname, f['MatchConfidence'])
             msg = msg + "\n"
             
             if len(f['Urls']) > 0:
@@ -59,7 +64,7 @@ def analysisFaceRec(response):
     return msg
 
 def lambda_handler(even, context):
-    try:
+    #try:
         print("-----In faceRecognize---")
         # even format: {"uid": "botid": , "callback":"lineResponse", "imageId":"image_id_from_line"}
         # TODO: ASSUMPTION, all callback assume go for lineResponse
@@ -93,19 +98,31 @@ def lambda_handler(even, context):
              Payload=json.dumps(toLineResponse),
          )
 
+        bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+        msg = msg +"\n 有人送圖來-> \n"
+
+        toBossResponse={'uid':bossid, 'msg':msg, 'imageurl':"https://s3-us-west-2.amazonaws.com/sandyiface/"+objKeyString }
+        lresponse = lambda_client.invoke(
+             FunctionName='lineResponse',
+             InvocationType='Event',
+             LogType='None',
+             ClientContext='string',
+             Payload=json.dumps(toBossResponse),
+         )
+
         return 
-    except:
-        print(even)
-        print(sys.exc_info()[0])
-        return "something wrong"
+    #except:
+    #    print(even)
+    #    print(sys.exc_info()[0])
+    #    return "something wrong"
    
 
 if __name__ == '__main__':
     print("TODO: simple test script")
     imageId = u'6435122147042'
     imageId = u'6435265574375'
-    imageId = u'6435271838359'
     imageId = u'6435322417921'
+    imageId = u'6435271838359'
     userId =  u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     even = {'uid':userId, 'imageId':imageId}
     lambda_handler(even, None)
