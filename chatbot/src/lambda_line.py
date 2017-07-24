@@ -69,9 +69,25 @@ def lambda_handler(even, context):
             isGroup = True
             uid = even['events'][0]['source']['roomId']
 
-        msg = ''
-        if 'text' in even['events'][0]['message']:
+        msg = '_'
+        messageType = 'text'
+
+        if 'text' == even['events'][0]['message']['type']:
             msg = even['events'][0]['message']['text']
+
+        if 'image' == even['events'][0]['message']['type']:
+            messageType = 'image'
+            imageId = even['events'][0]['message']['id']
+            imageAnalysis = {'uid':uid, 'imageId': imageId}
+            lresponse = lambda_client.invoke(
+                FunctionName='facerecognize',
+                InvocationType='Event',
+                LogType='None',
+                ClientContext='string',
+                Payload=json.dumps(imageAnalysis),
+            )
+
+
         even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
@@ -98,8 +114,12 @@ def lambda_handler(even, context):
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
     
-        #print(toLog)
+        print(toLog)
+   
         table_log.put_item(Item=toLog)
+        if messageType == 'image':
+            return "imageOk"
+
         if msg.startswith(tuple(learn_triggers)) :
             if isGroup:
                 print("ignore learn from group")
@@ -114,7 +134,7 @@ def lambda_handler(even, context):
                 )
         else:
             print("to trigger ai brain \n\n")
-            if isGroup:
+            if isGroup :
                 if msg.startswith(tuple(group_triggers)):
                     print("in group trigger")
                     tmpmsg = msg
@@ -156,7 +176,7 @@ if __name__ == '__main__':
     tmp = {u'events':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
-            u'message': {'text':msg},
+            u'message': { 'type':'image' , 'id':'6435322417921'},
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
 
