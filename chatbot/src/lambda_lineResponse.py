@@ -12,7 +12,7 @@ from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyr
 
 
 
-def responseToUser(uid, resp, botid=''):
+def responseToUser(uid, resp, botid='',imageurl=''):
 #    try:
         print("to response to line user, with botid:"+botid+"-end-")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
@@ -30,6 +30,9 @@ def responseToUser(uid, resp, botid=''):
                 "text": resp
              }]
         }  
+
+        if imageurl != '':
+            payload['messages'].append({'type':'image', "originalContentUrl":  imageurl, "previewImageUrl": imageurl})
 
         jdump = json.dumps(payload)
         print(jdump)
@@ -52,13 +55,16 @@ def lambda_handler(even, context):
         print("-----just response message to a uid ---")
         # all we need in even{} is uid, msg, botid
         botid = ''
+        imageurl = ''
         if 'uid' in even and 'msg' in even:
             if 'botid' in even: 
                 botid = even['botid']
+            if 'imageurl'  in even:
+                imageurl = even['imageurl']
         else:
             return
 
-        responseToUser(even['uid'],even['msg'],botid)
+        responseToUser(even['uid'],even['msg'],botid,imageurl)
 
         tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
@@ -80,7 +86,10 @@ def lambda_handler(even, context):
 if __name__ == '__main__':
 
     # To try from command line
-    tmp={'uid':u'Uc9b95e58acb9ab8d2948f8ac1ee48fad','msg':'a short url'}
+    tmp={
+        'uid':u'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
+         'msg':'a short url',
+         'imageurl':'https://s3-us-west-2.amazonaws.com/sandyiface/Uc9b95e58acb9ab8d2948f8ac1ee48fad_6435271838359.jpg'}
     print(lambda_handler(tmp, None))
 
     
