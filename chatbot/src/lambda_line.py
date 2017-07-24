@@ -69,7 +69,9 @@ def lambda_handler(even, context):
             isGroup = True
             uid = even['events'][0]['source']['roomId']
 
-        msg = even['events'][0]['message']['text']
+        msg = ''
+        if 'text' in even['events'][0]['message']:
+            msg = even['events'][0]['message']['text']
         even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
