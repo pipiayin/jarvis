@@ -6,6 +6,7 @@ import boto3
 import sys
 import datetime
 import requests
+import urllib
 import random
 from nocheckin import XLineToken
 
@@ -15,11 +16,66 @@ from wikiFinder import findWikiCN
 
 lambda_client = boto3.client('lambda')
 
+def beautyCompare(imageId):
+    rclient = boto3.client('rekognition')
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('sandyifamousface')
+    firstFaceV = 0
+    secondFaceV = 0
+    firstName = ''
+    secondName = ''
+    for o in bucket.objects.all():
+        #print(o.key)
+        response = rclient.compare_faces(
+            SourceImage={
+                'S3Object': {
+                'Bucket': 'sandyiface',
+                'Name': imageId,
+            }
+        },
+            TargetImage={
+                'S3Object': {
+                'Bucket': 'sandyifamousface',
+                'Name': o.key,
+            }
+        },
+            SimilarityThreshold = 45
+        )
+
+
+        if len(response['FaceMatches'] ) > 0:
+            simV = response['FaceMatches'][0]['Similarity']
+            print(o.key+" "+str(simV))
+            if simV >  firstFaceV :
+                firstFaceV = simV
+                firstName = o.key
+            elif simV >= secondFaceV:
+                secondFaceV = simV
+                secondName = o.key
+            else:
+                pass
+        if firstFaceV >= 90 :
+            break
+        if secondFaceV >= 60 and secondName[0:-5] != firstName[0:-5]:
+            break
+
+    if firstName == '':
+        print("no match")
+        return {}
+    if firstFaceV >= 93:
+        result = {firstName[0:-5]:firstFaceV}
+    else:
+        result = {secondName[0:-5]:secondFaceV, firstName[0:-5]:firstFaceV}
+    print(result)
+    return result
+
 
 def faceReport(faceDetailDict):
     
     explains = '這是個{} 年齡大概是{}'
-    AgeRange = random.randint(faceDetailDict['AgeRange']['Low'],faceDetailDict['AgeRange']['High']-3)
+    ageL = faceDetailDict['AgeRange']['Low']
+    ageH = int((faceDetailDict['AgeRange']['High'] + faceDetailDict['AgeRange']['Low'])/2)
+    AgeRange = random.randint(ageL, ageH)
     genderZHDict = {'MALE':'男的','FEMALE':'女的'}
     genderZH = genderZHDict[faceDetailDict['Gender']['Value'].upper()]
     explains = explains.format(genderZH, AgeRange)
@@ -170,8 +226,24 @@ def lambda_handler(even, context):
             lineResponse(toLineResponse)
             return "not human"
 
+        sendCompareList = []
         for fd in fresponse:
             msg = msg + faceReport(fd)+ "\n"
+            if fd['Gender']['Value'].upper() == 'FEMALE':
+                beautyResult = beautyCompare(objKeyString)
+                if beautyResult == {}:
+                    msg = msg +"\n 根據美女資料比對結果 照片中的女性之美是天生而獨一無二的"
+                elif len(beautyResult) == 1 :
+                    name, value = beautyResult.popitem()
+                    msg = msg +"\n 這根本就是 {} 相似度達 {}".format(name, value)
+                    sendCompareList.append(name)
+                else:
+                    msg = msg +"\n 根據美女資料比對結果 照片中的美女乃是\n"
+                    for bname in beautyResult:
+                        sendCompareList.append(bname)
+                        msg = msg + bname+" 相似度:"+str(beautyResult[bname]) +"\n"
+                    msg = msg +" 的綜合"
+               
 
         cresponse = recognizeCelebrities(objKeyString)
        
@@ -183,6 +255,14 @@ def lambda_handler(even, context):
 
         toLineResponse = {'uid':uid, 'msg':msg}
         lineResponse(toLineResponse)
+
+        for bSend in sendCompareList:
+            imageurl = "https://s3-us-west-2.amazonaws.com/sandyifamousface/" + urllib.parse.quote(bSend)+"1.jpg"
+            toBResponse = {'uid':uid, 
+                 'msg':bSend+"的參考照", 
+                 'imageurl': imageurl }
+            print(toBResponse)
+            lineResponse(toBResponse)
 
         userDisplayName = getUserDisplayName(uid)
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
@@ -204,6 +284,7 @@ if __name__ == '__main__':
     imageId = u'6435265574375'
     imageId = u'6435322417921'
     imageId = u'6435271838359'
+    imageId = '6439491741308'
     userId =  u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     even = {'uid':userId, 'imageId':imageId}
     lambda_handler(even, None)

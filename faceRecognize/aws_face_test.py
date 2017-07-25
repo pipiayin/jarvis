@@ -13,6 +13,55 @@ import boto3
 import requests
 from nocheckin import XLineToken
 
+def beautyCompare(imageId):
+    rclient = boto3.client('rekognition')
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('sandyifamousface')
+    firstFaceV = 0
+    secondFaceV = 0
+    firstName = ''
+    secondName = ''
+    for o in bucket.objects.all():
+        #print(o.key)
+
+        response = rclient.compare_faces(
+            SourceImage={
+                'S3Object': {
+                'Bucket': 'sandyiface',
+                'Name': imageId,
+            }
+        },
+            TargetImage={
+                'S3Object': {
+                'Bucket': 'sandyifamousface',
+                'Name': o.key,
+            }
+        },
+            SimilarityThreshold = 45 
+        )
+    
+        if len(response['FaceMatches'] ) > 0:
+            simV = response['FaceMatches'][0]['Similarity']
+            print(o.key+" "+str(simV))
+            if simV >  firstFaceV :
+                firstFaceV = simV 
+                firstName = o.key
+            elif simV >= secondFaceV:
+                secondFaceV = simV
+                secondName = o.key
+            else:
+                pass         
+        if firstFaceV >= 93 :
+            break
+        if secondFaceV >= 60 and secondName[0:-5] != firstName[0:-5]:
+            break
+   
+    if firstName == '':
+        print("no match")
+        return {}
+    result = {firstName:firstFaceV, secondName:secondFaceV}
+    print(result)
+    return result
 
 def faceReport(faceDetailDict):
     
@@ -70,6 +119,9 @@ if __name__ == '__main__':
     image_id = '6438421593368'
     image_id = '6436738029032'
     image_id = '6435122147042'
+    image_id = '6439491741308' #girl
+    image_id = '6435122147042'
+    image_id = '6438421593368'
     image_url = 'https://api.line.me/v2/bot/message/{}/content'.format(image_id)
     r = requests.get(image_url, headers=headers, stream=True)
     print(dir(r))
@@ -82,6 +134,8 @@ if __name__ == '__main__':
 
     with r.raw as data:
         obj.upload_fileobj(data)
+
+
 
 
     rclient = boto3.client('rekognition')
@@ -104,6 +158,9 @@ if __name__ == '__main__':
     print(len(response['FaceDetails']))
     for fd in response['FaceDetails']:
         print(faceReport(fd))
+        if fd['Gender']['Value'].upper() == 'FEMALE':
+            r = beautyCompare(image_id)
+            print(r)
 
     response = rclient.recognize_celebrities(
     Image={
