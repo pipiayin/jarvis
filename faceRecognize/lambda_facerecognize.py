@@ -39,7 +39,7 @@ def beautyCompare(imageId):
                 'Name': o.key,
             }
         },
-            SimilarityThreshold = 45
+            SimilarityThreshold = 53
         )
 
 
@@ -56,7 +56,7 @@ def beautyCompare(imageId):
                 pass
         if firstFaceV >= 90 :
             break
-        if secondFaceV >= 60 and secondName[0:-5] != firstName[0:-5]:
+        if secondFaceV >= 65 and secondName[0:-5] != firstName[0:-5]:
             break
 
     if firstName == '':
