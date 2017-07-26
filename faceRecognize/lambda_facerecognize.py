@@ -56,13 +56,13 @@ def beautyCompare(imageId):
                 pass
         if firstFaceV >= 90 :
             break
-        if secondFaceV >= 65 and secondName[0:-5] != firstName[0:-5]:
-            break
+#        if secondFaceV >= 65 and secondName[0:-5] != firstName[0:-5]:
+#            break
 
     if firstName == '':
         print("no match")
         return {}
-    if firstFaceV >= 93:
+    if firstFaceV >= 90:
         result = {firstName[0:-5]:firstFaceV}
     else:
         result = {secondName[0:-5]:secondFaceV, firstName[0:-5]:firstFaceV}
@@ -72,7 +72,7 @@ def beautyCompare(imageId):
 
 def faceReport(faceDetailDict):
     
-    explains = '這是個{} 年齡大概是{}'
+    explains = '\n這位是{} 年齡大概是{}歲'
     ageL = faceDetailDict['AgeRange']['Low']
     ageH = int((faceDetailDict['AgeRange']['High'] + faceDetailDict['AgeRange']['Low'])/2)
     AgeRange = random.randint(ageL, ageH)
@@ -166,13 +166,13 @@ def analysisFaceRec(response):
     #TODO improve message
     msg = ""
     if len(response['CelebrityFaces']) == 0:
-        msg = u'這個相片裡的人好像不是名人...'
+        msg = u'\n 恩...這個相片裡的人好像不是名人...'
 
     if len(response['CelebrityFaces']) > 0 :
         msg = ''
         for f in response['CelebrityFaces']:
             cname = findWikiCN(f['Name'])
-            msg = msg +  u'這張相片中的人和 {} {}有 {}的相似度 '.format(f['Name'],cname, f['MatchConfidence'])
+            msg = msg +  u'\n 在名人資料庫中比對這個人和 {} {}有 {}的相似度 '.format(f['Name'],cname, f['MatchConfidence'])
             msg = msg + "\n"
             
             if len(f['Urls']) > 0:
@@ -232,17 +232,19 @@ def lambda_handler(even, context):
             if fd['Gender']['Value'].upper() == 'FEMALE':
                 beautyResult = beautyCompare(objKeyString)
                 if beautyResult == {}:
-                    msg = msg +"\n 根據美女資料比對結果 照片中的女性之美是天生而獨一無二的"
+                    msg = msg +"\n 根據美女資料比對結果 照片中的女性之美是天生而獨一無二的\n"
                 elif len(beautyResult) == 1 :
                     name, value = beautyResult.popitem()
-                    msg = msg +"\n 這根本就是 {} 相似度達 {}".format(name, value)
+                    msg = msg +"\n這根本就是 {} 相似度達 {}".format(name, value)
                     sendCompareList.append(name)
                 else:
-                    msg = msg +"\n 根據美女資料比對結果 照片中的美女乃是\n"
+                    msg = msg +"\n根據美女資料比對結果 照片中的美女乃是\n"
                     for bname in beautyResult:
+                        if bname == '' or int(beautyResult[bname]) == 0:
+                            continue
                         sendCompareList.append(bname)
-                        msg = msg + bname+" 相似度:"+str(beautyResult[bname]) +"\n"
-                    msg = msg +" 的綜合"
+                        msg = msg + bname+" 相似度:"+str(int(beautyResult[bname])) +"% \n"
+                    msg = msg +"的綜合 \n"
                
 
         cresponse = recognizeCelebrities(objKeyString)
