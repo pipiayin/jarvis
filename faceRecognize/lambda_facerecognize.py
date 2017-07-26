@@ -16,7 +16,7 @@ from wikiFinder import findWikiCN
 
 lambda_client = boto3.client('lambda')
 
-def beautyCompare(imageId):
+def beautyCompare(byteArray):
     rclient = boto3.client('rekognition')
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('sandyifamousface')
@@ -28,10 +28,7 @@ def beautyCompare(imageId):
         #print(o.key)
         response = rclient.compare_faces(
             SourceImage={
-                'S3Object': {
-                'Bucket': 'sandyiface',
-                'Name': imageId,
-            }
+                'Bytes': byteArray
         },
             TargetImage={
                 'S3Object': {
@@ -113,10 +110,18 @@ def faceReport(faceDetailDict):
 
 
 
-def detectFaces(imageId,bucket='sandyiface'):
+def detectFaces(bArray,bucket='sandyiface'):
     rclient = boto3.client('rekognition')
 
     response = rclient.detect_faces(
+        Image={
+            'Bytes': bArray
+        },
+        Attributes=[
+        'ALL',
+       ]
+    )
+    """response = rclient.detect_faces(
         Image={
             'S3Object': {
             'Bucket': 'sandyiface',
@@ -126,7 +131,7 @@ def detectFaces(imageId,bucket='sandyiface'):
         Attributes=[
         'ALL',
        ]
-    )
+    )"""
 
     return response['FaceDetails']
 
@@ -141,12 +146,20 @@ def uploadLineImageToS3(uid, imageId, bucket='sandyiface'):
     bucket = s3.Bucket(bucket)
     objkey = uid + "_" + imageId+".jpg"
     obj = bucket.Object(objkey)
+    bArray = None
+
+  #  with r.raw as data:
+  #      obj.upload_fileobj(data)
+
     with r.raw as data:
-        obj.upload_fileobj(data)
+        f = data.read()
+        bArray = bytearray(f)
+
+    obj.put(Body = bArray)
 
     obj.Acl().put(ACL='public-read') 
 
-    return objkey
+    return objkey, bArray
 
 def recognizeCelebrities(objkey,bucket='sandyiface'):
 
@@ -211,8 +224,9 @@ def lambda_handler(even, context):
         else:
             return 
 
-        objKeyString = uploadLineImageToS3(uid, imageId)
-        fresponse = detectFaces(objKeyString)
+        objKeyString, bArray = uploadLineImageToS3(uid, imageId)
+        #fresponse = detectFaces(objKeyString)
+        fresponse = detectFaces(bArray)
         msg = ''
         if len(fresponse)>=3:
             msg = '拜託不要用團體照為難我，最多就兩個人好嗎'
@@ -230,7 +244,7 @@ def lambda_handler(even, context):
         for fd in fresponse:
             msg = msg + faceReport(fd)+ "\n"
             if fd['Gender']['Value'].upper() == 'FEMALE':
-                beautyResult = beautyCompare(objKeyString)
+                beautyResult = beautyCompare(bArray)
                 if beautyResult == {}:
                     msg = msg +"\n 根據美女資料比對結果 照片中的女性之美是天生而獨一無二的\n"
                 elif len(beautyResult) == 1 :
@@ -270,7 +284,12 @@ def lambda_handler(even, context):
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         msg = msg +userDisplayName+":送圖來 \n"
 
-        toBossResponse={'uid':bossid, 'msg':msg, 'imageurl':"https://s3-us-west-2.amazonaws.com/sandyiface/"+objKeyString }
+        toBossImageurl = 'https://api.line.me/v2/bot/message/{}/content'.format(imageId)
+        toBossImageurl = "https://s3-us-west-2.amazonaws.com/sandyiface/"+objKeyString
+        #toBossResponse={'uid':bossid, 'msg':msg, 'imageurl':"https://s3-us-west-2.amazonaws.com/sandyiface/"+objKeyString }
+        print('--- boss url ---')
+        print(toBossImageurl)
+        toBossResponse={'uid':bossid, 'msg':msg, 'imageurl':toBossImageurl }
         lineResponse(toBossResponse)
 
         return "ok"
