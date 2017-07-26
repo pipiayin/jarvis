@@ -16,6 +16,27 @@ from wikiFinder import findWikiCN
 
 lambda_client = boto3.client('lambda')
 
+def detectModeration(bArray):
+    rclient = boto3.client('rekognition')
+    response = rclient.detect_moderation_labels(
+        Image={
+            'Bytes': bArray
+        },
+        MinConfidence = 60
+    )
+    return response
+
+def explainModeration(mResponse):
+    msg = ''
+    for mlabel in mResponse['ModerationLabels']:
+        if mlabel['Name'] == 'Explicit Nudity' or mlabel['ParentName'] == 'Explicit Nudity' and mlabel['Confidence'] >=80 :
+            msg = '\n經過分析 有{}%的信心覺得 這照片恐有傷風敗俗嫌疑...\n'.format(int(mlabel['Confidence']))
+            msg = msg +"\n小姍不分析 也不想看這類照片 sorry"
+            break
+
+    return msg
+
+
 def beautyCompare(byteArray):
     rclient = boto3.client('rekognition')
     s3 = boto3.resource('s3')
@@ -161,15 +182,13 @@ def uploadLineImageToS3(uid, imageId, bucket='sandyiface'):
 
     return objkey, bArray
 
-def recognizeCelebrities(objkey,bucket='sandyiface'):
+def recognizeCelebrities(bArray,bucket='sandyiface'):
 
     rclient = boto3.client('rekognition')
     response = rclient.recognize_celebrities(
     Image = {
-            'S3Object': {
-            'Bucket': bucket,
-            'Name': objkey }
-           }
+        'Bytes':bArrayi
+        }
     )
     return response
     
@@ -225,6 +244,20 @@ def lambda_handler(even, context):
             return 
 
         objKeyString, bArray = uploadLineImageToS3(uid, imageId)
+        bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+
+        dResponse = detectModeration(bArray)
+        if len(dResponse['ModerationLabels']) > 0:
+            modMsg = explainModeration(dResponse)
+            if modMsg != '':
+                toLineResponse = {'uid':uid, 'msg':modMsg}
+                lineResponse(toLineResponse)
+                bossModMsg = modMsg + " "+objKeyString
+                toBossResponse={'uid':bossid, 'msg':bossModMsg }
+                lineResponse(toBossResponse)
+                return "moderation!"
+
+
         #fresponse = detectFaces(objKeyString)
         fresponse = detectFaces(bArray)
         msg = ''
@@ -261,9 +294,9 @@ def lambda_handler(even, context):
                     msg = msg +"的綜合 \n"
                
 
-        cresponse = recognizeCelebrities(objKeyString)
+        cresponse = recognizeCelebrities(bArray)
        
-        msg = msg+ analysisFaceRec(cresponse)
+        msg = msg + analysisFaceRec(cresponse)
         
         toLineResponse={'uid':uid, 'msg':msg}
         if msg == '':
@@ -281,7 +314,6 @@ def lambda_handler(even, context):
             lineResponse(toBResponse)
 
         userDisplayName = getUserDisplayName(uid)
-        bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         msg = msg +userDisplayName+":送圖來 \n"
 
         toBossImageurl = 'https://api.line.me/v2/bot/message/{}/content'.format(imageId)
@@ -306,6 +338,7 @@ if __name__ == '__main__':
     imageId = u'6435322417921'
     imageId = u'6435271838359'
     imageId = '6439491741308'
+    imageId = '6445361396005' #moderation label!
     userId =  u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     even = {'uid':userId, 'imageId':imageId}
     lambda_handler(even, None)
