@@ -13,27 +13,6 @@ import boto3
 import requests
 from nocheckin import XLineToken
 
-def detectModeration(bArray):
-    rclient = boto3.client('rekognition')
-    response = rclient.detect_moderation_labels(
-        Image={
-            'Bytes': bArray
-        },
-        MinConfidence = 60
-    )
-    return response
-
-def explainModeration(mResponse):
-    msg = ''
-    for mlabel in mResponse['ModerationLabels']:
-        if mlabel['Name'] == 'Explicit Nudity' or mlabel['ParentName'] == 'Explicit Nudity' and mlabel['Confidence'] >=80 :
-            msg = '\n經過分析 有{}的信心覺得 這照片恐有傷風敗俗嫌疑...\n'.format(int(mlabel['Confidence'])) 
-            msg = msg +"\n小姍不分析 也不想看這類照片 sorry"
-            break
-        
-    return msg
-
-
 def beautyCompare(imageId):
     rclient = boto3.client('rekognition')
     s3 = boto3.resource('s3')
@@ -125,17 +104,6 @@ if __name__ == '__main__':
     headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
 
 
-
-  #  url = 'https://trialbot-api.line.me/v1/events'
-    """
-    url = 'https://trialbot-api.line.me/v1/profiles'
-    uids = [ "u0a3d105aa9f8c1ab256dffe226c1d99a", "u1ea21aa1908e6f9db4493f338add1f43", "u41b34094d1078bfd7ac91ae9a0fa2d25", "u47ea331dd00d16c830afef34795b634d", "ua112a584bffbd8898c583669931ee23b", "ubc5b714cecbad5657485548f2a6776fa", "ue38104279bcf8edf0534e038fd151006", "ueda8b2682b70f3bd7b93d72ac58a5e33", "uf234561bda4da2dd46e6486636eb607f",'u9c82e1183eeac7c50124d769d343657c']
-    for uid in uids :
-        params={"mids":uid}
-        r = requests.get(url, headers=headers, params = params)
-        print(r)
-        print(r.text)
-    """
     image_id = '6433940320137'
     image_id = '6438421593368'
     image_id = '6436738029032'
@@ -143,40 +111,19 @@ if __name__ == '__main__':
     image_id = '6435122147042'
     image_id = '6438421593368'
     image_id = '6439491741308' #girl
-    image_id = '6445361396005' #modo
-
     image_url = 'https://api.line.me/v2/bot/message/{}/content'.format(image_id)
     r = requests.get(image_url, headers=headers, stream=True)
+    print(dir(r))
+
     bArray = None
     with r.raw as data:
-        f = data.read()
+        f = data.read() 
         bArray = bytearray(f)
-    #with r.raw  as fd:
-    #    print(fd.read())
-
-    dResponse = detectModeration(bArray)
-    print(dResponse)
-    if len(dResponse['ModerationLabels']) > 0:
-        modMsg = explainModeration(dResponse)
-        if modMsg != '':
-            print(modMsg)
-"""
-    import boto3
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket('sandyiface')
-    obj = bucket.Object(image_id)
-
-    with r.raw as data:
-        obj.upload_fileobj(data)
 
     rclient = boto3.client('rekognition')
-
     response = rclient.detect_faces(
         Image={
-            'S3Object': {
-            'Bucket': 'sandyiface',
-            'Name': image_id
-             }
+            'Bytes': bArray
         },
         Attributes=[
         'ALL',
@@ -189,27 +136,5 @@ if __name__ == '__main__':
     print(len(response['FaceDetails']))
     for fd in response['FaceDetails']:
         print(faceReport(fd))
-        if fd['Gender']['Value'].upper() == 'FEMALE':
-            r = beautyCompare(image_id)
-            print(r)
 
-    response = rclient.recognize_celebrities(
-    Image={
-        'S3Object': {
-            'Bucket': 'sandyiface',
-            'Name': image_id
-        }
-    }
-    )
-    for k in response:
-        print(k)
-
-    if len(response['CelebrityFaces']) > 0 :
-        print("match somebody")
-        for f in response['CelebrityFaces']:
-            print(f['MatchConfidence'])
-            print(f['Name'])
-            print(f['Urls'])
-
-"""
 
