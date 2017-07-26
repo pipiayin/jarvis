@@ -187,7 +187,7 @@ def recognizeCelebrities(bArray,bucket='sandyiface'):
     rclient = boto3.client('rekognition')
     response = rclient.recognize_celebrities(
     Image = {
-        'Bytes':bArrayi
+        'Bytes':bArray
         }
     )
     return response
