@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 from __future__ import print_function 
 import json
@@ -305,13 +305,13 @@ def lambda_handler(even, context):
         toLineResponse = {'uid':uid, 'msg':msg}
         lineResponse(toLineResponse)
 
-        for bSend in sendCompareList:
-            imageurl = "https://s3-us-west-2.amazonaws.com/sandyifamousface/" + urllib.parse.quote(bSend)+"1.jpg"
-            toBResponse = {'uid':uid, 
-                 'msg':bSend+"的參考照", 
-                 'imageurl': imageurl }
-            print(toBResponse)
-            lineResponse(toBResponse)
+        #for bSend in sendCompareList:
+        #    imageurl = "https://s3-us-west-2.amazonaws.com/sandyifamousface/" + urllib.parse.quote(bSend)+"1.jpg"
+        #    toBResponse = {'uid':uid, 
+        #         'msg':bSend+"的參考照", 
+        #         'imageurl': imageurl }
+        #    print(toBResponse)
+        #    lineResponse(toBResponse)
 
         userDisplayName = getUserDisplayName(uid)
         msg = msg +userDisplayName+":送圖來 \n"
@@ -339,6 +339,7 @@ if __name__ == '__main__':
     imageId = u'6435271838359'
     imageId = '6439491741308'
     imageId = '6445361396005' #moderation label!
+    imageId = u'6435271838359'
     userId =  u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     even = {'uid':userId, 'imageId':imageId}
     lambda_handler(even, None)
