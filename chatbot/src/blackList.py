@@ -3,6 +3,8 @@
 
 #TODO a better way to get black list
 badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
+              'U1e509f4a4c19d8e5ff9cab69b898dd97',
+              'Ued5345798c61880b2f83aded07fc17ea',
               'U582c6095db180f64ddc3d31936cda2f9',
               'Uc4381cd6770532f86ae4ffa4c2925651',
               'Uec200f8b1434c9d172dad49da7b1908e',

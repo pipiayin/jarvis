@@ -13,6 +13,7 @@ import botocore.session
 import requests
 from lineTools import getBotHeader
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
+from blackList import badfriends
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -24,6 +25,16 @@ lambda_client = boto3.client('lambda')
 learn_triggers = ['590590',u'小安 學',u'小安學']
 group_triggers = [u'小姍',u'小安','JHC']
 
+
+
+def lineResponse(toLineResponse):
+    lresponse = lambda_client.invoke(
+         FunctionName='lineResponse',
+         InvocationType='Event',
+         LogType='None',
+         ClientContext='string',
+         Payload=json.dumps(toLineResponse),
+    )
 
 def getLineUser(fromuid,botid=''):
     try:
@@ -59,6 +70,7 @@ def lambda_handler(even, context):
         ts =  int(time.time())
         print(even) #
         uid = ''
+        bossid = 'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         isGroup = False
         if 'userId' in even['events'][0]['source'] :
             uid = even['events'][0]['source']['userId']
@@ -76,6 +88,15 @@ def lambda_handler(even, context):
             msg = even['events'][0]['message']['text']
 
         if 'image' == even['events'][0]['message']['type']:
+            if uid in badfriends:
+                msg = '抱歉 目前系統認定是你是壞朋友 你送的圖就先不理會了 如果要申訴 請email給我主人: ai@talent-service.com'
+                toLineResponse = {'uid':uid, 'msg':msg}
+                lineResponse(toLineResponse)
+                toLineResponse = {'uid':bossid, 'msg': "有人傳圖片被擋:"+uid}
+                lineResponse(toLineResponse)
+
+                return
+
             messageType = 'image'
             imageId = even['events'][0]['message']['id']
             imageAnalysis = {'uid':uid, 'imageId': imageId}
