@@ -13,8 +13,21 @@ from nocheckin import XLineToken
 from lineTools import getUserDisplayName
 from wikiFinder import findWikiCN
 
-
+import io
 lambda_client = boto3.client('lambda')
+s3 = boto3.resource('s3')
+sfbucket = s3.Bucket('sandyifamousface')
+allFamousFaces = []
+
+for sobj in sfbucket.objects.all():
+    tmpo = sfbucket.Object(sobj.key)
+    tmpdata = tmpo.get()['Body'].read()
+    tmpba = bytearray(tmpdata)
+    allFamousFaces.append(tmpba)
+        
+
+print("initial script"+str(len(allFamousFaces)))
+
 
 def detectModeration(bArray):
     rclient = boto3.client('rekognition')
@@ -39,23 +52,25 @@ def explainModeration(mResponse):
 
 def beautyCompare(byteArray):
     rclient = boto3.client('rekognition')
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket('sandyifamousface')
+#    s3 = boto3.resource('s3')
+#    bucket = s3.Bucket('sandyifamousface')
     firstFaceV = 0
     secondFaceV = 0
     firstName = ''
     secondName = ''
-    for o in bucket.objects.all():
+#    for o in bucket.objects.all():
+    for o in allFamousFaces:
         #print(o.key)
         response = rclient.compare_faces(
             SourceImage={
                 'Bytes': byteArray
         },
             TargetImage={
-                'S3Object': {
-                'Bucket': 'sandyifamousface',
-                'Name': o.key,
-            }
+                'Bytes': o
+                #'S3Object': {
+                #'Bucket': 'sandyifamousface',
+                #'Name': o.key,
+            #}
         },
             SimilarityThreshold = 53
         )
