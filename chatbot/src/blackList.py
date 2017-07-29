@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 #TODO a better way to get black list
-badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
+bsadfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
+              'U679b5ab432456e4a0c01964ea5d0ae01',
+              'U5b6920bd0ae473155a443d08ecb38f49',
+              'U26821f8a982b0044e40b9826235bcc32',
               'U1e509f4a4c19d8e5ff9cab69b898dd97',
               'Ued5345798c61880b2f83aded07fc17ea',
               'U582c6095db180f64ddc3d31936cda2f9',
