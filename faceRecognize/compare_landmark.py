@@ -26,6 +26,14 @@ def compareLandMark(landmarkList1, landmarkList2):
                    ('eyeLeft','nose'),
                    ('mouthLeft','nose'),
                    ('mouthRight','nose'),
+                   ('mouthUp','mouthDown'),
+                   ('mouthLeft','mouthDown'),
+                   ('mouthRight','mouthDown'),
+                   ('noseRight','eyeRight'),
+                   ('leftPupil','rightPupil'),
+                   ('nose','rightPupil'),
+                   ('leftPupil','nose'),
+                   ('noseRight','noseLeft'),
                    ('eyeRight','eyeLeft') ,
                    ('mouthRight','mouthLeft') ,
                    ('mouthRight','eyeRight') ,
@@ -36,16 +44,28 @@ def compareLandMark(landmarkList1, landmarkList2):
     for (m1,m2) in compareList:
         d1 = getDistanceFromType(landmarkList1, m1, m2)
         d2 = getDistanceFromType(landmarkList2, m1, m2)
-        distance = abs(d1-d2)
+        distance = (abs(d1-d2)/d1)
         distList.append(distance)
 
 
+    lenD = len(distList)
     mD = statistics.mean(distList)
-    print(mD)
-    print(statistics.stdev(distList))
-    print(statistics.variance(distList))
+    mStd = statistics.stdev(distList)
+    #print(mD)
+    #print(mStd)
+    #print(statistics.stdev(distList))
+    mV = statistics.variance(distList)
     conf = (1-mD)**2
-    return conf
+    #print('1 - mean) **2')
+    #print(conf)
+    #print('1-std *(2')
+    #print((1-mStd)**2)
+    #print('1- var *(2')
+    #print((1-mV)**2)
+
+    #print('sum')
+    #print(mD * len(distList))
+    return conf*100
 
 if __name__ == '__main__':
     from exampleLM import landmark1, landmark2, landmark3

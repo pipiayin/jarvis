@@ -12,7 +12,7 @@ import random
 import boto3
 import requests
 from nocheckin import XLineToken
-from cpLMK import compareLandMark
+from compare_landmark import compareLandMark
 
 
 def listBeauty(bucket):
@@ -45,7 +45,7 @@ def listBeauty(bucket):
 
 if __name__ == '__main__':
     import sys
-    from exampleLM import landmark1
+    from exampleLM import landmarkS2,landmark1
     #bucket = sys.argv[1]
     #listBeauty(bucket)
     beautyList = {} 
@@ -53,5 +53,5 @@ if __name__ == '__main__':
         beautyList = json.load(data_file)
 
     for k in beautyList:
-        print('---- '+ k+" to 秀英")
+        print('---- '+ k+" to stanger")
         print(compareLandMark(landmark1, beautyList[k][0]['Landmarks']))
