@@ -29,6 +29,7 @@ def compareLandMark(landmarkList1, landmarkList2):
                    ('eyeRight','eyeLeft') ,
                    ('mouthRight','mouthLeft') ,
                    ('mouthRight','eyeRight') ,
+                   ('mouthLeft','eyeRight') ,
                    ('mouthRight','eyeLeft') ,
                   ]
 
@@ -39,12 +40,16 @@ def compareLandMark(landmarkList1, landmarkList2):
         distList.append(distance)
 
 
-    print(statistics.mean(distList))
+    mD = statistics.mean(distList)
+    print(mD)
     print(statistics.stdev(distList))
     print(statistics.variance(distList))
-    return "result"
+    conf = (1-mD)**2
+    return conf
 
-print('---')
-compareLandMark(landmark1, landmark2)
-print('---')
-compareLandMark(landmark1, landmark3)
+if __name__ == '__main__':
+    from exampleLM import landmark1, landmark2, landmark3
+    print('----')
+    compareLandMark(landmark1, landmark2)
+    print('----')
+    compareLandMark(landmark1, landmark3)
