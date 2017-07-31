@@ -12,21 +12,22 @@ from nocheckin import XLineToken
 
 from lineTools import getUserDisplayName
 from wikiFinder import findWikiCN
+from compare_landmark import compareLandMark, BeautyList
 
 import io
 lambda_client = boto3.client('lambda')
 s3 = boto3.resource('s3')
 sfbucket = s3.Bucket('sandyifamousface')
-allFamousFaces = []
+#allFamousFaces = []
 
-for sobj in sfbucket.objects.all():
-    tmpo = sfbucket.Object(sobj.key)
-    tmpdata = tmpo.get()['Body'].read()
-    tmpba = bytearray(tmpdata)
-    allFamousFaces.append(tmpba)
+#for sobj in sfbucket.objects.all():
+#    tmpo = sfbucket.Object(sobj.key)
+#    tmpdata = tmpo.get()['Body'].read()
+#    tmpba = bytearray(tmpdata)
+#    allFamousFaces.append(tmpba)
         
 
-print("initial script"+str(len(allFamousFaces)))
+#print("initial script"+str(len(allFamousFaces)))
 
 
 def detectModeration(bArray):
@@ -50,7 +51,48 @@ def explainModeration(mResponse):
     return msg
 
 
-def beautyCompare(byteArray):
+def beautyCompareInLM(bArray):
+    rclient = boto3.client('rekognition')
+    response = rclient.detect_faces(
+           Image={ 'Bytes':bArray
+            },
+            Attributes=[ 'ALL' ]
+    )
+
+    inputLandmark = response['FaceDetails'][0]['Landmarks']
+
+    firstFaceV = 0
+    secondFaceV = 0
+    firstName = ''
+    secondName = ''
+    result = {}
+    for k in BeautyList:
+        # print('---- to compare '+ k)
+        simV = compareLandMark(inputLandmark, BeautyList[k][0]['Landmarks'])
+        if simV >  firstFaceV :
+            firstFaceV = simV
+            firstName = k
+        elif simV >= secondFaceV:
+            secondFaceV = simV
+            secondName = k
+        else:
+            pass
+        if firstFaceV >= 90 :
+            break
+
+    if firstName == '':
+        print("no match")
+        return {}
+    if firstFaceV >= 90:
+        result = {firstName[0:-5]:firstFaceV}
+    else:
+        result = {secondName[0:-5]:secondFaceV, firstName[0:-5]:firstFaceV}
+    print(result)
+    return result
+
+
+
+""" def beautyCompare(byteArray):
     rclient = boto3.client('rekognition')
 #    s3 = boto3.resource('s3')
 #    bucket = s3.Bucket('sandyifamousface')
@@ -72,7 +114,7 @@ def beautyCompare(byteArray):
                 #'Name': o.key,
             #}
         },
-            SimilarityThreshold = 53
+            SimilarityThreshold = 60
         )
 
 
@@ -89,8 +131,8 @@ def beautyCompare(byteArray):
                 pass
         if firstFaceV >= 90 :
             break
-#        if secondFaceV >= 65 and secondName[0:-5] != firstName[0:-5]:
-#            break
+        if secondFaceV >= 65 and secondName[0:-5] != firstName[0:-5]:
+            break
 
     if firstName == '':
         print("no match")
@@ -101,7 +143,7 @@ def beautyCompare(byteArray):
         result = {secondName[0:-5]:secondFaceV, firstName[0:-5]:firstFaceV}
     print(result)
     return result
-
+"""
 
 def faceReport(faceDetailDict):
     
@@ -136,7 +178,7 @@ def faceReport(faceDetailDict):
         else:
             pass 
     emotionExplain = '\n照片中他看起來是'+ emotionZHDict[firstE.upper()]
-    if secondEV > 30:
+    if secondEV > 22:
         emotionExplain = emotionExplain +" 但是有帶有一點點" + emotionZHDict[secondE.upper()]
 
     if faceDetailDict['Sunglasses']['Value']:
@@ -219,7 +261,7 @@ def analysisFaceRec(response):
         msg = ''
         for f in response['CelebrityFaces']:
             cname = findWikiCN(f['Name'])
-            msg = msg +  u'\n 在名人資料庫中比對這個人和 {} {}有 {}的相似度 '.format(f['Name'],cname, f['MatchConfidence'])
+            msg = msg +  u'\n 在名人資料庫中比對這個人和 {} {}有 {}%的相似度 '.format(f['Name'],cname, int(f['MatchConfidence']))
             msg = msg + "\n"
             
             if len(f['Urls']) > 0:
@@ -292,7 +334,7 @@ def lambda_handler(even, context):
         for fd in fresponse:
             msg = msg + faceReport(fd)+ "\n"
             if fd['Gender']['Value'].upper() == 'FEMALE':
-                beautyResult = beautyCompare(bArray)
+                beautyResult = beautyCompareInLM(bArray)
                 if beautyResult == {}:
                     msg = msg +"\n 根據美女資料比對結果 照片中的女性之美是天生而獨一無二的\n"
                 elif len(beautyResult) == 1 :
@@ -355,6 +397,7 @@ if __name__ == '__main__':
     imageId = '6439491741308'
     imageId = '6445361396005' #moderation label!
     imageId = u'6435271838359'
+    imageId = '6439491741308'
     userId =  u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     even = {'uid':userId, 'imageId':imageId}
     lambda_handler(even, None)
