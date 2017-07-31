@@ -1,7 +1,7 @@
 # To deploy lambda on AWS
 rm facerecognize.zip
 
-zip facerecognize.zip -r lambda_facerecognize.py  requests/ nocheckin.py wikiFinder.py boto3/ botocore/ lineTools.py
+zip facerecognize.zip -r lambda_facerecognize.py  requests/ nocheckin.py wikiFinder.py boto3/ botocore/ lineTools.py compare_landmark.py allBeautyJson
 
 aws --profile ailine s3 cp facerecognize.zip s3://sandyai2/
 
