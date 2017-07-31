@@ -1,5 +1,10 @@
 
 import statistics
+import json
+
+BeautyList = {}
+with open('allBeautyJson') as data_file:
+    BeautyList = json.load(data_file)
 
 
 def getLM(landmarkList, typeName):
