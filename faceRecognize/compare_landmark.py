@@ -55,6 +55,9 @@ def compareLandMark(landmarkList1, landmarkList2):
     #print(mStd)
     #print(statistics.stdev(distList))
     mV = statistics.variance(distList)
+    if mD >= 0.6 :
+        return 0
+
     conf = (1-mD)**2
     #print('1 - mean) **2')
     #print(conf)
