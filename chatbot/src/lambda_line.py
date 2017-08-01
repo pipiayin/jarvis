@@ -12,7 +12,7 @@ import random
 import botocore.session
 import requests
 from lineTools import getBotHeader
-from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken
+from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,bossid
 from blackList import badfriends
 
 
@@ -63,14 +63,24 @@ def getLineUser(fromuid,botid=''):
         print('can not line user profile from uid: '+fromuid)
         return ''
 
+def invoke_lambda_event(functionName, payload):
+    lresponse = lambda_client.invoke(
+        FunctionName = functionName,
+        InvocationType = 'Event',
+        LogType = 'None',
+        ClientContext = 'string',
+        Payload = payload
+    )
+    return lresponse
+
 
 def lambda_handler(even, context):
    # try:
-        print("-----get message ---")
+        print("-----get message from lambda line---")
         ts =  int(time.time())
         print(even) #
         uid = ''
-        bossid = 'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
+        #bossid = 'Uc9b95e58acb9ab8d2948f8ac1ee48fad', bossid from import nocheckin, I know it is a bad design but...
         isGroup = False
         if 'userId' in even['events'][0]['source'] :
             uid = even['events'][0]['source']['userId']
@@ -100,14 +110,8 @@ def lambda_handler(even, context):
             messageType = 'image'
             imageId = even['events'][0]['message']['id']
             imageAnalysis = {'uid':uid, 'imageId': imageId}
-            lresponse = lambda_client.invoke(
-                FunctionName='facerecognize',
-                InvocationType='Event',
-                LogType='None',
-                ClientContext='string',
-                Payload=json.dumps(imageAnalysis),
-            )
 
+            invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
 
         even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
@@ -131,6 +135,9 @@ def lambda_handler(even, context):
             toLog['bossids'] = even['bossids']
 
         oneUser['last'] = ts
+        if 'state' not in oneUser:
+            oneUser['state'] = 'chatting'
+
         print(oneUser)
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
@@ -146,13 +153,7 @@ def lambda_handler(even, context):
                 print("ignore learn from group")
             else: 
                 print("to learn")
-                lresponse = lambda_client.invoke(
-                    FunctionName='ailearn',
-                    InvocationType='Event',
-                    LogType='None',
-                    ClientContext='string',
-                    Payload=json.dumps(toLog),
-                )
+                invoke_lambda_event('ailearn', json.dumps(toLog) )
         else:
             print("to trigger ai brain \n\n")
             if isGroup :
@@ -163,22 +164,10 @@ def lambda_handler(even, context):
                         tmpmsg = tmpmsg.replace(t,'')
 
                     even['events'][0]['message']['text'] = tmpmsg
-                    lresponse = lambda_client.invoke(
-                        FunctionName='aibrain',
-                        InvocationType='Event',
-                        LogType='None',
-                        ClientContext='string',
-                        Payload=json.dumps(even),
-                    )
+                    invoke_lambda_event('ailearn', json.dumps(even) )
             else:
                 print('not group...')
-                lresponse = lambda_client.invoke(
-                    FunctionName='aibrain',
-                    InvocationType='Event',
-                    LogType='None',
-                    ClientContext='string',
-                    Payload=json.dumps(even),
-                )
+                invoke_lambda_event('aibrain', json.dumps(even) )
 
         print("responsed (tolog->)"+str(toLog))
         return "ok"
@@ -197,7 +186,8 @@ if __name__ == '__main__':
     tmp = {u'events':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
-            u'message': { 'type':'image' , 'id':'6435322417921'},
+            #u'message': { 'type':'image' , 'id':'6435322417921'},
+            u'message': { 'type':'text' , 'text':msg},
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
 
