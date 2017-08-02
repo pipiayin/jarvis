@@ -67,8 +67,11 @@ def lambda_handler(even, context):
                 imageurl = even['imageurl']
         else:
             return
+        geo = None
+        if 'geo' in even:
+            geo = even['geo']
 
-        responseToUser(even['uid'],even['msg'],botid,imageurl)
+        responseToUser(even['uid'],even['msg'],botid,imageurl,geo=geo)
 
         tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
         bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'

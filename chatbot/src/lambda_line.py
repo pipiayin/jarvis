@@ -164,7 +164,7 @@ def lambda_handler(even, context):
                         tmpmsg = tmpmsg.replace(t,'')
 
                     even['events'][0]['message']['text'] = tmpmsg
-                    invoke_lambda_event('ailearn', json.dumps(even) )
+                    invoke_lambda_event('aibrain', json.dumps(even) )
             else:
                 print('not group...')
                 invoke_lambda_event('aibrain', json.dumps(even) )
@@ -187,7 +187,9 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'message': { 'type':'image' , 'id':'6435322417921'},
-            u'message': { 'type':'text' , 'text':msg},
+            #u'message': { 'type':'text' , 'text':msg},
+             u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
+           
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
 

@@ -14,6 +14,7 @@ import requests
 from difflib import SequenceMatcher
 from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
+from config import MapActions
 
 lineBrain = SocialBrain()
 
@@ -107,55 +108,14 @@ def predefineAction(msg, uid):
     msg = msg.replace("「",'').replace("」",'')
     
     #TODO find a better mapping way instead of hardcoding
-    mapActions = [
-        { 'call_back': actEventReg,
-          'terms' :
-                    [u'請通知我天氣特報' ,
-                     u'請通知激烈天氣特報',
-                     u'停止通知我天氣特報',
-                     u'停止通知天氣特報',
-                     u'不要通知我天氣特報',
-                     u'不要通知天氣特報',
-                     u'小姍請通知我天氣特報',
-                     u'小姍通知我激烈天氣特報',
-                     u'通知激烈天氣特報',
-                     u'請每天教我一句英文',
-                     u'請給我每日一句學英文',
-                     u'小姍請給我每日一句學英文',
-                     u'小姍給我每日一句學英文',
-                     u'每日一句學英文',
-                     u'自動給我每日一句學英文',
-                     u'通知天氣特報', 
-                     u'請通知最近謠言破解',
-                     u'請通知我最近謠言破解',
-                     u'請協助我破解網路謠言',
-                     u'請幫我破解網路謠言',
-                     u'請協助我謠言破解',
-                     ]
-        },
-        {'call_back': actWishes,
-         'terms': [u'我想許願']
-         },
-        {'call_back': actTaipeiBus,
-         'terms': [u'幫我查公車', u'請幫我查公車', u'小姍幫我查公車', u'公車在哪裡', u'請幫我查公車']
-         },
-        {'call_back': actLottery,
-         'terms': [u'幫我抽根籤', u'請幫我抽個籤', u'小姍幫我抽簽', u'幫我抽簽看看', u'再幫我抽一次', u'請幫我抽支籤', u'請幫大姐抽支籤', u'請幫我抽籤']
-         },
-        {'call_back': actAstro,
-         'terms': [u'今天星座運勢', u'跟我說今天星座運勢', u'小姍幫我查星座運勢', u'幫我看星座運勢', u'幫我查今日星座運勢', u'今日星座運勢',u'小姍幫我查今日星座']
-         },
-        {'call_back': actDayfortune,
-         'terms': [u'幫我算命 ', u'出生運勢', u'小姍幫我查出生運勢', u'幫我看出生運勢', u'請幫我算命 生日是', u'請幫我算命',u'幫我算命生日是',u'請幫我算命生日是']
-         }
-    ]
+    mapActions = MapActions
     for a in mapActions:
         for term in a['terms']:
             if similar(term, msg) >= 0.7 or msg.startswith(term):
-                return a['call_back'](msg, uid)
+                return globals()[a['call_back']](msg, uid)
             parts = msg.split(" ")
             if similar(term, parts[0]) >= 0.75:
-                return a['call_back'](msg, uid)
+                return globals()[a['call_back']](msg, uid)
 
     return False
 
@@ -174,6 +134,12 @@ def actDayfortune(msg, uid):
 
     return False
 
+
+def actPixnetFood(msg, uid):
+    print("act pixnet")
+    req = {'uid': uid, 'msg': msg}
+    invokeLambdaEvent('pixnetfood', req)
+    return True
 
 def actAstro(msg, uid):
     print("act Astro")
@@ -216,10 +182,12 @@ def lambda_handler(even, context):
    # try:
     print("-----get message this is lambda brain ---")
     fromuid = ''
+    isGroup = False
     if 'userId' in even['events'][0]['source']:
         fromuid = even['events'][0]['source']['userId']
     if 'groupId' in even['events'][0]['source']:
         fromuid = even['events'][0]['source']['groupId']
+        isGroup = True
         print("---- the fromuid is actual groupId")
     if 'roomId' in even['events'][0]['source']:
         fromuid = even['events'][0]['source']['roomId']
