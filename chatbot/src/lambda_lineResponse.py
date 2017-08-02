@@ -11,8 +11,7 @@ from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken, happyr
 
 
 
-
-def responseToUser(uid, resp, botid='',imageurl=''):
+def responseToUser(uid, resp, botid='',imageurl='',geo=None):
 #    try:
         print("to response to line user, with botid:"+botid+"-end-")
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
@@ -28,11 +27,16 @@ def responseToUser(uid, resp, botid='',imageurl=''):
             "messages":[{
                 "type":"text",
                 "text": resp
-             }]
+             },
+             #{u'type': u'sticker',  u'packageId': u'3524', u'stickerId': u'2713770'}
+             ]
         }  
 
         if imageurl != '':
             payload['messages'].append({'type':'image', "originalContentUrl":  imageurl, "previewImageUrl": imageurl})
+
+        if geo is not None and type(geo) == type({}):
+            payload['messages'].append(geo)
 
         jdump = json.dumps(payload)
         print(jdump)
@@ -88,8 +92,8 @@ if __name__ == '__main__':
     # To try from command line
     tmp={
         'uid':u'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
-         'msg':'a short url',
-         'imageurl':'https://s3-us-west-2.amazonaws.com/sandyiface/Uc9b95e58acb9ab8d2948f8ac1ee48fad_6435271838359.jpg'}
+         'msg':'a short url',}
+         #'imageurl':'https://s3-us-west-2.amazonaws.com/sandyiface/Uc9b95e58acb9ab8d2948f8ac1ee48fad_6435271838359.jpg'}
     print(lambda_handler(tmp, None))
 
     
