@@ -139,6 +139,9 @@ def lambda_handler(even, context):
             oneUser['state'] = 'chatting'
 
         print(oneUser)
+        if 'created' not in oneUser :
+            oneUser['created'] = ts
+
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
     
