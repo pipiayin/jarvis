@@ -136,9 +136,15 @@ def actDayfortune(msg, uid):
 
 
 def actPixnetFood(msg, uid):
-    print("act pixnet")
+    print("act pixnet of Food")
     req = {'uid': uid, 'msg': msg}
     invokeLambdaEvent('pixnetfood', req)
+    return True
+
+def actPixnetFans(msg, uid):
+    print("act pixnet of Fans")
+    req = {'uid': uid, 'msg': msg}
+    invokeLambdaEvent('pixnetfans', req)
     return True
 
 def actAstro(msg, uid):
@@ -190,6 +196,7 @@ def lambda_handler(even, context):
         isGroup = True
         print("---- the fromuid is actual groupId")
     if 'roomId' in even['events'][0]['source']:
+        isGroup = True
         fromuid = even['events'][0]['source']['roomId']
         print("---- the fromuid is actual roomId")
 

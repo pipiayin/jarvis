@@ -8,33 +8,43 @@ import json
 
 API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=12&format=json'
 FANS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=21&format=json'
-FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page=73&format=json'
+FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page={}&format=json&page={}'
 
 
 def getFoodNews(location=''):
-    r = requests.get(FOOD_API_URL)
-    a = json.loads(r.text)
     newsList = []
     msg = ''
-    for article in a['articles']:
-        total = article['hits']['total']
-        daily = article['hits']['daily']
-        if location != '':
-            if 'address' not in article:
-                continue
-            elif location not in article['address']:
-                continue
-            else: 
-                pass
- 
+    cntPage = 7
 
-        if total <= 400:
-            continue
-        if "(H)" in article['title']:
-            continue
-        if 'location' not in article:
-            continue
-        newsList.append(article)
+    cnt = 1 
+    while(cnt <= cntPage):
+        r = requests.get(FOOD_API_URL.format(33,cnt))
+        #print(cnt)
+        cnt += 1
+        a = json.loads(r.text)
+        for article in a['articles']:
+            total = article['hits']['total']
+            daily = article['hits']['daily']
+            if location != '':
+                if 'address' not in article:
+                    continue
+                elif location not in article['address']:
+                    continue
+                else: 
+                    pass
+            if total <= 350:
+                continue
+            if "(H)" in article['title']:
+                continue
+            if 'location' not in article:
+                continue
+            newsList.append(article)
+
+        if len(newsList) > 0:
+            break
+
+    if len(newsList) <= 0:
+        return ("歹勢 最近沒在{}的新美食文".format(location) , {})
 
     n = random.choice(newsList)
     title = n['title']
@@ -44,7 +54,7 @@ def getFoodNews(location=''):
     longitude = n['location']['longitude']
     latitude = n['location']['latitude']
     geo = {'longitude': longitude, 'latitude': latitude, 'address': address}
-    msg = '最近{} 寫了美食文：{} 可以考慮去試看看唷 \n地點:{} \n{}'.format(writer, title, address, link)
+    msg = '最近"{}" 寫了美食文："{}" 可以考慮去試看看唷~ \n地點:{} \n{}'.format(writer, title, address, link)
     return (msg, geo)
 
 def getFansNews():
@@ -78,7 +88,7 @@ def getFansNews():
 
 
 if __name__ == '__main__':
-    print(getFansNews())
-    print(getFoodNews('台南'))
+ #   print(getFansNews())
+    print(getFoodNews(location = '彰化'))
   
 

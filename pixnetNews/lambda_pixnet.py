@@ -29,10 +29,16 @@ def lambda_foodhandler(even, context):
                 location = l
                 break 
         
+        print('location:'+ location)
         (resMsg, geo) = getFoodNews(location=location)
-        geo['title'] = '推薦美食地點'
-        geo['type'] = 'location'
-        toLineResponse={'uid':uid, 'msg':resMsg, 'geo':geo}
+        if len(geo) > 0:
+            print(geo)
+            geo['title'] = '推薦美食地點'
+            geo['type'] = 'location'
+            toLineResponse={'uid':uid, 'msg':resMsg, 'geo':geo}
+        else:
+            toLineResponse={'uid':uid, 'msg':resMsg}
+          
 
         lresponse = lambda_client.invoke(
              FunctionName='lineResponse',
@@ -81,7 +87,8 @@ def lambda_fanshandler(even, context):
 
 if __name__ == '__main__':
     print("TODO: simple test script")
-    even = {u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' }
+    import sys
+    even = {u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' , u'msg':sys.argv[1]}
 
-    lambda_handler(even, None)
+    lambda_foodhandler(even, None)
 
