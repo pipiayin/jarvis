@@ -7,13 +7,14 @@ import sys
 import datetime
 import random
 from pixnetTool import getFansNews, getFoodNews
+from twlocation import TWLOCATION
 
 lambda_client = boto3.client('lambda')
 
 def lambda_foodhandler(even, context):
     try:
         print("-----In Lambda_foodhandler---")
-        # even format: {"uid": "botid": , "callback":"lineResponse"}
+        # even format: {"uid": "botid": , "msg":"msg"}
         # TODO: at this moment, all callback assume go for lineResponse
         uid = '' 
         if 'uid' in even :
@@ -21,9 +22,17 @@ def lambda_foodhandler(even, context):
         else:
             return 
 
-        print(even)
-        (msg, geo) = getFoodNews()
-        toLineResponse={'uid':uid, 'msg':msg}
+        oriMsg = even['msg']
+        location = ''
+        for l in TWLOCATION:
+            if l in oriMsg:
+                location = l
+                break 
+        
+        (resMsg, geo) = getFoodNews(location=location)
+        geo['title'] = '推薦美食地點'
+        geo['type'] = 'location'
+        toLineResponse={'uid':uid, 'msg':resMsg, 'geo':geo}
 
         lresponse = lambda_client.invoke(
              FunctionName='lineResponse',

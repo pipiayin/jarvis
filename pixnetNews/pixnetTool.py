@@ -8,10 +8,10 @@ import json
 
 API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=12&format=json'
 FANS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=21&format=json'
-FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page=21&format=json'
+FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page=73&format=json'
 
 
-def getFoodNews():
+def getFoodNews(location=''):
     r = requests.get(FOOD_API_URL)
     a = json.loads(r.text)
     newsList = []
@@ -19,6 +19,15 @@ def getFoodNews():
     for article in a['articles']:
         total = article['hits']['total']
         daily = article['hits']['daily']
+        if location != '':
+            if 'address' not in article:
+                continue
+            elif location not in article['address']:
+                continue
+            else: 
+                pass
+ 
+
         if total <= 400:
             continue
         if "(H)" in article['title']:
@@ -70,6 +79,6 @@ def getFansNews():
 
 if __name__ == '__main__':
     print(getFansNews())
-    print(getFoodNews())
+    print(getFoodNews('台南'))
   
 
