@@ -134,14 +134,17 @@ def lambda_handler(even, context):
             oneUser['bossids'] = even['bossids']
             toLog['bossids'] = even['bossids']
 
-        oneUser['last'] = ts
         if 'state' not in oneUser:
             oneUser['state'] = 'chatting'
 
         print(oneUser)
         if 'created' not in oneUser :
-            oneUser['created'] = ts
+            oneUser['created'] = 0
+            if 'last' not in oneUser:
+            # that means new users after created colume built
+                oneUser['created'] = ts
 
+        oneUser['last'] = ts
         if 'userId' in oneUser :
             table_user.put_item(Item=oneUser)
     
