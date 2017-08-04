@@ -109,11 +109,11 @@ class SocialBrain():
 #        if lenMsg == 2 : # two words
 #            return self.randomAct(u'act_two_words')
 
-        if lenMsg == 3 : # two words
-            list3words = self.kb[u'list_three_words'].split(';')
-            for tw in list3words:
-                if tw == msg:
-                    return self.randomAct(u'act_three_words')
+#        if lenMsg == 3 : # two words
+#            list3words = self.kb[u'list_three_words'].split(';')
+#            for tw in list3words:
+#                if tw == msg:
+#                    return self.randomAct(u'act_three_words')
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
@@ -182,10 +182,17 @@ class SocialBrain():
         wcount = len(wordtypes)
         nounwcount = 0.0
         ncount = 0
+        ncnt = 0
+        toCommand = False
         for (w,f) in wordtypes:
+            if ncnt == 0 and f in ['v']:
+                toCommand = True
+             
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
                 ncount +=1
+            ncnt += 1
+
         if wcount == 0:
             wcount = 0.5
         nrate = nounwcount / float(wcount)
@@ -220,6 +227,10 @@ class SocialBrain():
        # if response == '': # can't find any answer try for BibleHandler
        #     response = esBibleHandler(msg, words)
 
+        if response == '' and toCommand :
+            cannotDo = self.randomAct('list_cannot_do')
+            response = cannotDo.format(words[0], words[0])
+          
         if response == '': # can't find any answer give 20% for pttHandler
             if random.randint(0,7) < 1:
                 response = pttHandler(msg, words)

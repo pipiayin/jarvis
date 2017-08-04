@@ -9,12 +9,84 @@ import json
 API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=12&format=json'
 FANS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=21&format=json'
 FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page={}&format=json&page={}'
+ARTICLE_URL = 'https://emma.pixnet.cc/blog/articles/{}?user={}&format=json'
+HOTNEWS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/{}?per_page={}&format=json&page={}'
 
 
-def getFoodNews(location=''):
+def analysisArticle(userName, articleNo):
+    r = requests.get(ARTICLE_URL.format(articleNo, userName))
+    bodyHtml = json.loads(r.text)['article']['body']
+    adCount = bodyHtml.count('<ins class') +0.001
+    picCount = bodyHtml.count('<img')
+    alertMsg = ''
+    #print(adCount)
+    #print(picCount)
+    if adCount >= 2:
+        alertMsg = '不過 這篇廣告超級多!!'
+#    p = re.compile(r'<.*?>')
+#    result = p.sub('',bodyHtml)
+#    for line in result.split("\n"):
+#        line = line.strip()
+#        if '延伸閱讀' in line : 
+#            break
+#        if line == '' or line =='(adsbygoogle = window.adsbygoogle || []).push({});' or line == '&nbsp;': 
+#            continue 
+#        
+#    bodyHtml = re.sub(r'\&lt;.*?\&gt;', '', bodyHtml)
+    return alertMsg
+
+def getHotNews(cata, keyword, maxPageCnt, articlesPerPage):
+    newsList = []
+    cntPage = maxPageCnt
+    cnt = 1 
+    while(cnt <= cntPage):
+        url =  HOTNEWS_API_URL.format(cata, articlesPerPage,cnt)
+        r = requests.get(url)
+        #print(cnt)
+        cnt += 1
+        a = json.loads(r.text)
+        if 'articles' not in a:
+            break
+        for article in a['articles']:
+            total = article['hits']['total']
+            daily = article['hits']['daily']
+            if keyword not in article['title']:
+                continue
+            if total <= 319: # magic number to identify hot article
+                continue
+            newsList.append(article)
+
+        if len(newsList) >= 3: # find at least 3 
+            break
+
+    return newsList
+
+def getTravelNews(keyword, kuso=True):
+    newsList= getHotNews(29,keyword,8,25)
+    if len(newsList) <= 0:
+        return ("歹勢 最近沒在{}的新消息".format(keyword) , {})
+
+    n = random.choice(newsList)
+    title = n['title']
+    link = n['link'].split('-')[0]
+    writer = n['user']['display_name']
+    msg = '最近"{}" 寫了旅記"{}" 可以參考唷~ \n{}'.format(writer, title, link)
+    if kuso == True:
+        kusoMsg = ''
+        anaResult = analysisArticle(n['user']['name'], n['id'])
+        if anaResult != '':
+            msg = msg + "\n" + anaResult
+        else:
+            print('no special')
+
+    return msg
+
+
+ 
+def getFoodNews(location='', kuso=False):
     newsList = []
     msg = ''
-    cntPage = 7
+    cntPage = 8
 
     cnt = 1 
     while(cnt <= cntPage):
@@ -32,15 +104,13 @@ def getFoodNews(location=''):
                     continue
                 else: 
                     pass
-            if total <= 350:
-                continue
-            if "(H)" in article['title']:
+            if total <= 319: # magic number to identify hot article
                 continue
             if 'location' not in article:
                 continue
             newsList.append(article)
 
-        if len(newsList) > 0:
+        if len(newsList) >= 7:
             break
 
     if len(newsList) <= 0:
@@ -55,6 +125,12 @@ def getFoodNews(location=''):
     latitude = n['location']['latitude']
     geo = {'longitude': longitude, 'latitude': latitude, 'address': address}
     msg = '最近"{}" 寫了美食文："{}" 可以考慮去試看看唷~ \n地點:{} \n{}'.format(writer, title, address, link)
+    if kuso == True:
+        kusoMsg = ''
+        anaResult = analysisArticle(n['user']['name'], n['id'])
+        if anaResult != '':
+            msg = msg + "\n" + anaResult
+
     return (msg, geo)
 
 def getFansNews():
@@ -65,7 +141,7 @@ def getFansNews():
     for article in a['articles']:
         total = article['hits']['total']
         daily = article['hits']['daily']
-        if total <= 400:
+        if total <= 319:
             continue
         if "(H)" in article['title']:
             continue
@@ -89,6 +165,6 @@ def getFansNews():
 
 if __name__ == '__main__':
  #   print(getFansNews())
-    print(getFoodNews(location = '彰化'))
-  
-
+    
+#    print(getFoodNews(location = sys.argv[1] , kuso=True))
+    print(getTravelNews(sys.argv[1]))
