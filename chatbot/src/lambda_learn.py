@@ -116,6 +116,10 @@ def lambda_handler(even, context):
         msg_except_empty = list(filter(lambda x: x!= '', parts))    
         msg = msg_except_empty[0].strip()
         uname = getUserDisplayName(even['uid'])
+        if even['uid'] != bossid: 
+            responseToUser(even['uid'],u'抱歉 由於太多壞朋友教壞小姍...我的創造者讓我閉門思過 暫時不學新東西.. ')
+            return "not learn"
+
         if even['uid'] in badfriends:
             responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
 #            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
