@@ -39,10 +39,11 @@ def lineResponse(toLineResponse):
 def getLineUser(fromuid,botid=''):
     try:
         item = table_user.get_item( Key={ 'userId': fromuid })
-#        if "Item" in item:
-#            print('get user from nosql')
-#            print(item['Item'])
- 
+        if "Item" in item:
+            print('get user from nosql')
+            print(item['Item'])
+            return item['Item']
+         
 
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
@@ -170,6 +171,8 @@ def lambda_handler(even, context):
                         tmpmsg = tmpmsg.replace(t,'')
 
                     even['events'][0]['message']['text'] = tmpmsg
+                    print('message to aibrain')
+                    print(json.dumps(even))
                     invoke_lambda_event('aibrain', json.dumps(even) )
             else:
                 print('not group...')
@@ -192,9 +195,10 @@ if __name__ == '__main__':
     tmp = {u'events':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
+            #u'source': {'groupId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'message': { 'type':'image' , 'id':'6435322417921'},
-            #u'message': { 'type':'text' , 'text':msg},
-             u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
+            u'message': { 'type':'text' , 'text':msg},
+            #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
            
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
