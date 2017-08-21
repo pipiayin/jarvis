@@ -42,8 +42,9 @@ def getLineUser(fromuid,botid=''):
         if "Item" in item:
             print('get user from nosql')
             print(item['Item'])
-            return item['Item']
+#            return item['Item']
          
+        oneUser = item['Item']
 
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
@@ -53,13 +54,15 @@ def getLineUser(fromuid,botid=''):
             botHeaders = getBotHeader(botid)
             if botHeaders != '':
                 headers = botHeaders
-            print(headers)
 
         print(line_url)
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         print(rjson)
-        return rjson
+
+        oneUser['pictureUrl'] = rjson['pictureUrl']
+        oneUser['displayName'] = rjson['displayName']
+        return oneUser
     except:
         print('can not line user profile from uid: '+fromuid)
         return ''
