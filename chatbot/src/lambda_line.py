@@ -143,7 +143,7 @@ def lambda_handler(even, context):
             oneUser['history'].append(msg)
 
         if len(oneUser['history']) > 7:
-            oneUser['history'].remove(oneUser[0])
+            oneUser['history'].remove(oneUser['history'][0])
 
         print(oneUser)
         if 'created' not in oneUser :
