@@ -6,6 +6,7 @@ from __future__ import print_function
 import json
 import boto3
 import sys
+import datetime
 import json
 import time
 import random
@@ -39,12 +40,20 @@ def lineResponse(toLineResponse):
 def getLineUser(fromuid,botid=''):
     try:
         item = table_user.get_item( Key={ 'userId': fromuid })
+        oneUser = {}
         if "Item" in item:
             print('get user from nosql')
             print(item['Item'])
 #            return item['Item']
-         
-        oneUser = item['Item']
+            oneUser = item['Item']
+        else:
+            oneUser['last'] = 0
+
+        n = datetime.datetime.now().timestamp()
+       
+        if (n - int(oneUser['last'])) <= 60*60*24:
+            print("do not update Line profile in 24 hours")
+            return oneUser
 
         line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
         
@@ -60,11 +69,12 @@ def getLineUser(fromuid,botid=''):
         rjson = json.loads(r.text)
         print(rjson)
 
+        print("do the update")
         oneUser['pictureUrl'] = rjson['pictureUrl']
         oneUser['displayName'] = rjson['displayName']
         return oneUser
     except:
-        print('can not line user profile from uid: '+fromuid)
+        print('exception for get user profile from uid: '+fromuid)
         return ''
 
 def invoke_lambda_event(functionName, payload):
@@ -121,6 +131,8 @@ def lambda_handler(even, context):
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
         oneUser = getLineUser(uid)
+        print('-------')
+        print(type(oneUser))
         if 'botid' in even:
             oneUser = getLineUser(uid,even['botid'])
             oneUser['botid'] = even['botid']
@@ -139,6 +151,7 @@ def lambda_handler(even, context):
             toLog['bossids'] = even['bossids']
 
         if 'state' not in oneUser:
+            print(type(oneUser))
             oneUser['state'] = 'chatting'
         if 'history' not in oneUser:
             oneUser['history'] = [msg]
