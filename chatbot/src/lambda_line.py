@@ -137,6 +137,13 @@ def lambda_handler(even, context):
 
         if 'state' not in oneUser:
             oneUser['state'] = 'chatting'
+        if 'history' not in oneUser:
+            oneUser['history'] = [msg]
+        else:
+            oneUser['history'].append(msg)
+
+        if len(oneUser['history']) > 7:
+            oneUser['history'].remove(oneUser[0])
 
         print(oneUser)
         if 'created' not in oneUser :
