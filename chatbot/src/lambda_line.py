@@ -52,7 +52,6 @@ def getLineUser(fromuid,botid=''):
             oneUser['created'] = int(n)
             print("this is new user!!! userId="+fromuid)
 
-       
         if (n - int(oneUser['last'])) <= 60*60*24:
             print("do not update Line profile in 24 hours")
             return oneUser
@@ -66,7 +65,6 @@ def getLineUser(fromuid,botid=''):
             if botHeaders != '':
                 headers = botHeaders
 
-        print(line_url)
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         print(rjson)
@@ -173,8 +171,18 @@ def lambda_handler(even, context):
         else:
             oneUser['history'].append(msg)
 
-        if len(oneUser['history']) > 7:
+        if len(oneUser['history']) > 10:
             oneUser['history'].remove(oneUser['history'][0])
+
+        if len(oneUser['history']) >=4 and len(set(oneUser['history'][-3:]))==1:
+            print("handle repeating")
+            msg = '呃？你需要冷靜一下 你好像在講重複的話'
+            toLineResponse = {'uid':uid, 'msg':msg}
+            lineResponse(toLineResponse)
+            toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
+            lineResponse(toLineResponse)
+            return
+
 
         print(oneUser)
         if 'created' not in oneUser :
