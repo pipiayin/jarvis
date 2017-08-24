@@ -77,7 +77,7 @@ def getLineUser(fromuid,botid=''):
         if 'pictureUrl' in rjson:
             oneUser['pictureUrl'] = rjson['pictureUrl']
         else:
-            oneUser['pictureUrl'] = ''
+            oneUser['pictureUrl'] = 'none'
         oneUser['displayName'] = rjson['displayName']
         oneUser['userId'] = rjson['userId']
         return oneUser
@@ -126,7 +126,14 @@ def lambda_handler(even, context):
                 lineResponse(toLineResponse)
                 toLineResponse = {'uid':bossid, 'msg': "有人傳圖片被擋:"+uid}
                 lineResponse(toLineResponse)
+                return
 
+            if isGroup:
+                msg = '抱歉 小姍最近看圖兼分析實在太累了 在群組中送的圖就先不理會了 但是個別好友送圖來給我 我還是會努力的看用力地看唷...如果要申訴 請email給我主人: ai@talent-service.com'
+                toLineResponse = {'uid':uid, 'msg':msg}
+                lineResponse(toLineResponse)
+                toLineResponse = {'uid':bossid, 'msg': "有群組傳圖片被擋:"+uid}
+                lineResponse(toLineResponse)
                 return
 
             messageType = 'image'
