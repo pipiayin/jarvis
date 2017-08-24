@@ -72,6 +72,7 @@ def getLineUser(fromuid,botid=''):
         print("do the update")
         oneUser['pictureUrl'] = rjson['pictureUrl']
         oneUser['displayName'] = rjson['displayName']
+        oneUser['userId'] = rjson['userId']
         return oneUser
     except:
         print('exception for get user profile from uid: '+fromuid)
