@@ -38,9 +38,10 @@ def lineResponse(toLineResponse):
     )
 
 def getLineUser(fromuid,botid=''):
-    try:
+#    try:
         item = table_user.get_item( Key={ 'userId': fromuid })
         oneUser = {}
+        n = datetime.datetime.now().timestamp()
         if "Item" in item:
             print('get user from nosql')
             print(item['Item'])
@@ -48,8 +49,9 @@ def getLineUser(fromuid,botid=''):
             oneUser = item['Item']
         else:
             oneUser['last'] = 0
+            oneUser['created'] = int(n)
+            print("this is new user!!! userId="+fromuid)
 
-        n = datetime.datetime.now().timestamp()
        
         if (n - int(oneUser['last'])) <= 60*60*24:
             print("do not update Line profile in 24 hours")
@@ -68,15 +70,20 @@ def getLineUser(fromuid,botid=''):
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
         print(rjson)
+        if 'message' in rjson and rjson['message'] == 'Not found':
+            return oneUser
 
-        print("do the update")
-        oneUser['pictureUrl'] = rjson['pictureUrl']
+        print("do the update oneUser")
+        if 'pictureUrl' in rjson:
+            oneUser['pictureUrl'] = rjson['pictureUrl']
+        else:
+            oneUser['pictureUrl'] = ''
         oneUser['displayName'] = rjson['displayName']
         oneUser['userId'] = rjson['userId']
         return oneUser
-    except:
-        print('exception for get user profile from uid: '+fromuid)
-        return ''
+#    except:
+#        print('exception for get user profile from uid: '+fromuid)
+#        return ''
 
 def invoke_lambda_event(functionName, payload):
     lresponse = lambda_client.invoke(
@@ -171,10 +178,11 @@ def lambda_handler(even, context):
 
         oneUser['last'] = ts
         if 'userId' in oneUser :
+            print('do dynamodb update user')
             table_user.put_item(Item=oneUser)
     
+        print('do dynamodb log')
         print(toLog)
-   
         table_log.put_item(Item=toLog)
         if messageType == 'image':
             return "imageOk"
