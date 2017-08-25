@@ -44,12 +44,15 @@ def getLineUser(fromuid,botid=''):
         n = datetime.datetime.now().timestamp()
         if "Item" in item:
             print('get user from nosql')
-            print(item['Item'])
+            #print(item['Item'])
 #            return item['Item']
             oneUser = item['Item']
+            if 'profile' not in oneUser:
+                oneUser['profile'] = {}
         else:
             oneUser['last'] = 0
             oneUser['created'] = int(n)
+            oneUser['profile'] = {}
             print("this is new user!!! userId="+fromuid)
 
         if (n - int(oneUser['last'])) <= 60*60*24:
@@ -77,6 +80,9 @@ def getLineUser(fromuid,botid=''):
         else:
             oneUser['pictureUrl'] = 'none'
         oneUser['displayName'] = rjson['displayName']
+        if 'profile' not in oneUser:
+            oneUser['profile'] = {}
+        oneUser['profile']['name'] = rjson['displayName']
         oneUser['userId'] = rjson['userId']
         return oneUser
 #    except:
@@ -93,6 +99,12 @@ def invoke_lambda_event(functionName, payload):
     )
     return lresponse
 
+
+def sendDeny(uid, bossid, msg):
+    toLineResponse = {'uid':uid, 'msg':msg}
+    lineResponse(toLineResponse)
+    toLineResponse = {'uid':bossid, 'msg': msg+"->"+uid}
+    lineResponse(toLineResponse)
 
 def lambda_handler(even, context):
    # try:
@@ -113,6 +125,7 @@ def lambda_handler(even, context):
 
         msg = '_'
         messageType = 'text'
+        oneUser = {}
 
         if 'text' == even['events'][0]['message']['type']:
             msg = even['events'][0]['message']['text']
@@ -120,32 +133,31 @@ def lambda_handler(even, context):
         if 'image' == even['events'][0]['message']['type']:
             if uid in badfriends:
                 msg = '抱歉 目前系統認定是你是壞朋友 你送的圖就先不理會了 如果要申訴 請email給我主人: ai@talent-service.com'
-                toLineResponse = {'uid':uid, 'msg':msg}
-                lineResponse(toLineResponse)
-                toLineResponse = {'uid':bossid, 'msg': "有人傳圖片被擋:"+uid}
-                lineResponse(toLineResponse)
+                sendDeny(uid,bossid,msg)
                 return
 
             if isGroup:
                 msg = '抱歉 小姍最近看圖兼分析實在太累了 在群組中送的圖就先不理會了 但是個別好友送圖來給我 我還是會努力的看用力地看唷...如果要申訴 請email給我主人: ai@talent-service.com'
-                toLineResponse = {'uid':uid, 'msg':msg}
-                lineResponse(toLineResponse)
-                toLineResponse = {'uid':bossid, 'msg': "有群組傳圖片被擋:"+uid}
-                lineResponse(toLineResponse)
+                sendDeny(uid, bossid, msg)
                 return
 
-            messageType = 'image'
+            oneUser = getLineUser(uid)
             imageId = even['events'][0]['message']['id']
-            imageAnalysis = {'uid':uid, 'imageId': imageId}
+            msg = uid + "_" + imageId
 
-            invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
+            if 'profile' in oneUser and 'allow' in oneUser['profile'] and 'image' in oneUser['profile']['allow'] :
+                messageType = 'image'
+                imageAnalysis = {'uid':uid, 'imageId': imageId}
+                invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
+            else:
+                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~ 這幾天照片先不分析 讓我休息一下啦~~ 等學會分身之術會再開放照片分析功能唷~~ 如果有學校教學用途 研究測試用途 可以自己寫email給我的創造者(ai@talent-service.com) 跟他商量額外開放...反正小姍我也要一例一休啦'
+                sendDeny(uid, bossid, msg)
+                msg = uid + "_" + imageId
 
         even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
         oneUser = getLineUser(uid)
-        print('-------')
-        print(type(oneUser))
         if 'botid' in even:
             oneUser = getLineUser(uid,even['botid'])
             oneUser['botid'] = even['botid']
@@ -164,19 +176,18 @@ def lambda_handler(even, context):
             toLog['bossids'] = even['bossids']
 
         if 'state' not in oneUser:
-            print(type(oneUser))
             oneUser['state'] = 'chatting'
         if 'history' not in oneUser:
             oneUser['history'] = [msg]
         else:
             oneUser['history'].append(msg)
 
-        if len(oneUser['history']) > 10:
+        if len(oneUser['history']) > 51:
             oneUser['history'].remove(oneUser['history'][0])
 
-        if len(oneUser['history']) >=4 and len(set(oneUser['history'][-3:]))==1:
+        if len(oneUser['history']) >= 5  and len(set(oneUser['history'][-5:]))==1:
             print("handle repeating")
-            msg = '呃？你需要冷靜一下 你好像在講重複的話'
+            msg = '請冷靜 你好像在講重複的話'
             toLineResponse = {'uid':uid, 'msg':msg}
             lineResponse(toLineResponse)
             toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
