@@ -14,9 +14,8 @@ def getIntent(msg):
     timing = []
     location = ''
  
-    if len(msg) <= 4 :
+    if len(msg) <= 5 :
         entity.append(msg)
-        verb = msg
     
 
     words = pseg.cut(msg)
@@ -30,8 +29,10 @@ def getIntent(msg):
             entity.append(tmpN)
             pnv = True
             tmpN = word.word
-        elif word.flag in  ['v','vi','vn']:
+        elif word.flag in  ['v','vi','vn','vr']:
             verb = word.word
+        elif word.flag in  ['r','nr']:
+            entity.append(word.word)
         elif word.flag in ['t','tg']:
             timing.append(word.word)
         elif word.flag in ['f','ns']:

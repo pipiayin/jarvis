@@ -126,6 +126,9 @@ def lambda_handler(even, context):
             responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
+            if bossid == even['uid']:
+                #boss can ask for learning
+                break
             if bw in fullmsg:
                 responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 ')
                 responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)

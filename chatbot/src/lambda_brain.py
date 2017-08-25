@@ -200,7 +200,9 @@ def lambda_handler(even, context):
         fromuid = even['events'][0]['source']['roomId']
         print("---- the fromuid is actual roomId")
 
-    msg = even['events'][0]['message']['text']
+    msg = even['events'][0]['message']['text'].strip()
+    print('---in brain ---')
+    print(msg)
     resp = ''
     tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'

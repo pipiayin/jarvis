@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
@@ -53,7 +53,7 @@ def listGroup(days=0, botid = '' ):
                     allgid.append(item['uid'])
                 print(item)
  
-        time.sleep(1)
+        time.sleep(9)
         if 'LastEvaluatedKey' not in r or r['LastEvaluatedKey'] == None:
             break
         else:
@@ -95,9 +95,10 @@ def listLog(botid ='',uid=''):
             else:
                 toPrint['resp'] = ''
 
-            print(str(toPrint['ts'])+";; "+toPrint['uid']+";; "+toPrint['botid']+";; "+toPrint['msg']+ ";; "+toPrint['resp'])
+            if 'isGroup' in item and item['isGroup'] == 'False':
+                print(str(toPrint['ts'])+";; "+toPrint['uid']+";; "+toPrint['botid']+";; "+toPrint['msg']+ ";; "+toPrint['resp'])
 
-        time.sleep(1)
+        time.sleep(10)
  
         if 'LastEvaluatedKey' not in r or r['LastEvaluatedKey'] == None:
             break

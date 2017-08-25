@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 
@@ -21,12 +21,22 @@ table_usert = dynamodb.Table('lineusert')
 table_user = dynamodb.Table('lineuser')
 
 def getLineUser(uid):
+        item = table_user.get_item( Key={ 'userId': uid })
+        oneUser = {}
+        n = datetime.datetime.now().timestamp()
+        if "Item" in item:
+#            return item['Item']
+            oneUser = item['Item']
+    
+        if len(oneUser) > 0:
+            return oneUser
 
         line_url = 'https://api.line.me/v2/bot/profile/' + uid
         headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
 
         r = requests.get(line_url, headers=headers)
         rjson = json.loads(r.text)
+
         return rjson
 
 def sendToUser(uid, msg):
@@ -117,6 +127,11 @@ def showLineUsers(lastdays=None):
  #     {'displayName': 'Y G', 'pictureUrl': 'http://dl.profile.line-cdn.net/0hOw6jMh39EFgLEz8kzRBvDzdWHjV8PRYQcyFbOS0VRmEuIlVaYiFcPyxEG28mIgILMn0PPSwWTG4i', 'userId': 'Ua60d254375033b0a8cd170dab02ea453', 'statusMessage': '思念太猖狂(煩惱)', 'last': Decimal('1497232992')}
             n = datetime.datetime.now().timestamp()
 
+            if 'created' in item:
+                cd = datetime.datetime.fromtimestamp(item['created'])
+                tmp = tmp + cd.isoformat()
+             
+            tmp = tmp +","
             if lastdays is not None and 'last' in item:
                 toCheck = n - (lastdays*24*60*60)
                 last = item['last']
@@ -125,6 +140,7 @@ def showLineUsers(lastdays=None):
                     print(tmp)
 
             elif lastdays is None:
+                tmp = tmp +","
                 print(tmp)
             else:
                 pass
