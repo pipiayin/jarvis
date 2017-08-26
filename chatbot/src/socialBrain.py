@@ -184,13 +184,17 @@ class SocialBrain():
         ncount = 0
         ncnt = 0
         toCommand = False
+        nounWords = []
+        toCmdAct = ''
         for (w,f) in wordtypes:
             if ncnt == 0 and f in ['v']:
                 toCommand = True
-             
+            if ncnt > 0 and toCommand and f in ['v'] and toCmdAct == '':
+                toCmdAct = w
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
                 ncount +=1
+                nounWords.append(w)
             ncnt += 1
 
         if wcount == 0:
@@ -227,13 +231,18 @@ class SocialBrain():
        # if response == '': # can't find any answer try for BibleHandler
        #     response = esBibleHandler(msg, words)
 
-        if response == '' and toCommand :
-            cannotDo = self.randomAct('list_cannot_do')
-            response = cannotDo.format(words[0], words[0])
           
         if response == '': # can't find any answer give 20% for pttHandler
             if random.randint(0,7) < 1:
                 response = pttHandler(msg, words)
+
+        if response == '' and toCommand :
+            cannotDo = self.randomAct('list_cannot_do')
+            showN = ''
+            for n in nounWords:
+                showN = showN + n
+            response = cannotDo.format(toCmdAct, showN)
+
         if response == '':
             #TODO put in will do list
             willDoList = self.kb['will_do'].split(";")
