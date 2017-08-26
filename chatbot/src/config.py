@@ -2,17 +2,30 @@
 # for quick and dirty config.
 
 MapActions = [
+    { 'call_back': 'actPixnetFans',
+      'terms' : [ 
+                  u'你有認識什麼偶像明星嗎',
+                  u'我想知道偶像明星的小道消息',
+                  u'我是個沒救的韓流鐵粉',
+                  u'最新的偶像明星消息',
+                  u'偶像明星消息',
+                ]
+    },
     { 'call_back': 'actPixnetFood',
       'terms' : [ 
                   u'請推薦餐廳',
                   u'請推薦美食',
+                  u'介紹一下美食',
                   u'推薦附近美食',
                   u'推薦附近餐廳',
+                  u'請推薦附近美食',
+                  u'隨便推薦好吃的',
                   u'有什麼好吃的',
                   u'推薦吃什麼好',
-                  u'要吃什麼啊'
+                  u'要吃什麼啊',
+                  u'晚上要吃什麼啊',
                 ]
-    }
+    },
     { 'call_back': 'actEventReg',
       'terms' :
                    [u'請通知我天氣特報' ,
