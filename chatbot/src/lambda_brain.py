@@ -206,7 +206,7 @@ def lambda_handler(even, context):
     resp = ''
     tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
-    bossmsg = u'傳下列訊息給聊天機器人 '
+    bossmsg = u'傳下列訊息給AI '
     dname = getUserDisplayName(fromuid)
     ts = int(time.time())
     toLog = {'uid': fromuid, 'ts': ts, 'line':
@@ -219,7 +219,7 @@ def lambda_handler(even, context):
             bossNotifyList = bossNotifyList + even['bossids']
         bossmsg = bossmsg + even['botid'] + " "
         resp = genericBrain.think(msg)
-        notifyData = dname + bossmsg + "\n" + msg
+        notifyData = dname + bossmsg + "\n" + msg+"\nAI回答: "+resp
         toLog['resp'] = resp
         toLog['botid'] = even['botid']
         table_log.put_item(Item=toLog)
@@ -237,7 +237,7 @@ def lambda_handler(even, context):
             table_log.put_item(Item=toLog)
             responseToUser(fromuid, resp)
 
-    notifyData = dname + bossmsg + "\n" + msg
+    notifyData = dname + bossmsg + "\n" + msg+"\nAI回答: "+resp
     responseToUser(tsid, notifyData)
     return "ok"
    # except:

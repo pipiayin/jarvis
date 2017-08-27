@@ -50,12 +50,23 @@ def esHandler(msg, words):
     res = es.search(index="testi", body=q)
     print("Got %d Hits:" % res['hits']['total'])
     allposi =[]
+    allposiScore =[]
+    cntPossible = 0
     for h in res['hits']['hits']:
+        print(h)
+        score = int(h['_score'])+1
         allposi = allposi + h['_source']['res']
+        allposiScore.append(score)
+        cntPossible += 1
         #result = random.choice((h['_source']['res']))
         #return result
+    toPick = []
+    for exdi in range(cntPossible):
+        toPick = toPick + [exdi] * allposiScore[exdi]
+    #print(toPick)
     if len(allposi) > 0:
-        result = random.choice(allposi)
+        resultPick = random.choice(toPick)
+        result = allposi[resultPick]
         return result
 
     qb = {

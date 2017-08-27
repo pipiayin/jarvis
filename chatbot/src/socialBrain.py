@@ -241,7 +241,8 @@ class SocialBrain():
             showN = ''
             for n in nounWords:
                 showN = showN + n
-            response = cannotDo.format(toCmdAct, showN)
+            if toCmdAct != '' and showN != '':
+                response = cannotDo.format(toCmdAct, showN)
 
         if response == '':
             #TODO put in will do list
