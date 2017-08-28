@@ -20,6 +20,14 @@ table_log = dynamodb.Table('lineuser')
 table_usert = dynamodb.Table('lineusert')
 table_user = dynamodb.Table('lineuser')
 
+def updateUserState(uid, state):
+        item = table_user.get_item( Key={ 'userId': uid })
+        if "Item" in item:
+            oneUser = item['Item']
+            oneUser['state'] = state
+            table_user.put_item( Item = oneUser)
+         
+
 def getLineUser(uid):
         item = table_user.get_item( Key={ 'userId': uid })
         oneUser = {}
@@ -115,7 +123,7 @@ def listLineUserId():
     return allUid
     
 
-def showLineUsers(lastdays=None):
+def showLineUsers(lastdays=None, historiesOnly=False):
         allUid = []
         r = table_user.scan(Limit=5000)
         cnt = 1
@@ -123,7 +131,13 @@ def showLineUsers(lastdays=None):
             pictureUrl = ''
             if 'pictureUrl' in item:
                 pictureUrl=item['pictureUrl']
-            tmp = "{},{},{},".format(item['displayName'],pictureUrl,item['userId'])
+            historiesNo = ''
+            histories = ''
+            if 'history'  in item:
+                historiesNo = str(len(item['history']))
+                for h in item['history']:
+                    histories = histories +"\n"+h
+            tmp = "{},{},{},{},".format(item['userId'],pictureUrl,item['displayName'],historiesNo)
  #     {'displayName': 'Y G', 'pictureUrl': 'http://dl.profile.line-cdn.net/0hOw6jMh39EFgLEz8kzRBvDzdWHjV8PRYQcyFbOS0VRmEuIlVaYiFcPyxEG28mIgILMn0PPSwWTG4i', 'userId': 'Ua60d254375033b0a8cd170dab02ea453', 'statusMessage': '思念太猖狂(煩惱)', 'last': Decimal('1497232992')}
             n = datetime.datetime.now().timestamp()
 
@@ -144,6 +158,8 @@ def showLineUsers(lastdays=None):
                 print(tmp)
             else:
                 pass
+            if historiesOnly:
+                print(histories)
             cnt += 1
 
 def getUserSession(uid):
@@ -165,12 +181,18 @@ if __name__ == '__main__':
     parser.add_argument('--msg','-m', help='send message to all user')
     parser.add_argument('--select','-s', help='selected user list file')
     parser.add_argument('--profile','-p', help='get one user profile')
+    parser.add_argument('--updateState','-u', help='update one user profile (with -p)')
     parser.add_argument('--lastdays','-d', help='show only user who actually use in past N days')
     parser.add_argument('--imageurl','-i', help='message attached image url') 
+    parser.add_argument('--historiesOnly','-H',action='store_true', help='list only conversation history (for analysis purpose)') 
 
     args = parser.parse_args()
     if args.profile is not None :
-        print("show single user profile")
+        if args.updateState is not None:
+            print("update single user state to:" + args.updateState)
+            updateUserState(args.profile, args.updateState)
+        else:
+            print("show single user profile")
         print(getLineUser(args.profile))
         exit(0)
 
@@ -179,7 +201,7 @@ if __name__ == '__main__':
         lastdays = None
         if args.lastdays is not None:
             lastdays = float(args.lastdays)
-        showLineUsers(lastdays)
+        showLineUsers(lastdays, args.historiesOnly)
         exit(0)
 
     if args.msg is not None:
