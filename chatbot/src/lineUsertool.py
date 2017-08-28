@@ -136,7 +136,7 @@ def showLineUsers(lastdays=None, historiesOnly=False):
             if 'history'  in item:
                 historiesNo = str(len(item['history']))
                 for h in item['history']:
-                    histories = histories +"\n"+h
+                    histories = histories +"\n"+str(h)
             tmp = "{},{},{},{},".format(item['userId'],pictureUrl,item['displayName'],historiesNo)
  #     {'displayName': 'Y G', 'pictureUrl': 'http://dl.profile.line-cdn.net/0hOw6jMh39EFgLEz8kzRBvDzdWHjV8PRYQcyFbOS0VRmEuIlVaYiFcPyxEG28mIgILMn0PPSwWTG4i', 'userId': 'Ua60d254375033b0a8cd170dab02ea453', 'statusMessage': '思念太猖狂(煩惱)', 'last': Decimal('1497232992')}
             n = datetime.datetime.now().timestamp()

@@ -8,11 +8,17 @@ import boto3
 import sys
 import json
 import decimal
-from decimal import Decimal
 import random
 import argparse
 import time
 import datetime
+import decimal
+ 
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return int(obj)
+    raise TypeError
+
 from nocheckin import XLineToken
 
 
@@ -71,32 +77,19 @@ def listLog(botid ='',uid=''):
             r = table_log.scan(ExclusiveStartKey=last)
 
         for item in r['Items']:
-            toPrint = {}
-            last = item
-            toPrint['ts'] = int(item['ts'])
-            toPrint['uid'] = item['uid']
-            if uid != '' and toPrint['uid'] != uid:
+            if uid != '' and item['uid'] != uid:
                 continue
             if botid != '' and 'botid' not in item:
                 continue
             if botid != '' and item['botid'] != botid:
                 continue
 
-            if 'botid' in item:
-                toPrint['botid'] = item['botid']
-            else:
-                toPrint['botid'] = ""
-            if type(item['msg']) == type(''):
-                toPrint['msg'] = item['msg']
-            else:
-                toPrint['msg'] = ''
-            if 'resp' in item:
-                toPrint['resp'] = item['resp']
-            else:
-                toPrint['resp'] = ''
 
-            if 'isGroup' in item and item['isGroup'] == 'False':
-                print(str(toPrint['ts'])+";; "+toPrint['uid']+";; "+toPrint['botid']+";; "+toPrint['msg']+ ";; "+toPrint['resp'])
+            if 'isGroup' in item  and item['isGroup'] == 'False' and 'resp' in item:
+
+                s=json.dumps(item, default=decimal_default,ensure_ascii=False)
+                print(s)
+                #print(str(toPrint['ts'])+";; "+toPrint['uid']+";; "+toPrint['botid']+";; "+toPrint['msg']+ ";; "+toPrint['resp'])
 
         time.sleep(10)
  

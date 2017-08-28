@@ -15,6 +15,7 @@ import requests
 from lineTools import getBotHeader
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,bossid
 from blackList import badfriends
+import decimal
 
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
@@ -26,6 +27,11 @@ learn_triggers = ['590590',u'小安 學',u'小安學']
 group_triggers = [u'小姍',u'小安','JHC']
 
 
+
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return int(obj)
+    raise TypeError
 
 def lineResponse(toLineResponse):
     lresponse = lambda_client.invoke(
@@ -189,14 +195,14 @@ def lambda_handler(even, context):
         if len(oneUser['history']) > 51:
             oneUser['history'].remove(oneUser['history'][0])
 
-        if len(oneUser['history']) >= 5  and len(set(oneUser['history'][-5:]))==1:
-            print("handle repeating")
-            msg = '請冷靜 你好像在講重複的話'
-            toLineResponse = {'uid':uid, 'msg':msg}
-            lineResponse(toLineResponse)
-            toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
-            lineResponse(toLineResponse)
-            return
+       # if len(oneUser['history']) >= 5  and len(set(oneUser['history'][-5:]))==1:
+       #     print("handle repeating")
+       #     msg = '請冷靜 你好像在講重複的話'
+       #     toLineResponse = {'uid':uid, 'msg':msg}
+       #     lineResponse(toLineResponse)
+       #     toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
+       #     lineResponse(toLineResponse)
+       #     return
 
 
         print(oneUser)
@@ -207,6 +213,7 @@ def lambda_handler(even, context):
                 oneUser['created'] = ts
 
         oneUser['last'] = ts
+        even['oneUser'] = oneUser
         if 'userId' in oneUser :
             print('do dynamodb update user')
             table_user.put_item(Item=oneUser)
@@ -231,11 +238,11 @@ def lambda_handler(even, context):
 
                     even['events'][0]['message']['text'] = tmpmsg
                     print('message to aibrain')
-                    print(json.dumps(even))
-                    invoke_lambda_event('aibrain', json.dumps(even) )
+                    print(json.dumps(even,default=decimal_default))
+                    invoke_lambda_event('aibrain', json.dumps(even,default=decimal_default) )
             else:
                 print('not group...')
-                invoke_lambda_event('aibrain', json.dumps(even) )
+                invoke_lambda_event('aibrain', json.dumps(even,default=decimal_default) )
 
         print("responsed (tolog->)"+str(toLog))
         return "ok"
