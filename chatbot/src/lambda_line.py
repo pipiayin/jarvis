@@ -126,6 +126,12 @@ def lambda_handler(even, context):
         msg = '_'
         messageType = 'text'
         oneUser = {}
+        oneUser = getLineUser(uid)
+
+        if 'state' in oneUser and oneUser['state'] == 'prohibit':
+            msg = '人工智慧分析過去聊天記錄 認定是你是壞朋友 目前小姍不願意和你聊天 如果要申訴 請email至: ai@talent-service.com'
+            sendDeny(uid,bossid,msg)
+            return
 
         if 'text' == even['events'][0]['message']['type']:
             msg = even['events'][0]['message']['text']
@@ -141,7 +147,6 @@ def lambda_handler(even, context):
                 sendDeny(uid, bossid, msg)
                 return
 
-            oneUser = getLineUser(uid)
             imageId = even['events'][0]['message']['id']
             msg = uid + "_" + imageId
 
@@ -150,14 +155,14 @@ def lambda_handler(even, context):
                 imageAnalysis = {'uid':uid, 'imageId': imageId}
                 invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
             else:
-                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~ 這幾天照片先不分析 讓我休息一下啦~~ 等學會分身之術會再開放照片分析功能唷~~ 如果有學校教學用途 研究測試用途 可以自己寫email給我的創造者(ai@talent-service.com) 跟他商量額外開放...反正小姍我也要一例一休啦'
+                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~ 這幾天照片先不分析 讓我休息一下啦~~ 等學會分身之術會再開放照片分析功能唷~~\n 如果有學校教學用途 研究測試用途 可以自己寫email給我的創造者(ai@talent-service.com) 跟他商量額外開放'
                 sendDeny(uid, bossid, msg)
                 msg = uid + "_" + imageId
 
         even['isGroup'] =  str(isGroup) 
         msg = msg.strip()
         toLog = {'uid':uid, 'ts':ts, 'line':even['events'], 'msg':msg, 'isGroup': str(isGroup)}
-        oneUser = getLineUser(uid)
+        #oneUser = getLineUser(uid)
         if 'botid' in even:
             oneUser = getLineUser(uid,even['botid'])
             oneUser['botid'] = even['botid']
