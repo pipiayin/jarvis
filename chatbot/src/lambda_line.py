@@ -19,7 +19,6 @@ from blackList import badfriends
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 
-table_log = dynamodb.Table('linelog')
 table_user = dynamodb.Table('lineuser')
 lambda_client = boto3.client('lambda')
 
@@ -212,9 +211,6 @@ def lambda_handler(even, context):
             print('do dynamodb update user')
             table_user.put_item(Item=oneUser)
     
-        print('do dynamodb log')
-        print(toLog)
-        table_log.put_item(Item=toLog)
         if messageType == 'image':
             return "imageOk"
 
