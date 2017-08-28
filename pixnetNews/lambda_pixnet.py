@@ -30,7 +30,7 @@ def lambda_foodhandler(even, context):
                 break 
         
         print('location:'+ location)
-        (resMsg, geo) = getFoodNews(location=location)
+        (resMsg, geo) = getFoodNews(location=location, kuso=True)
         if len(geo) > 0:
             print(geo)
             geo['title'] = '推薦美食地點'
@@ -57,7 +57,7 @@ def lambda_foodhandler(even, context):
 
 def lambda_fanshandler(even, context):
     try:
-        print("-----In Lambda_lottery---")
+        print("-----In Lambda_fanshandler---")
         # even format: {"uid": "botid": , "callback":"lineResponse"}
         # TODO: at this moment, all callback assume go for lineResponse
         uid = '' 
