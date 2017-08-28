@@ -53,7 +53,7 @@ def esHandler(msg, words):
     allposiScore =[]
     cntPossible = 0
     for h in res['hits']['hits']:
-        print(h)
+        #print(h)
         score = int(h['_score'])+1
         allposi = allposi + h['_source']['res']
         allposiScore.append(score)
