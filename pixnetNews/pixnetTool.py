@@ -83,7 +83,7 @@ def getTravelNews(keywords, kuso=True):
             break
 
     if len(newsList) <= 0:
-        return ("歹勢 最近沒在{}的新消息".format(keyword) , {})
+        return "歹勢 最近沒有相關旅遊的新消息"
 
     #print(len(newsList))
     n = random.choice(newsList)
