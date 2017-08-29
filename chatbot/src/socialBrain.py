@@ -186,6 +186,11 @@ class SocialBrain():
         toCommand = False
         nounWords = []
         toCmdAct = ''
+        msg = msg.strip()
+        if msg in self.kb[u'bad_words'].split(';'):
+            response = self.randomAct(u'bad_words_res')
+            return response
+
         for (w,f) in wordtypes:
             if ncnt == 0 and f in ['v']:
                 toCommand = True
