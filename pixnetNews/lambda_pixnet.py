@@ -6,7 +6,7 @@ import boto3
 import sys
 import datetime
 import random
-from pixnetTool import getFansNews, getFoodNews
+from pixnetTool import getFansNews, getFoodNews, getTravelNews
 from twlocation import TWLOCATION
 
 lambda_client = boto3.client('lambda')
@@ -55,6 +55,36 @@ def lambda_foodhandler(even, context):
         return "something wrong"
    
 
+def lambda_travelhandler(even, context):
+    try:
+        print("-----In Lambda_travelhandler---")
+        # even format: {"uid": "botid": , "callback":"lineResponse","msg":"search msg" }
+        # TODO: at this moment, all callback assume go for lineResponse
+        uid = '' 
+        if 'uid' in even :
+            uid = even['uid']
+        else:
+            return 
+
+        print(even)
+        msg = getTravelNews(even['msg'])
+        toLineResponse={'uid':uid, 'msg':msg}
+
+        print(msg)
+        lresponse = lambda_client.invoke(
+             FunctionName='lineResponse',
+             InvocationType='Event',
+             LogType='None',
+             ClientContext='string',
+             Payload=json.dumps(toLineResponse),
+         )
+
+        return 
+    except:
+        print(even)
+        print(sys.exc_info()[0])
+        return "something wrong"
+
 def lambda_fanshandler(even, context):
     try:
         print("-----In Lambda_fanshandler---")
@@ -90,5 +120,6 @@ if __name__ == '__main__':
     import sys
     even = {u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' , u'msg':sys.argv[1]}
 
-    lambda_foodhandler(even, None)
+#    lambda_foodhandler(even, None)
+    lambda_travelhandler(even,None)
 

@@ -6,11 +6,12 @@ import sys
 import datetime
 import json
 
-API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=12&format=json'
-FANS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=21&format=json'
-FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page={}&format=json&page={}'
-ARTICLE_URL = 'https://emma.pixnet.cc/blog/articles/{}?user={}&format=json'
-HOTNEWS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/{}?per_page={}&format=json&page={}'
+from nocheckin import client_id
+API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=12&format=json&client_id='+client_id
+FANS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/30?per_page=21&format=json&client_id=084e1fa57f6e8d1d9700499656e02b7c&client_id='+client_id
+FOOD_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/26?per_page={}&format=json&page={}&client_id='+client_id
+ARTICLE_URL = 'https://emma.pixnet.cc/blog/articles/{}?user={}&format=json&client_d='+client_id
+HOTNEWS_API_URL = 'https://emma.pixnet.cc/mainpage/blog/categories/hot_weekly/{}?per_page={}&format=json&page={}&client_id='+client_id
 
 
 def analysisArticle(userName, articleNo):
@@ -45,27 +46,42 @@ def getHotNews(cata, keyword, maxPageCnt, articlesPerPage):
         #print(cnt)
         cnt += 1
         a = json.loads(r.text)
+        #print("---")
+        #print(a)
         if 'articles' not in a:
             break
         for article in a['articles']:
             total = article['hits']['total']
             daily = article['hits']['daily']
-            if keyword not in article['title']:
-                continue
             if total <= 319: # magic number to identify hot article
                 continue
-            newsList.append(article)
+            if keyword in article['title']:
+                newsList.append(article)
+                continue
+            else:
+                for t in article['tags']:
+                    if keyword == t['tag']:
+                        newsList.append(article)
+                        #print('got the tag')
+                        continue
+                continue
 
-        if len(newsList) >= 3: # find at least 3 
+        if len(newsList) >= 3: # if got least 3 
+            #print(newsList)
             break
 
+    #print(len(newsList))
     return newsList
 
 def getTravelNews(keyword, kuso=True):
     newsList= getHotNews(29,keyword,8,25)
     if len(newsList) <= 0:
+        newsList= getHotNews(28,keyword,8,25)
+
+    if len(newsList) <= 0:
         return ("歹勢 最近沒在{}的新消息".format(keyword) , {})
 
+    #print(len(newsList))
     n = random.choice(newsList)
     title = n['title']
     link = n['link'].split('-')[0]
@@ -94,6 +110,7 @@ def getFoodNews(location='', kuso=False):
         #print(cnt)
         cnt += 1
         a = json.loads(r.text)
+        #print(a)
         for article in a['articles']:
             total = article['hits']['total']
             daily = article['hits']['daily']
@@ -168,3 +185,4 @@ if __name__ == '__main__':
     
 #    print(getFoodNews(location = sys.argv[1] , kuso=True))
     print(getTravelNews(sys.argv[1]))
+
