@@ -68,7 +68,7 @@ def lambda_travelhandler(even, context):
 
         print(even)
         keywords = [even['msg']]
-        commonRemoves = ['景點','地方','好玩','秘境','私房景點','美食','推薦','旅遊']
+        commonRemoves = ['景點','地方','好玩','秘境','私房景點','美食','推薦','旅遊','小姍']
         if 'location' in even['intent'] and even['intent']['location'] != '':
             keywords.append(even['intent']['location'])
         keywords.extend(even['intent']['entities'])
@@ -76,6 +76,7 @@ def lambda_travelhandler(even, context):
             if r in keywords:
                 keywords.remove(r)
         
+        print(keywords)
         msg = getTravelNews(keywords)
         toLineResponse={'uid':uid, 'msg':msg}
 
@@ -127,11 +128,8 @@ def lambda_fanshandler(even, context):
 if __name__ == '__main__':
     print("TODO: simple test script")
     import sys
-    even = { 
-       u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' , 
-       u'msg': sys.argv[1], 
-        'intent':{'timings': [], 'intent': '推薦', 'entities': ['景點', '名古屋', '名古屋景點'], 'msg': '推薦名古屋景點', 'location': ''} 
-    }
+    even = {'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad', 'callback': '', 'botid': '', 'msg': '小姍推薦日本高山景點', 'intent': {'timings': [], 'entities': ['小姍', '景點'], 'msg': '小姍推薦日本景點', 'location': '日本', 'intent': '推薦'}}
+    
 
 #    lambda_foodhandler(even, None)
     lambda_travelhandler(even,None)
