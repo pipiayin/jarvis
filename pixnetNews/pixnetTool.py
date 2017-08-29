@@ -73,10 +73,14 @@ def getHotNews(cata, keyword, maxPageCnt, articlesPerPage):
     #print(len(newsList))
     return newsList
 
-def getTravelNews(keyword, kuso=True):
-    newsList= getHotNews(29,keyword,8,25)
-    if len(newsList) <= 0:
-        newsList= getHotNews(28,keyword,8,25)
+def getTravelNews(keywords, kuso=True):
+    newsList = []
+    for keyword in keywords:
+        newsList = getHotNews(29,keyword,8,25)
+        if len(newsList) <= 0:
+            newsList = getHotNews(28,keyword,8,25)
+        if len(newsList) > 2:
+            break
 
     if len(newsList) <= 0:
         return ("歹勢 最近沒在{}的新消息".format(keyword) , {})
@@ -184,5 +188,4 @@ if __name__ == '__main__':
  #   print(getFansNews())
     
 #    print(getFoodNews(location = sys.argv[1] , kuso=True))
-    print(getTravelNews(sys.argv[1]))
-
+    print(getTravelNews( [ sys.argv[1] ]))

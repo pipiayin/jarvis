@@ -56,9 +56,9 @@ def lambda_foodhandler(even, context):
    
 
 def lambda_travelhandler(even, context):
-    try:
+    #try:
         print("-----In Lambda_travelhandler---")
-        # even format: {"uid": "botid": , "callback":"lineResponse","msg":"search msg" }
+        # even format: {"uid": "botid": , "callback":"lineResponse","msg":"search msg","intent":{'intent':'','location':'','entities':[] } }
         # TODO: at this moment, all callback assume go for lineResponse
         uid = '' 
         if 'uid' in even :
@@ -67,7 +67,16 @@ def lambda_travelhandler(even, context):
             return 
 
         print(even)
-        msg = getTravelNews(even['msg'])
+        keywords = [even['msg']]
+        commonRemoves = ['景點','地方','好玩','秘境','私房景點','美食','推薦','旅遊']
+        if 'location' in even['intent'] and even['intent']['location'] != '':
+            keywords.append(even['intent']['location'])
+        keywords.extend(even['intent']['entities'])
+        for r in commonRemoves:
+            if r in keywords:
+                keywords.remove(r)
+        
+        msg = getTravelNews(keywords)
         toLineResponse={'uid':uid, 'msg':msg}
 
         print(msg)
@@ -80,10 +89,10 @@ def lambda_travelhandler(even, context):
          )
 
         return 
-    except:
-        print(even)
-        print(sys.exc_info()[0])
-        return "something wrong"
+#    except:
+#        print(even)
+#        print(sys.exc_info()[0])
+#        return "something wrong"
 
 def lambda_fanshandler(even, context):
     try:
@@ -118,8 +127,11 @@ def lambda_fanshandler(even, context):
 if __name__ == '__main__':
     print("TODO: simple test script")
     import sys
-    even = {u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' , u'msg':sys.argv[1]}
+    even = { 
+       u'uid': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad' , 
+       u'msg': sys.argv[1], 
+        'intent':{'timings': [], 'intent': '推薦', 'entities': ['景點', '名古屋', '名古屋景點'], 'msg': '推薦名古屋景點', 'location': ''} 
+    }
 
 #    lambda_foodhandler(even, None)
     lambda_travelhandler(even,None)
-
