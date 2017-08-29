@@ -124,9 +124,15 @@ def listLineUserId():
     
 
 def showLineUsers(lastdays=None, historiesOnly=False):
-        allUid = []
-        r = table_user.scan(Limit=5000)
-        cnt = 1
+    allUid = []
+    cnt = 1
+    last = None
+    while True :
+        if last == None:
+            r = table_user.scan()
+        else :
+            r = table_log.scan(ExclusiveStartKey=last)
+
         for item in r['Items']:
             pictureUrl = ''
             if 'pictureUrl' in item:
@@ -161,6 +167,12 @@ def showLineUsers(lastdays=None, historiesOnly=False):
             if historiesOnly:
                 print(histories)
             cnt += 1
+
+        time.sleep(1)
+        if 'LastEvaluatedKey' not in r or r['LastEvaluatedKey'] == None:
+            break
+        else:
+            last = r['LastEvaluatedKey']
 
 def getUserSession(uid):
     item = table_user.get_item( Key={ 'userId': uid })

@@ -14,7 +14,8 @@ import requests
 from difflib import SequenceMatcher
 from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
-from config import MapActions
+from config import MapActions, MatchActTravel
+from twMessageProcess import  getIntent, decideAction
 
 lineBrain = SocialBrain()
 
@@ -220,11 +221,13 @@ def lambda_handler(even, context):
     msg = even['events'][0]['message']['text'].strip()
     print('---in brain ---')
     print(msg)
-    resp = ''
+    resp = '(可能由intent處理)'
     tsid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     bossid = u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'
     bossmsg = u'傳下列訊息給AI '
-    dname = getUserDisplayName(fromuid)
+    dname = "!!"
+    if oneUser != {} :
+        dname = oneUser['displayName']
     ts = int(time.time())
     toLog = {'uid': fromuid, 'ts': ts, 'line':
              even['events'], 'msg': msg, 'resp': ""}
@@ -245,8 +248,17 @@ def lambda_handler(even, context):
             responseToUser(oneBoss, notifyData, even['botid'])
         responseToUser(fromuid, resp, even['botid'])
     else:
+        intent = getIntent(msg)
+        lambdaFunctionName = decideAction(intent, MatchActTravel)
+        didSendMsg = False
+        if lambdaFunctionName != '':
+            intentPayLoad = {'uid':fromuid, 'botid':'', 'msg':msg, 'intent':intent, 'callback':''}
+            invokeLambdaEvent(lambdaFunctionName, intentPayLoad)
+            didSendMsg = True
+
+        if not didSendMsg: 
         # TODO FIXME: a short cut here to invoke bus search
-        didSendMsg = predefineAction(msg, fromuid)
+            didSendMsg = predefineAction(msg, fromuid)
 
         if not didSendMsg:
             resp = lineBrain.think(msg)

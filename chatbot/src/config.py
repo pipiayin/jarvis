@@ -1,6 +1,16 @@
 
 # for quick and dirty config.
 
+MatchActTravel = {
+    'lambda' : 'pixnettravel',
+    'criteries':[ [('intent','推薦'),('entities','景點'),('location','')],
+                  [('intent','好玩'),('entities','地方')],
+                  [('intent','推薦'),('entities','觀光'),('entities','景點')],
+                ]
+    }
+
+
+# to be replace bu MatchActXXXXX latter. (TODO)
 MapActions = [
     { 'call_back': 'actPixnetFans',
       'terms' : [ 
