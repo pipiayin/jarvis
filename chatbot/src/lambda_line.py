@@ -111,6 +111,25 @@ def sendDeny(uid, bossid, msg):
     toLineResponse = {'uid':bossid, 'msg': msg+"->"+uid}
     lineResponse(toLineResponse)
 
+
+def isAllowImage(oneUser):
+    if 'profile' in oneUser and 'allow' in oneUser['profile'] and 'image' in oneUser['profile']['allow'] :
+        return True
+    return False
+
+def setAllowImage(oneUser):
+    print('do dynamodb update user to allow image analysis')
+    if 'profile' not in oneUser:
+        oneUser['profile'] = {}
+
+    if 'allow' not in oneUser['profile']:
+        oneUser['profile']['allow'] = []
+
+    if 'image' not in oneUser['profile']['allow']:
+        oneUser['profile']['allow'].append('image')
+    
+    table_user.put_item(Item=oneUser)
+
 def lambda_handler(even, context):
    # try:
         print("-----get message from lambda line---")
@@ -140,6 +159,12 @@ def lambda_handler(even, context):
 
         if 'text' == even['events'][0]['message']['type']:
             msg = even['events'][0]['message']['text']
+        if 'sticker' == even['events'][0]['message']['type']:
+            packageId = even['events'][0]['message']['packageId']
+            if packageId == '1540679':
+                msg = '大感謝~ 幫忙買了小姍貼圖~ 照片分析功能開啟!'
+                setAllowImage(oneUser)
+                sendDeny(uid,bossid,msg)
 
         if 'image' == even['events'][0]['message']['type']:
             if uid in badfriends:
@@ -155,12 +180,12 @@ def lambda_handler(even, context):
             imageId = even['events'][0]['message']['id']
             msg = uid + "_" + imageId
 
-            if 'profile' in oneUser and 'allow' in oneUser['profile'] and 'image' in oneUser['profile']['allow'] :
+            if isAllowImage(oneUser):
                 messageType = 'image'
                 imageAnalysis = {'uid':uid, 'imageId': imageId}
                 invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
             else:
-                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~ 這幾天照片先不分析 讓我休息一下啦~~ 等學會分身之術會再開放照片分析功能唷~~\n 如果有學校教學用途 研究測試用途 可以自己寫email給我的創造者(ai@talent-service.com) 跟他商量額外開放'
+                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~~ \n 目前先開放購買小姍貼圖的好友分析照片...(買了小姍的日常貼圖後 傳任一張給小姍看一下) 感恩啦~ '
                 sendDeny(uid, bossid, msg)
                 msg = uid + "_" + imageId
 
@@ -269,6 +294,7 @@ if __name__ == '__main__':
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
 
+    tmp = {'events':[{'type': 'message', 'replyToken': '4e184e77a33841d0ae95c8bf4b8dd300', 'source': {'userId': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad', 'type': 'user'}, 'timestamp': 1503969668255, 'message': {'type': 'sticker', 'id': '6614883524485', 'stickerId': '19099990', 'packageId': '1540679'}}]}
     print(lambda_handler(tmp, None))
 
     
