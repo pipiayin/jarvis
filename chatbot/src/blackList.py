@@ -1,7 +1,30 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
-badfriends = ['U8fac6794d83b4a39614dd1c3f563230e','U23382b41c01869abed7f0b620183b071','U3845f28ae73e0cf6165a7b7d8ab4210e','Udb9af9dd4ee3c75ee4d7e4c078364057']
+#TODO a better way to get black list
+badfriends = ['U8fac6794d83b4a39614dd1c3f563230e',
+              'U679b5ab432456e4a0c01964ea5d0ae01',
+              'U5b6920bd0ae473155a443d08ecb38f49',
+              'U26821f8a982b0044e40b9826235bcc32',
+              'U1e509f4a4c19d8e5ff9cab69b898dd97',
+              'Ued5345798c61880b2f83aded07fc17ea',
+              'U582c6095db180f64ddc3d31936cda2f9',
+              'Uc4381cd6770532f86ae4ffa4c2925651',
+              'Uec200f8b1434c9d172dad49da7b1908e',
+              'Uad3b0eb2186314f3a466e1d66b0c50f5',
+              'U52e09cb436ff919e35206398894994a7',
+              'U23382b41c01869abed7f0b620183b071',
+              'U3845f28ae73e0cf6165a7b7d8ab4210e',
+              'Ue3fbac475776995ee2deecd706913719',
+              'Udb9af9dd4ee3c75ee4d7e4c078364057',
+              'U5d6b90c98e9789236eb23b24f001ba61',
+              'Ua208c93e936b1267981512076381f132',
+              'Ue4ce06741b8e8bfad3378c35aeef12fa',
+              'U1c77efb9c44d1a825ea26d8e838cf5aa',
+              'Uf364d37a0b234874c1bf15b3b401aac1',
+              'U70950279e3c10fb7ab51d62bfd6ad4ef',
+              'Ue39a1988990eee4c59448a9757b5f932',
+              'Ua7657307e984cb9972fdbe8e948e8b0c']
 badwords = [ u'幹你娘'
     ,u'幹你老師'
     ,u'幹林老師'
@@ -22,6 +45,7 @@ badwords = [ u'幹你娘'
     ,u'雞雞癢'
     ,u'大肉棒'
     ,u'打砲'
+    ,u'中出'
     ,u'上床'
     ,u'fuck'
     ,u'FUCK'
@@ -40,4 +64,6 @@ badwords = [ u'幹你娘'
 ,u'恁娘卡好'
     ,u'破麻'
     ,u'肏他媽'
+    ,u'雞雞'
+    ,u'Gay'
     ]

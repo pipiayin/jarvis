@@ -16,6 +16,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from datetime import datetime
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
+from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import aws_access_key_id,aws_secret_access_key,XLineToken,happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 from blackList import badfriends,badwords
 
@@ -40,36 +41,6 @@ es = Elasticsearch(
 
 learn_triggers = ['590590', u'小安學', u'小安 學']
 
-def getBotHeader(botid):
-    botMap = {'happyrun':happyrunXLineToken,
-              'botann':botannXLineToken,
-              'botpm':botpmXLineToken,
-              'botjhc':botjhcXLineToken,
-              'botyunyun':botyunyunXLineToken}
-    if botid in botMap:
-        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+botMap[botid]}
-        return headers
-    else:
-        return ""
-
-def getUserDisplayName(fromuid, botid=''):
-    try:
-        line_url = 'https://api.line.me/v2/bot/profile/'+fromuid
-        headers = {"Content-type": "application/json; charset=utf-8","Authorization" : "Bearer "+XLineToken}
-
-        if botid != '':
-            botHeaders = getBotHeader(botid)
-            if botHeaders != '':
-                headers = botHeaders
-
-
-        r = requests.get(line_url, headers=headers)
-        rjson = json.loads(r.text)
-        ruser = rjson['displayName']
-        return ruser
-    except:
-        print('can not get displayName from uid:'+fromuid)
-        return ''
 
 
 def responseToToken(replyToken, resp, botid=''):
@@ -145,12 +116,19 @@ def lambda_handler(even, context):
         msg_except_empty = list(filter(lambda x: x!= '', parts))    
         msg = msg_except_empty[0].strip()
         uname = getUserDisplayName(even['uid'])
+        if even['uid'] != bossid: 
+            responseToUser(even['uid'],u'抱歉 由於太多壞朋友教壞小姍...我的創造者讓我閉門思過 暫時不學新東西.. ')
+            return "not learn"
+
         if even['uid'] in badfriends:
             responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
 #            responseToToken(replyToken,u'抱歉 系統分析後認定你是壞朋友 小姍不會跟你學資訊 ')
             responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)
             return "not learn"
         for bw in badwords:
+            if bossid == even['uid']:
+                #boss can ask for learning
+                break
             if bw in fullmsg:
                 responseToUser(even['uid'],u'抱歉 系統分析後認定你是壞朋友 ')
                 responseToUser(bossid, uname + u'試圖教以下事情然而人工智慧不接受 \n'+msg, botid)

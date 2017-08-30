@@ -45,6 +45,7 @@ A config-able chat microservice for better customer support.
        * SandyAI then ask user B?
        * SandyAI then ask back user A?
 - add books
+- nocheckin_py_doc.txt <- this is a placehole document for participants
 # how to make a Lambda?
 - ZIP every thing.
 - check deployToAWS_AITS.sh

@@ -1,0 +1,4 @@
+
+to register user uid and event mapping via a AWS lambda
+it uses an dynamodb table (lineevent)
+

@@ -109,11 +109,11 @@ class SocialBrain():
 #        if lenMsg == 2 : # two words
 #            return self.randomAct(u'act_two_words')
 
-        if lenMsg == 3 : # two words
-            list3words = self.kb[u'list_three_words'].split(';')
-            for tw in list3words:
-                if tw == msg:
-                    return self.randomAct(u'act_three_words')
+#        if lenMsg == 3 : # two words
+#            list3words = self.kb[u'list_three_words'].split(';')
+#            for tw in list3words:
+#                if tw == msg:
+#                    return self.randomAct(u'act_three_words')
 
         if lenMsg > 9 :
             engcounts = len(re.findall('[a-zA-Z]',msg))
@@ -166,25 +166,42 @@ class SocialBrain():
     def think(self, msg):
         response = ""
         self.processmsg = msg # supposedly, basicParser will change processmsg
-        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
+        all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler]
+        #all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler, esBibleHandler]
         short_list = [self.basicParser, esHandler]
-        bible_first_list = [self.basicParser, esHandler,esBibleHandler]
+        #bible_first_list = [self.basicParser, esHandler,esBibleHandler]
         handler_list = short_list
-        bList = [u'聖經',u'信仰',u'基督教',u'基督']
-        for bw in bList:
-            if self.processmsg.count(bw) > 0:
-                handler_list = bible_first_list
-                break
+       # bList = [u'聖經',u'信仰',u'基督教',u'基督']
+       # for bw in bList:
+       #     if self.processmsg.count(bw) > 0:
+       #         handler_list = bible_first_list
+       #         break
         words = pseg.cut(msg)
         
         words, wordtypes = self.simpleListWords(words)
         wcount = len(wordtypes)
         nounwcount = 0.0
         ncount = 0
+        ncnt = 0
+        toCommand = False
+        nounWords = []
+        toCmdAct = ''
+        msg = msg.strip()
+        if msg in self.kb[u'bad_words'].split(';'):
+            response = self.randomAct(u'bad_words_res')
+            return response
+
         for (w,f) in wordtypes:
+            if ncnt == 0 and f in ['v']:
+                toCommand = True
+            if ncnt > 0 and toCommand and f in ['v'] and toCmdAct == '':
+                toCmdAct = w
             if f in['n','j','nr','ns','nt','an','nt']:
                 nounwcount += len(w)
                 ncount +=1
+                nounWords.append(w)
+            ncnt += 1
+
         if wcount == 0:
             wcount = 0.5
         nrate = nounwcount / float(wcount)
@@ -216,14 +233,23 @@ class SocialBrain():
             if basic_res != '':
                 return basic_res
          
-        if response == '': # can't find any answer try for BibleHandler
-            response = esBibleHandler(msg, words)
+       # if response == '': # can't find any answer try for BibleHandler
+       #     response = esBibleHandler(msg, words)
 
-       # if response == '': # can't find any answer give 50% for pttHandler
-       #     if random.randint(0,1) < 1:
-       #         response = pttHandler(msg, words)
+          
+        if response == '': # can't find any answer give 20% for pttHandler
+            if random.randint(0,7) < 1:
+                response = pttHandler(msg, words)
+
+        if response == '' and toCommand :
+            cannotDo = self.randomAct('list_cannot_do')
+            showN = ''
+            for n in nounWords:
+                showN = showN + n
+            if toCmdAct != '' and showN != '':
+                response = cannotDo.format(toCmdAct, showN)
+
         if response == '':
-            print("in will do")
             #TODO put in will do list
             willDoList = self.kb['will_do'].split(";")
             for wd in willDoList:
