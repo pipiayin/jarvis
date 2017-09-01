@@ -94,6 +94,47 @@ def getLineUser(fromuid,botid=''):
 #        print('exception for get user profile from uid: '+fromuid)
 #        return ''
 
+def isCopying(history):
+    h = history #just lazy typing
+    if len(h) <= 2:
+        return False
+    currentMsg = ''
+    if type(h[-1]) == type(''):
+        currentMsg = h[-1]
+    if type(h[-1]) == type([]):
+        currentMsg = h[-1][0]
+
+    preRes = ''
+    if type(h[-2]) == type(''):
+        preRes = None
+    if type(h[-2]) == type([]):
+        preRes = h[-2][1]
+
+    if preRes is not None and preRes == currentMsg:
+        return True
+    else:
+        return False
+
+
+
+def isRepeating(history):
+    #history is list, however, element might be list or string
+
+    inputList = []
+    if len(history) <= 3 :
+        return False
+
+    for h in history[-3:]:
+        if type(h) == type(''):
+            inputList.append(h)
+        if type(h) == type([]):
+            inputList.append(h[0])
+
+    if len(set(inputList)) <= 1:
+        return True
+    return False
+
+
 def invoke_lambda_event(functionName, payload):
     lresponse = lambda_client.invoke(
         FunctionName = functionName,
@@ -173,8 +214,9 @@ def lambda_handler(even, context):
                 return
 
             if isGroup:
-                msg = '抱歉 小姍最近看圖兼分析實在太累了 在群組中送的圖就先不理會了 但是個別好友送圖來給我 我還是會努力的看用力地看唷...如果要申訴 請email給我主人: ai@talent-service.com'
-                sendDeny(uid, bossid, msg)
+                #msg = '抱歉 小姍最近看圖兼分析實在太累了 在群組中送的圖就先不理會了 但是個別好友送圖來給我 我還是會努力的看用力地看唷...如果要申訴 請email給我主人: ai@talent-service.com'
+                #sendDeny(uid, bossid, msg)
+                print("just return directly")
                 return
 
             imageId = even['events'][0]['message']['id']
@@ -185,7 +227,7 @@ def lambda_handler(even, context):
                 imageAnalysis = {'uid':uid, 'imageId': imageId}
                 invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
             else:
-                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~~ \n 目前先開放購買小姍貼圖的好友分析照片...(買了小姍的日常貼圖後 傳任一張給小姍看一下) 感恩啦~ '
+                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~~ \n 目前先開放購買小姍貼圖的好友分析照片 \n (買小姍的日常貼圖後 傳任一張給小姍看一下 就會啟用看照片分析功能唷) \n 感謝啦~ '
                 sendDeny(uid, bossid, msg)
                 msg = uid + "_" + imageId
 
@@ -220,15 +262,23 @@ def lambda_handler(even, context):
         if len(oneUser['history']) > 51:
             oneUser['history'].remove(oneUser['history'][0])
 
-       # if len(oneUser['history']) >= 5  and len(set(oneUser['history'][-5:]))==1:
-       #     print("handle repeating")
-       #     msg = '請冷靜 你好像在講重複的話'
-       #     toLineResponse = {'uid':uid, 'msg':msg}
-       #     lineResponse(toLineResponse)
-       #     toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
-       #     lineResponse(toLineResponse)
-       #     return
+        if isRepeating(oneUser['history']):
+            print("handle repeating")
+            msg = '請冷靜 你好像在講重複的話'
+            toLineResponse = {'uid':uid, 'msg':msg}
+            lineResponse(toLineResponse)
+            toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
+            lineResponse(toLineResponse)
+            return
 
+        if isCopying(oneUser['history']):
+            print("handle copying")
+            msg = '你好像是學我說過的話耶？不要這樣嘛:~'
+            toLineResponse = {'uid':uid, 'msg':msg}
+            lineResponse(toLineResponse)
+            toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
+            lineResponse(toLineResponse)
+            return
 
         print(oneUser)
         if 'created' not in oneUser :
@@ -294,7 +344,7 @@ if __name__ == '__main__':
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}
 
-    tmp = {'events':[{'type': 'message', 'replyToken': '4e184e77a33841d0ae95c8bf4b8dd300', 'source': {'userId': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad', 'type': 'user'}, 'timestamp': 1503969668255, 'message': {'type': 'sticker', 'id': '6614883524485', 'stickerId': '19099990', 'packageId': '1540679'}}]}
+   # tmp = {'events':[{'type': 'message', 'replyToken': '4e184e77a33841d0ae95c8bf4b8dd300', 'source': {'userId': 'Uc9b95e58acb9ab8d2948f8ac1ee48fad', 'type': 'user'}, 'timestamp': 1503969668255, 'message': {'type': 'sticker', 'id': '6614883524485', 'stickerId': '19099990', 'packageId': '1540679'}}]}
     print(lambda_handler(tmp, None))
 
     

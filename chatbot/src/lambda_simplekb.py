@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 
-import sys
-import csv
-import json
+
 import random
 from elasticsearch import Elasticsearch, RequestsHttpConnection
-from datetime import datetime
-import sys
-import csv
 from requests_aws4auth import AWS4Auth
 from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id,aws_secret_access_key
@@ -34,20 +30,29 @@ es = Elasticsearch(
     connection_class=RequestsHttpConnection
 )
 
-def esHandler(msg, words):
-    result =""
+def lambda_kbhandler(even, context):
+# even structure
+# {'msg','' , 'index':'testi',
+#  "field":'pkey',"res":"res", 
+#  "score":2  } #min_score
+
+    msg = even['msg']
+    field = even['field']
+    idx = even['index']
+    if "score" in even:
+        min_score = int(even['score'])
 
     q = {
       "min_score": min_score,
       "query" :{
       "multi_match" : {
         "query": msg, 
-        "fields": [ "pkey", "similar" ] 
+        "fields": [ field]
       }
       }
     }   
 
-    res = es.search(index="testi", body=q)
+    res = es.search(index=idx, body=q)
     print("Got %d Hits:" % res['hits']['total'])
     allposi =[]
     allposiScore =[]
@@ -69,35 +74,15 @@ def esHandler(msg, words):
         result = allposi[resultPick]
         return result
 
-    qb = {
-      "min_score": 1.9, # well...books kb score should be higher? anyway...require refactorying in this part
-      "query" :{
-      "multi_match" : {
-        "query": msg, 
-        "fields": [ "pkey"]
-      }
-      }
-    }   
-
-    res = es.search(index="books1", body=qb)
-    print("Got %d Hits:" % res['hits']['total'])
-    if len(res['hits']['hits']) == 0:
-        return ''
-    else:
-   #     for i in res['hits']['hits']:
-   #         print(i['_source']['res'])
-        resultDict = random.choice(res['hits']['hits'][:3])
-        result = resultDict['_source']['res']
-        return result
+    return ""
 
 if __name__ == '__main__':
-    if len(sys.argv) <= 1:
-        print("usage: python3 "+sys.argv[0]+" <keyword> ")
-        print("")
-        exit(0)
 
-
+    import sys
+    msg = sys.argv[1]
+    even = {'msg':msg , 'index':'testi', "field":'pkey',"res":"res", "score":2.1  } 
+    r = lambda_kbhandler(even, None)
     print("==== result ===")
-    print(esHandler(sys.argv[1],[]))
+    print(r)
 
 

@@ -5,6 +5,8 @@
 from __future__ import print_function
 from socialBrain import SocialBrain, GenericBrain
 
+import base64
+import random
 import json
 import boto3
 import sys
@@ -14,8 +16,9 @@ import requests
 from difflib import SequenceMatcher
 from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
-from config import MapActions, MatchActTravel
+from config import MapActions, MatchActTravel, MatchBeHappyMsg
 from twMessageProcess import  getIntent, decideAction
+from lambda_simplekb import lambda_kbhandler
 
 lineBrain = SocialBrain()
 
@@ -93,6 +96,13 @@ def responseToUser(uid, resp, botid=''):
 #        return ''
 
 
+
+def invokeInternalLambda(functionName, payloadDict):
+# call internal function, this function supposedly should be deployed in 
+# AWS lambda but to be used directly in code for performance and cost 
+# consideration
+    resp = globals()[functionName](payloadDict, None)
+    return resp
 
 def invokeLambdaEvent(functionName, payloadDict):
     lresponse = lambda_client.invoke(
@@ -249,13 +259,41 @@ def lambda_handler(even, context):
         responseToUser(fromuid, resp, even['botid'])
     else:
         intent = getIntent(msg)
-        lambdaFunctionName = decideAction(intent, MatchActTravel)
+        print("got intent")
+        print(intent)
+        tryMatchActList = [MatchActTravel]
+        lambdaFunctionName = ''
+
+        for m in tryMatchActList:
+            ma = decideAction(intent, m)
+            if ma != '':
+                lambdaFunctionName = ma['lambda']
+                break
+
         didSendMsg = False
         if lambdaFunctionName != '':
+            print("match handle intent (lambda:"+lambdaFunctionName+")")
             intentPayLoad = {'uid':fromuid, 'botid':'', 'msg':msg, 'intent':intent, 'callback':''}
             invokeLambdaEvent(lambdaFunctionName, intentPayLoad)
             didSendMsg = True
 
+        tryMatchMsgList = [MatchBeHappyMsg]
+        for m in tryMatchMsgList:
+            ma = decideAction(intent, m)
+            print(ma)
+            if ma != '':
+                lambdaFunctionName = ma['lambda']
+                payload = ma['params']
+                resTemplate = random.choice( ma['resTemplate'])
+                lresp = invokeInternalLambda(lambdaFunctionName,payload)
+                resp = resTemplate.format(lresp)
+                print(resp)
+                responseToUser(fromuid, resp)
+                toLog['resp'] = resp
+                print(toLog)
+                table_log.put_item(Item=toLog)
+                didSendMsg = True
+        
         if not didSendMsg: 
         # TODO FIXME: a short cut here to invoke bus search
             didSendMsg = predefineAction(msg, fromuid)
