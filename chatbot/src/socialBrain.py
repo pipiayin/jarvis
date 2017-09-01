@@ -176,6 +176,7 @@ class SocialBrain():
        #     if self.processmsg.count(bw) > 0:
        #         handler_list = bible_first_list
        #         break
+        msg = msg.strip().replace("?",'').replace("？","")
         words = pseg.cut(msg)
         
         words, wordtypes = self.simpleListWords(words)
@@ -186,7 +187,6 @@ class SocialBrain():
         toCommand = False
         nounWords = []
         toCmdAct = ''
-        msg = msg.strip()
         if msg in self.kb[u'bad_words'].split(';'):
             response = self.randomAct(u'bad_words_res')
             return response
