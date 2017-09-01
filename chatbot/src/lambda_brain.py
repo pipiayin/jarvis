@@ -16,7 +16,7 @@ import requests
 from difflib import SequenceMatcher
 from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
-from config import MapActions, MatchActTravel, MatchBeHappyMsg
+from config import MapActions, MatchActTravel, MatchBeHappyMsg, MatchGFMsg
 from twMessageProcess import  getIntent, decideAction
 from lambda_simplekb import lambda_kbhandler
 
@@ -277,7 +277,7 @@ def lambda_handler(even, context):
             invokeLambdaEvent(lambdaFunctionName, intentPayLoad)
             didSendMsg = True
 
-        tryMatchMsgList = [MatchBeHappyMsg]
+        tryMatchMsgList = [MatchBeHappyMsg,MatchGFMsg]
         for m in tryMatchMsgList:
             ma = decideAction(intent, m)
             print(ma)

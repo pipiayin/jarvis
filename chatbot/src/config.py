@@ -2,6 +2,19 @@
 # -*- coding: utf-8 -*-
 
 # for quick and dirty config.
+MatchGFMsg = {
+    'lambda' : 'lambda_kbhandler',
+    'params' : {'msg':u'如何交到女朋友' , 'index':'testi', "field":'pkey',"res":"res", "score":2.2  },
+    'resTemplate' : ['{}',
+                     '小姍查了一下知識庫 覺得...{}',],
+    'criteries': [
+                   [('intent','有'), ('entity','怎樣'),('entity','女朋友')],
+                   [('intent','交到'), ('entity','如何'),('entity','女朋友')],
+                   [('intent','交到'), ('entity','怎樣才能'),('entity','女朋友')],
+                   [('intent','交到'), ('entity','才能'),('entity','女朋友')],
+                   [('entity','如何'),('entity','追女生')],
+                 ]
+}
 MatchBeHappyMsg = {
     'lambda' : 'lambda_kbhandler',
     'params' : {'msg':u'快樂的方法' , 'index':'testi', "field":'pkey',"res":"res", "score":2.1  },
@@ -11,6 +24,7 @@ MatchBeHappyMsg = {
     'criteries': [
                    [('intent','心情'), ('entity','不'),('entity','快樂')],
                    [('intent','覺得'), ('entity','不快樂')],
+                   [('intent','不太好'), ('entity','心情')],
                    [('entity','心情'), ('entity','不好')],
                    [('entity','怎樣'), ('intent','會'),('entity','快樂')],
                  ]
