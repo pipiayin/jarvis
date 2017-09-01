@@ -20,12 +20,29 @@ table_log = dynamodb.Table('lineuser')
 table_usert = dynamodb.Table('lineusert')
 table_user = dynamodb.Table('lineuser')
 
+def updateUserProfile(uid, profileString):
+    profileList = profileString.split(".")
+    item = table_user.get_item( Key={ 'userId': uid })
+    if "Item" in item:
+        oneUser = item['Item']
+        if 'profile' in oneUser:
+            if profileList[0] in oneUser['profile']:
+                oneUser['profile'][profileList[0]].append(profileList[1])
+            else:
+                oneUser['profile'][profileList[0]] = [profileList[1]]
+        else:
+            oneUser['profile'] = {} 
+            oneUser['profile'][profileList[0]] = [profileList[1]]
+        table_user.put_item( Item = oneUser)
+        print("done update")
+
+     
 def updateUserState(uid, state):
-        item = table_user.get_item( Key={ 'userId': uid })
-        if "Item" in item:
-            oneUser = item['Item']
-            oneUser['state'] = state
-            table_user.put_item( Item = oneUser)
+    item = table_user.get_item( Key={ 'userId': uid })
+    if "Item" in item:
+        oneUser = item['Item']
+        oneUser['state'] = state
+        table_user.put_item( Item = oneUser)
          
 
 def getLineUser(uid):
@@ -193,12 +210,22 @@ if __name__ == '__main__':
     parser.add_argument('--msg','-m', help='send message to all user')
     parser.add_argument('--select','-s', help='selected user list file')
     parser.add_argument('--profile','-p', help='get one user profile')
-    parser.add_argument('--updateState','-u', help='update one user profile (with -p)')
+    parser.add_argument('--updateState','-u', help='update one user state (with -p)')
+    parser.add_argument('--updateProfile','-U', help='update one user profile (with -p)')
     parser.add_argument('--lastdays','-d', help='show only user who actually use in past N days')
     parser.add_argument('--imageurl','-i', help='message attached image url') 
     parser.add_argument('--historiesOnly','-H',action='store_true', help='list only conversation history (for analysis purpose)') 
 
     args = parser.parse_args()
+    if args.updateProfile is not None:
+        if args.profile is None:
+            print("need to specify user id")
+        else:
+            print("to update " + args.profile + " "+ args.updateProfile)
+            if args.updateProfile == 'allow.image':
+     
+                updateUserProfile(args.profile, args.updateProfile)
+        exit(0)
     if args.profile is not None :
         if args.updateState is not None:
             print("update single user state to:" + args.updateState)

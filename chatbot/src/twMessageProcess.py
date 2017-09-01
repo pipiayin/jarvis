@@ -9,9 +9,9 @@ jieba.load_userdict('data/dict.txt.big')
 
 matchActTravel = { 
     'lambda' : 'pixnettravel',
-    'criteries':[ [('intent','推薦'),('entities','景點'),('location','')],
-                  [('intent','好玩'),('entities','地方')],
-                  [('intent','推薦'),('entities','觀光'),('entities','景點')],
+    'criteries':[ [('intent','推薦'),('entity','景點'),('location','')],
+                  [('intent','好玩'),('entity','地方')],
+                  [('intent','推薦'),('entity','觀光'),('entity','景點')],
                 ] 
     }
 
@@ -33,7 +33,6 @@ def getIntent(msg):
     pflag = ''
     tmpN = ''
     for word in words:
-        print(word.flag+" "+word.word)
         if word.flag in  ['nz','nt','n']:
             tmpN = tmpN + word.word
             entity.append(tmpN)
@@ -42,7 +41,7 @@ def getIntent(msg):
             tmpN = word.word
         elif word.flag in  ['v','vi','vn','vr']:
             verb = word.word
-        elif word.flag in  ['r','nr','l']:
+        elif word.flag in  ['r','nr','l','d','a']:
             entity.append(word.word)
         elif word.flag in ['t','tg']:
             timing.append(word.word)
@@ -69,15 +68,15 @@ def decideAction(intent, matchAct):
             if p == 'intent':
                 if intent[p] != v :
                     continue 
-            if p == 'entities':
-                if v not in intent[p]:
+            if p == 'entity':
+                if v not in intent['entities']:
                     continue 
             if p == 'location':
                 if v not in intent[p]:
                     continue 
             toMatch -= 1
         if toMatch <= 0:
-            return matchAct['lambda'] 
+            return matchAct
            
     return ""
 

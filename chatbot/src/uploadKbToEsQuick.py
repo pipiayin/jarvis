@@ -27,7 +27,7 @@ es = Elasticsearch(
 )
 print(es.info())
 
-def loadToEs( csvfile, idx, dtype):
+def loadToEs( csvfile, idx, dtype, qString='q', aString='a'):
     print("load kb csv file to allkb{}")
 
 
@@ -37,7 +37,8 @@ def loadToEs( csvfile, idx, dtype):
             q = line[0].strip()
             a = [line[1]]
             # build in each word
-            toInsert = {u'q':q , u'a':a}
+            toInsert = {qString:q , aString:a}
+
             print(toInsert)
             res = es.index(index=idx, doc_type=dtype,  body=toInsert)
 
@@ -52,9 +53,14 @@ if __name__ == '__main__':
     csvfile = sys.argv[1]
     idx = sys.argv[2]
     #es.indices.delete(index=idx)
-    es.indices.create(index=idx)
+    #es.indices.create(index=idx)
     dtype = sys.argv[3]
-    loadToEs(csvfile, idx, dtype)
+    
+    if len(sys.argv) >4 :
+    # must means assign qString and aString
+        loadToEs(csvfile, idx, dtype, sys.argv[4], sys.argv[5])
+    else:    
+        loadToEs(csvfile, idx, dtype)
     es.indices.refresh(index=idx)
 
 #res = es.search(index=idx, body=q)

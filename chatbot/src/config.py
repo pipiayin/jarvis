@@ -1,11 +1,28 @@
+#!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
 
 # for quick and dirty config.
+MatchBeHappyMsg = {
+    'lambda' : 'lambda_kbhandler',
+    'params' : {'msg':u'快樂的方法' , 'index':'testi', "field":'pkey',"res":"res", "score":2.1  },
+    'resTemplate' : ['我一直都會陪你聊天 或者你也可以試一下：{}',
+                     '其實...{}',
+                     '有個方法:{}... 總之小姍會陪你聊天你就會高興一些了'],
+    'criteries': [
+                   [('intent','心情'), ('entity','不'),('entity','快樂')],
+                   [('intent','覺得'), ('entity','不快樂')],
+                   [('entity','心情'), ('entity','不好')],
+                   [('entity','怎樣'), ('intent','會'),('entity','快樂')],
+                 ]
+    }
 
 MatchActTravel = {
     'lambda' : 'pixnettravel',
-    'criteries':[ [('intent','推薦'),('entities','景點'),('location','')],
-                  [('intent','好玩'),('entities','地方')],
-                  [('intent','推薦'),('entities','觀光'),('entities','景點')],
+    'criteries':[ [('intent','推薦'),('entity','景點'),('location','')],
+                  [('intent','好玩'),('entity','地方')],
+                  [('intent','好玩'),('entity','哪裡'),('location','')],
+                  [('intent','好玩'),('entity','哪邊'),('location','')],
+                  [('intent','推薦'),('entity','觀光'),('entity','景點')],
                 ]
     }
 
