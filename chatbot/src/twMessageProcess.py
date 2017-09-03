@@ -30,9 +30,11 @@ def getIntent(msg):
     words = pseg.cut(msg)
 
     pnv = False
+    pverb = False
     pflag = ''
     tmpN = ''
     for word in words:
+        print(word.flag+" "+word.word)
         if word.flag in  ['nz','nt','n']:
             tmpN = tmpN + word.word
             entity.append(tmpN)
