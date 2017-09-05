@@ -3,8 +3,8 @@
 
 import json
 import requests
-import jieba
-import jieba.posseg as pseg
+#import jieba
+#import jieba.posseg as pseg
 import re
 import random
 import time
@@ -40,8 +40,8 @@ class GenericBrain():
         res_act = self.kb[actKey].split(";")
         return random.choice(res_act)
 
-    def think(self, msg):
-        msg = msg.strip()
+    def think(self, intent):
+        msg = intent['msg'].strip()
         if msg in self.kb[u'bad_words'].split(';'):
             response = self.randomAct(u'bad_words_res')
             return response
@@ -155,15 +155,14 @@ class SocialBrain():
         return response
 
 
-    def simpleListWords(self, words):
-        toThinkList = []
+    def simpleListWords(self, oriCut):
         wordtypes = []
-        for w in words:
-            toThinkList.append(w.word)
-            wordtypes.append((w.word, w.flag))
-        return toThinkList, wordtypes
+        for f,w in oriCut:
+            wordtypes.append((w, f))
+        return wordtypes
 
-    def think(self, msg):
+    def think(self, intent):
+        msg = intent['msg'].strip()
         response = ""
         self.processmsg = msg # supposedly, basicParser will change processmsg
         all_list = [self.basicParser, esHandler, wikiHandler,esHealthHandler]
@@ -177,9 +176,8 @@ class SocialBrain():
        #         handler_list = bible_first_list
        #         break
         msg = msg.strip().replace("?",'').replace("？","")
-        words = pseg.cut(msg)
-        
-        words, wordtypes = self.simpleListWords(words)
+        #words = pseg.cut(msg)
+        wordtypes = self.simpleListWords(intent['oriCut'])
         wcount = len(wordtypes)
         nounwcount = 0.0
         ncount = 0
@@ -192,6 +190,8 @@ class SocialBrain():
             return response
 
         for (w,f) in wordtypes:
+            print("word:"+ w)
+            print("flag:"+f)
             if ncnt == 0 and f in ['v']:
                 toCommand = True
             if ncnt > 0 and toCommand and f in ['v'] and toCmdAct == '':
@@ -228,7 +228,7 @@ class SocialBrain():
             handler_list.append(esHealthHandler)
     
         for h in handler_list :
-            basic_res = h(self.processmsg,words) 
+            basic_res = h(self.processmsg,wordtypes) 
             #print('handle by'+str(h))
             if basic_res != '':
                 return basic_res
@@ -240,6 +240,18 @@ class SocialBrain():
         if response == '': # can't find any answer give 20% for pttHandler
             if random.randint(0,7) < 1:
                 response = pttHandler(msg, words)
+
+        if response == '' and not toCommand and len(nounWords)>0:
+            careonly = self.randomAct('careonly_res')
+            careString = ''
+            cnt = 1
+            for n in nounWords:
+                if cnt > 1:
+                    careString = careString + " "+n
+                else:
+                    careString = careString + n
+                cnt+=1
+            response = careonly.format(careString)
 
         if response == '' and toCommand :
             cannotDo = self.randomAct('list_cannot_do')
@@ -281,9 +293,11 @@ if __name__ == '__main__':
 
     msg = sys.argv[1]
 
+    intent ={'msg': '如何製作聊天機器人', 'location': '', 'entities': ['如何', '聊天機器人'], 'timings': [], 'intent': '製作', 'oriCut': [('r', '如何'), ('vn', '製作'), ('n', '聊天機器人')]}
+    intent = {'msg': '枯藤老樹昏鴉', 'timings': [], 'location': '', 'intent': '', 'oriCut': [('n', '枯藤'), ('n', '老樹'), ('n', '昏鴉')], 'entities': ['昏鴉', '枯藤老樹', '枯藤', '老樹', '老樹昏鴉']}
 #    print(genBrain.think(msg))
-#    print(gBrain.think(msg))
-    print(fbBrain.think(msg))
+    print(gBrain.think(intent))
+    print(fbBrain.think(intent))
 
 
 

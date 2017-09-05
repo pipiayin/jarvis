@@ -5,8 +5,8 @@
 import json
 import requests
 import sys
-import jieba
-import jieba.posseg as pseg
+#import jieba
+#import jieba.posseg as pseg
 import re
 
 def findWiki( word):
@@ -54,13 +54,13 @@ def wikiHandler(msg, words):
             if wikiResult != '':
                 return wikiResult
             
-        jieba.load_userdict('data/dict.txt.big')
-        words = pseg.cut(msg)
+        #jieba.load_userdict('data/dict.txt.big')
+        #words = pseg.cut(msg)
         tWord = ''
-        for word in words:
+        for (word, flag) in words:
             #print("debug:: "+str(word.word)+ " "+str(word.flag))
-            if word.flag in ['n','j','nr','ns','nt','an','nt']:
-                tWord = tWord + str(word.word)
+            if flag in ['n','j','nr','ns','nt','an','nt']:
+                tWord = tWord + str(word)
                 print("to find "+ tWord)
                     #print("yes")
                
