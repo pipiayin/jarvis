@@ -177,8 +177,8 @@ class SocialBrain():
        #         break
         msg = msg.strip().replace("?",'').replace("？","")
         #words = pseg.cut(msg)
-        wordtypes = self.simpleListWords(intent['oriCut'])
-        wcount = len(wordtypes)
+        typeWords = intent['oriCut']
+        wcount = len(typeWords)
         nounwcount = 0.0
         ncount = 0
         ncnt = 0
@@ -189,9 +189,9 @@ class SocialBrain():
             response = self.randomAct(u'bad_words_res')
             return response
 
-        for (w,f) in wordtypes:
-            print("word:"+ w)
-            print("flag:"+f)
+        for (f, w) in typeWords:
+            #print("word:"+ w)
+            #print("flag:"+f)
             if ncnt == 0 and f in ['v']:
                 toCommand = True
             if ncnt > 0 and toCommand and f in ['v'] and toCmdAct == '':
@@ -228,7 +228,7 @@ class SocialBrain():
             handler_list.append(esHealthHandler)
     
         for h in handler_list :
-            basic_res = h(self.processmsg,wordtypes) 
+            basic_res = h(self.processmsg,typeWords) 
             #print('handle by'+str(h))
             if basic_res != '':
                 return basic_res
@@ -241,7 +241,7 @@ class SocialBrain():
             if random.randint(0,7) < 1:
                 response = pttHandler(msg, words)
 
-        if response == '' and not toCommand and len(nounWords)>0:
+        if response == '' and not toCommand and len(nounWords)>0 and random.randint(0,5) < 3 :
             careonly = self.randomAct('careonly_res')
             careString = ''
             cnt = 1
@@ -280,7 +280,7 @@ class SocialBrain():
             else: 
                 response = random.choice(self.kb['act_no_info'].split(';'))
 
-        return response
+        return response.strip()
 
 
 
@@ -289,15 +289,16 @@ class SocialBrain():
 fbBrain = SocialBrain()
 gBrain = GenericBrain('happyrun','q')
 #genBrain = GenericEnBrain()
-if __name__ == '__main__':
+if __name__ == '__main__' :
 
     msg = sys.argv[1]
 
-    intent ={'msg': '如何製作聊天機器人', 'location': '', 'entities': ['如何', '聊天機器人'], 'timings': [], 'intent': '製作', 'oriCut': [('r', '如何'), ('vn', '製作'), ('n', '聊天機器人')]}
-    intent = {'msg': '枯藤老樹昏鴉', 'timings': [], 'location': '', 'intent': '', 'oriCut': [('n', '枯藤'), ('n', '老樹'), ('n', '昏鴉')], 'entities': ['昏鴉', '枯藤老樹', '枯藤', '老樹', '老樹昏鴉']}
-#    print(genBrain.think(msg))
-    print(gBrain.think(intent))
-    print(fbBrain.think(intent))
+    from twMessageProcess import  getIntent
+    intent = getIntent(msg)
+#    print(gBrain.think(intent))
+    r = fbBrain.think(intent)
+    print("social brain result")
+    print(r)
 
 
 
