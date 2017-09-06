@@ -18,6 +18,7 @@ from lineTools import getBotHeader, getUserDisplayName
 from nocheckin import XLineToken, happyrunXLineToken, botannXLineToken, botyunyunXLineToken, botpmXLineToken, botjhcXLineToken
 from config import MapActions, MatchActTravel, MatchBeHappyMsg, MatchGFMsg
 from twMessageProcess import  getIntent, decideAction
+from aiProfile import getMatchesFromIntent
 from lambda_simplekb import lambda_kbhandler
 
 lineBrain = SocialBrain()
@@ -241,6 +242,7 @@ def lambda_handler(even, context):
     ts = int(time.time())
     toLog = {'uid': fromuid, 'ts': ts, 'line':
              even['events'], 'msg': msg, 'resp': ""}
+    intent = None
     if 'botid' in even:
         genericBrain = GenericBrain(even['botid'], 'q')
         bossid = even['bossid']
@@ -261,6 +263,17 @@ def lambda_handler(even, context):
         intent = getIntent(msg)
         print("got intent")
         print(intent)
+        didSendMsg = False
+        aiProfileMatches = getMatchesFromIntent(intent)
+
+        if len(aiProfileMatches) > 0:
+            resp = random.choice(random.choice(aiProfileMatches)['res'])
+            responseToUser(fromuid, resp)
+            toLog['resp'] = resp
+            print(toLog)
+            table_log.put_item(Item=toLog)
+            didSendMsg = True
+
         tryMatchActList = [MatchActTravel]
         lambdaFunctionName = ''
 
@@ -270,7 +283,6 @@ def lambda_handler(even, context):
                 lambdaFunctionName = ma['lambda']
                 break
 
-        didSendMsg = False
         if lambdaFunctionName != '':
             print("match handle intent (lambda:"+lambdaFunctionName+")")
             intentPayLoad = {'uid':fromuid, 'botid':'', 'msg':msg, 'intent':intent, 'callback':''}
@@ -299,7 +311,7 @@ def lambda_handler(even, context):
             didSendMsg = predefineAction(msg, fromuid)
 
         if not didSendMsg:
-            resp = lineBrain.think(msg)
+            resp = lineBrain.think(intent)
             toLog['resp'] = resp
             print(toLog)
             table_log.put_item(Item=toLog)
@@ -318,6 +330,7 @@ if __name__ == '__main__':
     msg = sys.argv[1]
 
     # To try from command line
+
     tmp = {u'events':
            [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
@@ -349,38 +362,6 @@ if __name__ == '__main__':
     "590590 老師好 同學好",
     "老師好",
     "老師好",
-    "老師好",
-    "590590 妳討厭我嗎 怎麼會呢 我喜歡人類",
-    "590590 你討厭我嗎 怎麼會呢 我喜歡人類",
-    "590590 不開心 可以把不開心的事情說出來 我永遠是你的好聽中",
-    "590590 不開心 可以把不開心的事情說出來 我永遠是你的好聽眾",
-    "590590 請你罵我 我不忍這麼做",
-    "590590 請你罵我 這樣我很不捨",
-    "請你罵我",
-    "什麼是圖靈測試",
-    "圖靈測試是什麼",
-    "圖靈",
-    "590590 圖靈 艾倫·麥席森·圖靈，OBE，FRS（英語：Alan Mathison Turing，又譯阿蘭·圖靈，Turing也常翻譯成涂林或者杜林，1912年6月23日－1954年6月7日），英國計算機科學家、數學家、邏輯學家、密碼分析學家和理論生物學家，他被視為計算機科學與人工智慧之父。",
-    "590590 圖靈是誰 艾倫·麥席森·圖靈，OBE，FRS（英語：Alan Mathison Turing，又譯阿蘭·圖靈，Turing也常翻譯成涂林或者杜林，1912年6月23日－1954年6月7日），英國計算機科學家、數學家、邏輯學家、密碼分析學家和理論生物學家，他被視為計算機科學與人工智慧之父。",
-    "請推薦豐原美食",
-    "測試一下",
-    "很少的記憶體",
-    "590590 今天適合送花嗎 每天都適合送花",
-    "你的好朋友是誰",
-    "590590 回答錯了喔!!扣一分 sorry~",
-    "590590 你會像雲端情人嗎 有一天也許會唷 會和真人談戀愛",
-    "小姍是誰",
-    "戀戀神是誰",
-    "590590 幫我撐十秒 網路上的許多有趣的梗 我到現在都還不能體會",
-    "測試一下",
-    "590590 測試一下 測試又成功",
-    "590590 測試一下 測試又成功",
-    "測試一下",
-    "590590 你是人工智慧嗎 是的",
-    "590590 跟父母打架你覺得好嗎 打架不是好事情",
-    "590590 打架好嗎 打架永遠不會是好事情",
-    "測試一下",
-    "590590 測試一下 測試成功",
     "590590 測試一下 測試成功",
     "測試一下"
   ],
@@ -396,5 +377,6 @@ if __name__ == '__main__':
   "userId": "Uc9b95e58acb9ab8d2948f8ac1ee48fad"
 }
            }
+    
     print(lambda_handler(tmp, None))
     #predefineAction(msg, u'Uc9b95e58acb9ab8d2948f8ac1ee48fad')

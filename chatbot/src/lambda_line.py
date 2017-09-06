@@ -207,6 +207,12 @@ def lambda_handler(even, context):
                 setAllowImage(oneUser)
                 sendDeny(uid,bossid,msg)
 
+            else:
+                if not isGroup:
+                    msg = '抱歉 除了小姍的日常貼圖 其他貼圖我看不懂唷~'
+                    sendDeny(uid,bossid,msg)
+                return
+
         if 'image' == even['events'][0]['message']['type']:
             if uid in badfriends:
                 msg = '抱歉 目前系統認定是你是壞朋友 你送的圖就先不理會了 如果要申訴 請email給我主人: ai@talent-service.com'
@@ -338,8 +344,9 @@ if __name__ == '__main__':
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'source': {'groupId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'message': { 'type':'image' , 'id':'6435322417921'},
-            u'message': { 'type':'text' , 'text':msg},
+            #u'message': { 'type':'text' , 'text':msg},
             #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
+            u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
            
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}

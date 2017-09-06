@@ -35,7 +35,7 @@ def getIntent(msg):
     pflag = ''
     tmpN = ''
     for word in words:
-        print(word.flag+" "+word.word)
+        #print(word.flag+" "+word.word)
         oriCut.append((word.flag, word.word))
         if word.flag in  ['nz','nt','n']:
             tmpN = tmpN + word.word
@@ -45,7 +45,7 @@ def getIntent(msg):
             tmpN = word.word
         elif word.flag in  ['v','vi','vn','vr']:
             verb = word.word
-        elif word.flag in  ['r','nr','l','d','a','yg']:
+        elif word.flag in  ['r','nr','l','d','a','yg','i']:
             entity.append(word.word)
         elif word.flag in ['t','tg']:
             timing.append(word.word)
@@ -94,7 +94,7 @@ if __name__ == '__main__' :
 
     if args.msg is not None: # analysis an intent
         itent = getIntent(args.msg.strip())
-        print(itent)
+        #print(itent)
         print(decideAction(itent, matchActTravel))
         exit(0)
 
