@@ -21,6 +21,7 @@ def getIntent(msg):
     verb = ''
     entity = []
     timing = []
+    oriCut = []
     location = ''
     oriMsg = msg
  
@@ -30,9 +31,12 @@ def getIntent(msg):
     words = pseg.cut(msg)
 
     pnv = False
+    pverb = False
     pflag = ''
     tmpN = ''
     for word in words:
+        #print(word.flag+" "+word.word)
+        oriCut.append((word.flag, word.word))
         if word.flag in  ['nz','nt','n']:
             tmpN = tmpN + word.word
             entity.append(tmpN)
@@ -41,7 +45,7 @@ def getIntent(msg):
             tmpN = word.word
         elif word.flag in  ['v','vi','vn','vr']:
             verb = word.word
-        elif word.flag in  ['r','nr','l','d','a']:
+        elif word.flag in  ['r','nr','l','d','a','yg','i']:
             entity.append(word.word)
         elif word.flag in ['t','tg']:
             timing.append(word.word)
@@ -56,7 +60,7 @@ def getIntent(msg):
             pnv = False
         pflag = word.flag
 
-    intent = { 'intent':verb, 'timings':timing, 'location':location, 'entities': list(set(entity)), 'msg':oriMsg}
+    intent = { 'intent':verb, 'timings':timing, 'location':location, 'entities': list(set(entity)), 'msg':oriMsg, 'oriCut': oriCut}
     return intent
 
 
@@ -90,7 +94,7 @@ if __name__ == '__main__' :
 
     if args.msg is not None: # analysis an intent
         itent = getIntent(args.msg.strip())
-        print(itent)
+        #print(itent)
         print(decideAction(itent, matchActTravel))
         exit(0)
 

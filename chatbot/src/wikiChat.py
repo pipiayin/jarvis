@@ -5,8 +5,8 @@
 import json
 import requests
 import sys
-import jieba
-import jieba.posseg as pseg
+#import jieba
+#import jieba.posseg as pseg
 import re
 
 def findWiki( word):
@@ -42,10 +42,8 @@ def shortenResult(wikiResult):
         wikiResult = wikiResult+u'...其他可以查一下wiki唷'
     return wikiResult
 
-def wikiHandler(msg, words):
+def wikiHandler(msg, typeWords):
 
-    #TODO for wiki handler, need to use jieba to parse string again. 
-    # could be improve in the future
     wikiResult =''
     try:
         if len(msg) <= 4: ## short message
@@ -54,53 +52,54 @@ def wikiHandler(msg, words):
             if wikiResult != '':
                 return wikiResult
             
-        jieba.load_userdict('data/dict.txt.big')
-        words = pseg.cut(msg)
-        tWord = ''
-        for word in words:
+        tWords = []
+        tmpWord = ''
+        for (flag, word) in typeWords:
             #print("debug:: "+str(word.word)+ " "+str(word.flag))
-            if word.flag in ['n','j','nr','ns','nt','an','nt']:
-                tWord = tWord + str(word.word)
-                print("to find "+ tWord)
+            if flag in ['n','j','nr','ns','nt','an','nt']:
+                tmpWord = tmpWord + str(word)
+                tWords.append(tmpWord)
+                tWords.append(word)
+                print("add to find "+ tmpWord)
+                print("add to find "+ word)
                     #print("yes")
-               
-            else:
-                tWord = tWord+"!"
              
-        print(tWord)
-        tmpL = tWord.split("!")
-        allList = list(set(tmpL))
-        #print(allList)
+        allList = list(set(tWords))
         if u'' in allList:
             allList.remove(u'')
         if len(allList) == 0:
             #means no need to find
             return ''
         
-        tWord = allList[0].strip() #just pick first
-        if len(tWord) <= 1:
-            print('avoid one sinegle chinese char search')
-            return ''
-
-        print("find "+tWord)
-        wikiResult = findWiki(tWord)
-        wikiResult = shortenResult(wikiResult)
-
-        if len(allList) >= 2 and wikiResult =='': # give the string second chance
-            tWord = allList[1].strip() #just pick first
-            print("find second term "+tWord)
-            wikiResult = findWiki(tWord)
+        wikiResultList = []
+        result = ""
+        for targetWord in allList: 
+            wikiResult = ''
+            if len(targetWord) <= 1:
+                continue 
+            print("try to find from wiki "+targetWord)
+            wikiResult = findWiki(targetWord)
             wikiResult = shortenResult(wikiResult)
+            wikiResultList.append(wikiResult)
+            print(wikiResult)
 
-        return wikiResult
+        for r in wikiResultList:
+            if r.strip() != '' and len(r.strip()) > 0:
+                result = result + r + "\n"
+            
+        return result
     except: 
         print(sys.exc_info()[0])
         return 'err'
 
-    return wikiResult
 if __name__ == '__main__':
 
     msg = sys.argv[1]
+    from twMessageProcess import  getIntent
+    intent = getIntent(msg)
 
-    print(wikiHandler(msg,[]))
+    r = wikiHandler(msg,intent['oriCut'])
+    print("the result of wikihanlder")
+    print(r)
+    print("end of result of wikihandler")
     #

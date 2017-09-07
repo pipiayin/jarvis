@@ -2,6 +2,22 @@
 # -*- coding: utf-8 -*-
 
 # for quick and dirty config.
+MatchGFMsg = {
+    'lambda' : 'lambda_kbhandler',
+    'params' : {'msg':u'如何交到女朋友' , 'index':'testi', "field":'pkey',"res":"res", "score":2.2  },
+    'resTemplate' : ['{}',
+                     '小姍查了一下知識庫 覺得...{}',],
+    'criteries': [
+                   [('intent','有'), ('entity','怎樣'),('entity','女朋友')],
+                   [('intent','沒有'), ('entity','怎麼辦'),('entity','女朋友')],
+                   [('intent','告白'), ('entity','怎樣')],
+                   [('intent','告白'), ('entity','如何')],
+                   [('intent','交到'), ('entity','如何'),('entity','女朋友')],
+                   [('intent','交到'), ('entity','怎樣才能'),('entity','女朋友')],
+                   [('intent','交到'), ('entity','才能'),('entity','女朋友')],
+                   [('entity','如何'),('entity','追女生')],
+                 ]
+}
 MatchBeHappyMsg = {
     'lambda' : 'lambda_kbhandler',
     'params' : {'msg':u'快樂的方法' , 'index':'testi', "field":'pkey',"res":"res", "score":2.1  },
@@ -11,6 +27,7 @@ MatchBeHappyMsg = {
     'criteries': [
                    [('intent','心情'), ('entity','不'),('entity','快樂')],
                    [('intent','覺得'), ('entity','不快樂')],
+                   [('intent','不太好'), ('entity','心情')],
                    [('entity','心情'), ('entity','不好')],
                    [('entity','怎樣'), ('intent','會'),('entity','快樂')],
                  ]
@@ -55,6 +72,9 @@ MapActions = [
                   u'推薦吃什麼好',
                   u'要吃什麼啊',
                   u'晚上要吃什麼啊',
+                  u'晚上吃什麼好呢',
+                  u'晚餐吃什麼好呢',
+                  u'午餐吃什麼好呢',
                 ]
     },
     { 'call_back': 'actEventReg',
@@ -92,9 +112,9 @@ MapActions = [
          'terms': [u'幫我抽根籤', u'請幫我抽個籤', u'小姍幫我抽簽', u'幫我抽簽看看', u'再幫我抽一次', u'請幫我抽支籤', u'請幫大姐抽支籤', u'請幫我抽籤']
          },
         {'call_back': 'actAstro',
-         'terms': [u'今天星座運勢', u'跟我說今天星座運勢', u'小姍幫我查星座運勢', u'幫我看星座運勢', u'幫我查今日星座運勢', u'今日星座運勢',u'小姍幫我查今日星座']
+         'terms': [u'幫我查星座今日運勢',u'今天星座運勢', u'跟我說今天星座運勢', u'小姍幫我查星座運勢', u'幫我看星座運勢', u'幫我查今日星座運勢', u'今日星座運勢',u'小姍幫我查今日星座','查今日運勢','小姍查今日運勢']
          },
         {'call_back': 'actDayfortune',
-         'terms': [u'幫我算命 ', u'出生運勢', u'小姍幫我查出生運勢', u'幫我看出生運勢', u'請幫我算命 生日是', u'請幫我算命',u'幫我算命生日是',u'請幫我算命生日是']
+         'terms': [u'幫我算命 ', u'出生運勢', u'小姍幫我查出生運勢', u'幫我看出生運勢', u'請幫我算命 生日是', u'請幫我算命',u'幫我算命生日是',u'請幫我算命生日是',u'請幫我算命 出生日期是']
          }
 ]
