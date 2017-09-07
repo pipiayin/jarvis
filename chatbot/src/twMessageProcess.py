@@ -94,8 +94,8 @@ if __name__ == '__main__' :
 
     if args.msg is not None: # analysis an intent
         itent = getIntent(args.msg.strip())
-        #print(itent)
-        print(decideAction(itent, matchActTravel))
+        print(itent)
+        #print(decideAction(itent, matchActTravel))
         exit(0)
 
     if args.msgFile is not None:

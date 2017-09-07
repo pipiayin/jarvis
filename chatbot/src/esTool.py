@@ -63,7 +63,7 @@ def listAll(indexname, query=""):
 #print(res)
     print("Got %d Hits:" % res['hits']['total'])
     for h in res['hits']['hits']:
-        print(h['_id']+ " "+ str(h['_source']))
+        print(h['_id']+ " "+ str(h['_source'])+ " "+str(h['_score']))
 
 if __name__ == '__main__':
     bossid='Uc9b95e58acb9ab8d2948f8ac1ee48fad'
