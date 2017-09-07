@@ -15,7 +15,7 @@ from awsconfig import ESHOST, REGION
 from nocheckin import aws_access_key_id,aws_secret_access_key
 
 
-min_score=2
+min_score=1.5
 
 #host = 'search-sandyai-mdmcmay32zf36sgmk66tz2v454.us-east-1.es.amazonaws.com'
 host = ESHOST
@@ -52,18 +52,28 @@ def esHandler(msg, words):
     allposi =[]
     allposiScore =[]
     cntPossible = 0
+    pScore = 0 
     for h in res['hits']['hits']:
         #print(h)
         score = int(h['_score'])+1
+            
+        if pScore != 0 :
+            pGap = ( pScore - score) / score 
+    #        print(pGap)
+            if pGap >= 0.33 :
+                break
+        pScore = score
         allposi = allposi + h['_source']['res']
         allposiScore.append(score)
         cntPossible += 1
+        
         #result = random.choice((h['_source']['res']))
         #return result
     toPick = []
     for exdi in range(cntPossible):
         toPick = toPick + [exdi] * allposiScore[exdi]
     #print(toPick)
+    #print(allposi)
     if len(allposi) > 0:
         resultPick = random.choice(toPick)
         result = allposi[resultPick]
