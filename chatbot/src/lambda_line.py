@@ -153,8 +153,8 @@ def sendDeny(uid, bossid, msg):
     lineResponse(toLineResponse)
 
 
-def isAllowImage(oneUser):
-    if 'profile' in oneUser and 'allow' in oneUser['profile'] and 'image' in oneUser['profile']['allow'] :
+def isAllow(oneUser, allowAction):
+    if 'profile' in oneUser and 'allow' in oneUser['profile'] and allowAction in oneUser['profile']['allow'] :
         return True
     return False
 
@@ -228,7 +228,7 @@ def lambda_handler(even, context):
             imageId = even['events'][0]['message']['id']
             msg = uid + "_" + imageId
 
-            if isAllowImage(oneUser):
+            if isAllow(oneUser,'image'):
                 messageType = 'image'
                 imageAnalysis = {'uid':uid, 'imageId': imageId}
                 invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
@@ -306,8 +306,16 @@ def lambda_handler(even, context):
             if isGroup:
                 print("ignore learn from group")
             else: 
-                print("to learn")
-                invoke_lambda_event('ailearn', json.dumps(toLog) )
+                if isAllow(oneUser,'teach'):
+                    print("ai is going to learn")
+                    invoke_lambda_event('ailearn', json.dumps(toLog) )
+                else:
+                    print("not allow to teach")
+                    msg = '抱歉 目前小姍只會向經過審核的益友學習...想要變成小姍的益友？ 請email創造團隊: ai@talent-service.com'
+                    toLineResponse = {'uid':uid, 'msg':msg}
+                    lineResponse(toLineResponse)
+                    toLineResponse = {'uid':bossid, 'msg': msg+":"+uid+":"+oneUser['displayName']}
+                    lineResponse(toLineResponse)
         else:
             print("to trigger ai brain \n\n")
             if isGroup :
@@ -344,9 +352,9 @@ if __name__ == '__main__':
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'source': {'groupId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'message': { 'type':'image' , 'id':'6435322417921'},
-            #u'message': { 'type':'text' , 'text':msg},
+            u'message': { 'type':'text' , 'text':msg},
             #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
-            u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
+            #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
            
             u'bossid' : 'Uc9b95e58acb9ab8d2948f8ac1ee48fad',
            }]}

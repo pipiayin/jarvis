@@ -222,9 +222,8 @@ if __name__ == '__main__':
             print("need to specify user id")
         else:
             print("to update " + args.profile + " "+ args.updateProfile)
-            if args.updateProfile == 'allow.image':
      
-                updateUserProfile(args.profile, args.updateProfile)
+            updateUserProfile(args.profile, args.updateProfile)
         exit(0)
     if args.profile is not None :
         if args.updateState is not None:
