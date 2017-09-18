@@ -80,7 +80,7 @@ def esHandler(msg, words):
         return result
 
     qb = {
-      "min_score": 1.9, # well...books kb score should be higher? anyway...require refactorying in this part
+      "min_score": 1.5, # well...books kb score should be higher? anyway...require refactorying in this part
       "query" :{
       "multi_match" : {
         "query": msg, 
@@ -97,7 +97,10 @@ def esHandler(msg, words):
    #     for i in res['hits']['hits']:
    #         print(i['_source']['res'])
         resultDict = random.choice(res['hits']['hits'][:3])
-        result = resultDict['_source']['res']
+        if type(resultDict['_source']['res']) == type([]):
+            result = random.choice(resultDict['_source']['res'])
+        else:
+            result = resultDict['_source']['res']
         return result
 
 if __name__ == '__main__':
