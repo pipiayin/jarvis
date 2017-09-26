@@ -233,7 +233,7 @@ def lambda_handler(even, context):
                 imageAnalysis = {'uid':uid, 'imageId': imageId}
                 invoke_lambda_event('facerecognize', json.dumps(imageAnalysis) )
             else:
-                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~~ \n 目前先開放購買小姍貼圖的好友分析照片 \n (買小姍的日常貼圖後 傳任一張給小姍看一下 就會啟用看照片分析功能唷) \n 感謝啦~ '
+                msg = '小姍最近訊息太多，又要看照片分析，快累到不行了:~~ \n 目前先開放購買小姍貼圖的好友分析照片 \n (買小姍的日常貼圖 https://line.me/S/sticker/1540679  之後，傳任一張給小姍看一下，就會啟用看照片分析功能唷) \n 感謝啦~ '
                 sendDeny(uid, bossid, msg)
                 msg = uid + "_" + imageId
 
@@ -351,8 +351,8 @@ if __name__ == '__main__':
           [{
             u'source': {'userId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
             #u'source': {'groupId': u'Uc9b95e58acb9ab8d2948f8ac1ee48fad'},
-            #u'message': { 'type':'image' , 'id':'6435322417921'},
-            u'message': { 'type':'text' , 'text':msg},
+            u'message': { 'type':'image' , 'id':'6435322417921'},
+            #u'message': { 'type':'text' , 'text':msg},
             #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
             #u'message': {u'type': u'sticker', u'id': u'6475887180969', u'packageId': u'3524', u'stickerId': u'2713770'},
            
