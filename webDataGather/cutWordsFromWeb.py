@@ -49,7 +49,6 @@ if __name__ == '__main__':
             soup = BeautifulSoup(fp)
             for script in soup(["script", "style"]):
                 script.decompose()     # rip it out
-            print(f)
             #print(soup.body)
             text = soup.get_text()
 
@@ -61,6 +60,10 @@ if __name__ == '__main__':
             text = '\n'.join(chunk for chunk in chunks if chunk)
 
             for l in text.splitlines():
+                if len(l) <= 5: 
+                    continue
+                if len(l) >= 15:
+                    print(l)
                 outFile.write(l+"\n")
                 cnt+=1
                 if cnt % 1000 == 0:
