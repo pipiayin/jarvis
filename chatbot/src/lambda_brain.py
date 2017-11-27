@@ -312,6 +312,8 @@ def lambda_handler(even, context):
 
         if not didSendMsg:
             resp = lineBrain.think(intent)
+            if len(resp) >= 202:
+                resp = resp[:200] + '.....抱歉...我好像講太多'
             toLog['resp'] = resp
             print(toLog)
             table_log.put_item(Item=toLog)
