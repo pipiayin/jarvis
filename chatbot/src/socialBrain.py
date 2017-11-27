@@ -239,7 +239,7 @@ class SocialBrain():
           
         if response == '': # can't find any answer give 20% for pttHandler
             if random.randint(0,7) < 1:
-                response = pttHandler(msg, words)
+                response = pttHandler(msg, nounWords)
 
         if response == '' and not toCommand and len(nounWords)>0 and random.randint(0,5) < 3 :
             careonly = self.randomAct('careonly_res')
